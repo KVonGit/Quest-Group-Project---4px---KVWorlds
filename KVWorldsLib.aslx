@@ -1,0 +1,2589 @@
+<?xml version="1.0"?>
+
+<!-- KV - Quest Group Project -->
+
+<library>
+
+
+  <command name="kv_push_dir">
+    <pattern type="string"><![CDATA[^(?<text>push|pull|move) (?<object>.*) (?<exit>north|east|south|west|northeast|northwest|southeast|southwest|in|out|up|down|n|e|s|w|ne|nw|se|sw|o|u|d)$]]></pattern>
+    <script>
+      if (HasAttribute(object, "pushable")) {
+        object.parent = exit.to
+        msg ("You " + text + " the " + GetDisplayAlias(object) + " " + exit.alias + ".")
+        game.pov.parent = exit.to
+      }
+      else {
+        msg ("You can't " + text + " it.")
+      }
+    </script>
+  </command>
+  
+  <verb name="kv_press">
+    <property>press</property>
+    <pattern>press</pattern>
+    <defaultexpression>"You can't press " + object.article + "."</defaultexpression>
+  </verb>
+  <verb name="kv_ride">
+    <property>ride</property>
+    <pattern>ride</pattern>
+    <defaultexpression>"You can't ride " + object.article + "."</defaultexpression>
+  </verb>
+  
+  <verb name="kv_givetoRH">
+    <property>givetorh</property>
+    <pattern>give to rh</pattern>
+    <defaultexpression>"You can't give " + object.article + "  to RH."</defaultexpression>
+  </verb>
+  <verb name="kv_bookmark">
+    <property>bookmark</property>
+    <pattern>bookmark</pattern>
+    <defaultexpression>"You can't bookmark " + object.article + "."</defaultexpression>
+  </verb>
+  <verb name="kv_experience">
+    <property>experience</property>
+    <pattern>experience</pattern>
+    <defaultexpression>"You can't experience " + object.article + "."</defaultexpression>
+  </verb>
+  <verb name="kv_check">
+    <property>check</property>
+    <pattern>check</pattern>
+    <defaultexpression>"You can't check " + object.article + "."</defaultexpression>
+  </verb>
+  <verb name="kv_flip">
+    <pattern>flip #object#</pattern>
+    <defaulttext>You can't flip it.</defaulttext>
+  </verb>
+  <verb name="kv_consult">
+    <property>consult</property>
+    <pattern>consult</pattern>
+    <defaultexpression>"You can't consult " + object.article + "."</defaultexpression>
+  </verb>
+  <turnscript name="kv_turn_count">
+    <enabled />
+    <script>
+      if (not game.suppressturnscripts) {
+        IncreaseObjectCounter (game, "turns")
+      }
+    </script>
+  </turnscript>
+
+  <turnscript name="checkQuests_kv">
+    <enabled type="boolean">false</enabled>
+    <script>
+      AreAllQuestsCompleted
+    </script>
+  </turnscript>
+  <command name="kv_checkOpenQuests">
+    <pattern>quest;quests;open quests;check quests;check open quests;q;cq;check quest</pattern>
+    <script><![CDATA[
+      // DisplayList (player.activeQuestList, false)
+      // msg ("")
+      d = player.activeQuestList
+      hasQuests = false
+      foreach (key, d) {
+        if (not  DictionaryItem(d, key) = null) {
+          hasQuests = true
+        }
+      }
+      msg ("<br/><b>Active Quests:</b>")
+      if (hasQuests) {
+        foreach (key, d) {
+          if (not  DictionaryItem(d, key) = null) {
+            msg ("Quest: " + DictionaryItem(d, key))
+          }
+        }
+      }
+      else {
+        msg ("You have no active Quests at the moment.<br/>")
+      }
+      if (HasAttribute(player, "failedQuests")) {
+        msg ("Failed Quest(s):")
+        DisplayList (player.failedQuests, false)
+        msg ("")
+      }
+      if (ListCount(player.completedQuests) > 1) {
+        foreach (cmp, player.completedQuests) {
+          msg (cmp)
+        }
+      }
+      game.suppressturnscripts = true
+    ]]></script>
+  </command>
+  <command name="kv_score">
+    <pattern>score;check score;request score</pattern>
+    <script><![CDATA[
+      msg ("")
+      msg ("Your score: " + game.score + "{random:/69105?: out of about 42: out of an estimated 37: out of around 69:/???:/&infin;:/{color:red:game.maxscore}}")
+      msg ("")
+      msg ("True Maximum Score: [ <span style=\"color:white\">" + game.maxScore + " </span>]")
+      game.suppressturnscripts = true
+      DisplayList (game.scoreList, true)
+    ]]></script>
+  </command>
+  <command name="kv_diagnose">
+    <pattern>diagnose</pattern>
+    <script>
+      msg ("")
+      msg ("Your health: " + player.health + "%")
+      msg ("")
+      game.suppressturnscripts = true
+    </script>
+  </command>
+  <command name="kv_credits">
+    <pattern>credits</pattern>
+    <script><![CDATA[
+      msg ("<center><h2>Written, Edited, Recorded, Coded, Produced, and Directed by:</h2><b>THE QUEST FORUM:</b><br/>DarkLizerd<br/>XanMag<br/>K.V.<br/><br/><h3>Beta-tested by:<br/>Pertex</h3><br/><br/><h2>Starring:</h2><h1 style=\"font-size:400%\">The Pixie</h1><br/><br/><h3>...and The Quest Forum<h3></center><br/>")
+      DisplayHttpLink ("View the complete credit roll at textadventures.co.uk", "https://media.textadventures.co.uk/games/cNFLuCu1cUqmUv0I9_KEIQ/index.html", false)
+      game.suppressturnscripts = true
+    ]]></script>
+  </command>
+  <command name="kv_seeHintsCommand">
+    <pattern type="string"><![CDATA[(^(hint|hints|advice|advise|help|info|information)\s*(about|regarding|on|)(?<=\S)\s+(?<object>.*)\s*$|^(about|(tell me about)|concerning) (?<object>.*))]]></pattern>
+    <script>
+      HideOutputSection (game.menuoutputsection)
+      showHint (object)
+    </script>
+  </command>
+  <command name="kv_hints">
+    <pattern>hint;hints</pattern>
+    <unresolved type="string"></unresolved>
+    <script><![CDATA[
+      HideOutputSection (game.menuoutputsection)
+      hasHints = NewObjectList()
+      hintable = false
+      foreach (obj, ScopeReachable()) {
+        if (HasAttribute(obj, "hintlist")) {
+          list add (hasHints, obj)
+          hintable = true
+        }
+      }
+      if (hintable) {
+        ShowMenu ("What would you like a hint about?", hasHints, true) {
+          result = (GetObject(result))
+          msg ("Displaying hints for: " + GetDisplayName(result) + "<br/>")
+          HandleSingleCommand ("hint " + result.alias + "")
+        }
+      }
+      else {
+        msg ("Sorry. Nothing within reach has any hints set up.")
+      }
+      // msg ("Really, Pixie? You're asking for a hint???<br/><br/>Try entering DIR to get a list of files, then <code>CAT filename</code> to view a file.<br/>")
+    ]]></script>
+  </command>
+  <object name="kv_maxScoreObject">
+    <maxScore type="int">105</maxScore>
+  </object>
+
+  <object name="KV_worlds">
+    <object name="kv_Darkness">
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <dark />
+      <darkroomdescription>You can't see anything, smell anything, hear anything, or taste anything.</darkroomdescription>
+      <alias>Darkness</alias>
+      <beforeenter type="script">
+        JS.uiShow ("#commandPane")
+        JS.setCommands ("Feel around")
+      </beforeenter>
+      <object name="kv_lamp">
+        <inherit name="switchable" />
+        <inherit name="kvtype" />
+        <feature_switchable />
+        <take />
+        <feature_usegive />
+        <alias>lamp</alias>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+          <value>Switch on</value>
+          <value>Switch off</value>
+        </inventoryverbs>
+        <drop type="boolean">false</drop>
+        <dropmsg>You decide to hold on to the lamp.</dropmsg>
+        <attr name="feature_lightdark" type="boolean">false</attr>
+        <hintlist type="stringlist">
+          <value>Hint:  USE THE LAMP.</value>
+        </hintlist>
+        <onswitchon type="script"><![CDATA[
+          SetObjectLightstrength (kv_lamp, "strong")
+          if (game.pov.parent.dark) {
+            if (game.pov.parent=kv_Darkness) {
+              msg ("A soft glow emanates from the lamp, then slowly grows brighter, revealing your surroundings.  As you glance to and fro in an attempt to acclimate, the lamp begins to hum.<br/><br/>The humming is driving you insane! Growing louder and louder by the second, until, finally...")
+              msg ("<img src=\"" + GetFileURL("internalError.png")  + "\" />")
+              msg ("<br/><br/>Your surroundings, however, remain <code style=\"color:red\">not game.pov.parent.dark</code><br/><br/>'Huh,' you think to yourself (as if you'd think anything to anyone else), 'I hope I wasn't going to need <i>that</i> for anything else!'<br/><br/>")
+              MoveObject (player, kv_Swedenborgian Space)
+              RemoveObject (kv_lamp)
+            }
+            else {
+              HandleSingleCommand ("look")
+            }
+          }
+        ]]></onswitchon>
+        <onswitchoff type="script">
+          SetObjectLightstrength (lamp, "")
+        </onswitchoff>
+        <use type="script">
+          do (this, "onswitchon")
+        </use>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+          <value>Switch on</value>
+          <value>Switch off</value>
+        </displayverbs>
+      </object>
+      <command name="kv_feel">
+        <pattern>feel;feel around;feel about;search</pattern>
+        <script><![CDATA[
+          if (not kv_lamp.hasbeenmoved) {
+            msg ("You feel around in the dark.<br/><br/>After a moment or two, just after abandoning any hopes of finding anything, something far off in the distance catches your eye.<br/><br/>It looks like a faraway flicker of light... <br/><br/>You strain to get a better look, and that's all it is: a faraway flicker.<br/><br/>Just as you begin to contemplate entering UNDO, you notice that the light is slowly growing nearer.<br/><br/>After just a few moments, a man with a lamp appears.<br/>")
+            msg("\"You've proven your worth just by making it this far,\" he says, and, now that he's close enough, you can see that it's none other than Alex Warren!<br><br> \"Don't let this darkness slow you down,\" says Alex.<br/><br/>He flashes a grin and passes you the {object:kv_lamp:lamp}.  \"You may as well take this,\" he says. \"It's a little buggy. Tends to switch itself off randomly, but, besides that, it's a good lamp.\"<br/><br/>You take the {object:kv_lamp:lamp}, giving Alex a slight nod, and, with that, he says, \"cheers!\" and moves on to other things.<br/><br/>You wish Alex the best (as do we all), then you get back to the task at hand. Now that you have a light source (which, of course, just switched itself off), you're bound to {command:use lamp:use} it!")
+            MoveObject (kv_lamp, player)
+            JS.setCommands (game.defcmds)
+            JS.uiHide ("#commandPane")
+          }
+          else {
+            msg ("You feel around again for some reason.<br/><br/>Time passes...<br/>")
+          }
+        ]]></script>
+      </command>
+      <command name="kv_darkness_hints">
+        <pattern>hint;help;hints;wtf;wth;damn;what the hell</pattern>
+        <script><![CDATA[
+          ShowMenu ("What am I supposed to do in the dark?", Split ("Hint 1", ";"), true) {
+            msg ("HINT 1<br/>How many senses do you have?<br/><br/>")
+            ShowMenu ("", Split ("HINT 2", ";"), false) {
+              msg ("HINT 2 <br/>How many senses are referenced in the room description?")
+              ShowMenu ("", Split ("HINT 3", ";"), false) {
+                msg ("HINT 3<br/>This is directly from the Hitchhiker's Guide to the Galaxy.<br/>You ever played that?<br/><br/>")
+                ShowMenu ("", Split ("HINT4", ";"), false) {
+                  msg ("HINT 4 <br/>Enter: FEEL<br/><br/>")
+                }
+              }
+            }
+          }
+        ]]></script>
+      </command>
+    </object>
+    <object name="kv_Swedenborgian Space">
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <dark type="boolean">false</dark>
+      <alias>The Imaginarium</alias>
+      <darkroomdescription type="script">
+        msg ("You can't see anything, smell anything, hear anything, or taste anything.")
+      </darkroomdescription>
+      <enter type="script"><![CDATA[
+        msg ("<br/>RH is standing here, looking slightly confused.<br/><br/>\"Hi, Pix,\" he says, his eyes on his feet. \"My hidden item is in the hub. And so is the disk. I put it in the pouch, and everything that goes into <i>that</i> thing goes directly to the hub for some reason.\"<br/>")
+        if (kv_rabbit.parent = game.pov.parent) {
+          msg ("A {object:kv_rabbit:rabbit} sits just a few feet away from you, watching your every move.<br/>")
+        }
+      ]]></enter>
+      <object name="kv_pouch">
+        <inherit name="container_open" />
+        <inherit name="kvtype" />
+        <feature_container />
+        <open type="boolean">false</open>
+        <close type="boolean">false</close>
+        <hidechildren type="boolean">false</hidechildren>
+        <listchildren type="boolean">false</listchildren>
+        <take />
+        <alias>Strange Pouch</alias>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+        </displayverbs>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+        </inventoryverbs>
+        <attr name="feature_startscript" type="boolean">false</attr>
+        <hintlist type="stringlist">
+          <value>Hint 1:  Try entering:  SEARCH POUCH</value>
+        </hintlist>
+        <addscript type="script">
+          msg ("You put " + GetDisplayName(object) + " into the pouch, and it disappears!")
+          MoveObject (object, Quest Forum)
+        </addscript>
+        <search type="script"><![CDATA[
+          if (Got(kv_pouch)) {
+            if (not game.pov.parent = Quest Forum) {
+              msg ("You reach into the pouch and find yourself in:")
+              MoveObject (player, Quest Forum)
+            }
+            else {
+              msg ("You reach into the pouch and find yourself in:")
+              HandleSingleCommand ("look")
+            }
+            firsttime {
+              QuestComplete (KV, "searchPouch")
+              IncreaseScore (10)
+              list add (game.scoreList, "Searched the strange pouch: 10 points")
+              msg ("<center><b>[  YOUR SCORE HAS INCREASED BY 10  ]</b></center>")
+            }
+          }
+          else {
+            msg ("You'll need to pick it up first.")
+          }
+        ]]></search>
+        <ontake type="script">
+          firsttime {
+            AddQuest (KV, "searchPouch", "Search the Strange Pouch.")
+          }
+        </ontake>
+      </object>
+      <object name="kv_glitch">
+        <inherit name="kvtype" />
+        <drop type="boolean">false</drop>
+        <dropmsg>You try to drop the glitch, but it just messes everything up.</dropmsg>
+        <alias>glitch</alias>
+        <listalias><![CDATA[<span style="color:green">g</span><span style="color:blue">l</span><span style="color:red">i</span>t<span style="color:yellow">c</span><span style="color:purple">h</span>]]></listalias>
+        <hintlist type="stringlist">
+          <value>Hint 1:  Whatever you do, DON'T try to take the glitch!!! (If you do, you better clear the screen and learn a little JS!!!)</value>
+        </hintlist>
+        <take type="script"><![CDATA[
+          if (not EndsWith(player.currentcommand, "all")) {
+            request (Show, "Location")
+            msg ("You reach for the glitch, but it knocks the status bar down and disappears!<br/>")
+            statusmove
+            RemoveObject (kv_glitch)
+            IncreaseScore (10)
+            msg ("<center><b>[  YOUR SCORE HAS INCREASED BY 10  ]</br></center>")
+            list add (game.scoreList, "Tried to take the glitch: 10 points")
+            game.took_glitch = true
+          }
+          else {
+            msg ("You try to pick it up, but you lack focus.")
+          }
+        ]]></take>
+        <look type="script">
+          do (kv_glitch, "glitching")
+          SetTurnTimeout (2) {
+            SetBackgroundImage ("none")
+            SetBackgroundOpacity (1.0)
+            SetBackgroundColour ("White")
+          }
+        </look>
+        <glitching type="script">
+          game.glitching = true
+          SetBackgroundImage ("script.png")
+          SetBackgroundOpacity (0.7)
+          SetBackgroundColour (game.defaultbackground)
+        </glitching>
+        <enterverb type="script">
+          // ClearScreen
+          foreach (o, GetDirectChildren(kv_glitch)) {
+            MoveObject (o, kv_Crate Mart)
+            kv_glitch.parent = kv_Crate Mart
+          }
+        </enterverb>
+        <hints type="scriptdictionary">
+          <item key="showhints">
+            ShowMenu ("What do I do with the glitch?", kv_glitch.hinttopics, true) {
+              invoke (ScriptDictionaryItem(kv_glitch.hinttopics, result))
+            }
+          </item>
+        </hints>
+        <hinttopics type="scriptdictionary">
+          <item key="Hint 1"><![CDATA[
+            msg ("Hint 1:<br/>Have you tried examining it?")
+          ]]></item>
+          <item key="Hint 2"><![CDATA[
+            msg ("Hint 2:<br/>Have you tried taking it?")
+          ]]></item>
+        </hinttopics>
+      </object>
+      <object name="RH">
+        <inherit name="namedmale" />
+        <inherit name="kvtype" />
+        <alias>Richard Headkid</alias>
+        <inroomdescription type="string"></inroomdescription>
+        <takemsg><![CDATA[RH knocks your hands away.<br />"I will not be pawed at, thank you," he grumbles.]]></takemsg>
+        <speak><![CDATA["I'm sorry I ran off with the planet disk," says RH. "I put it in that pouch. It sends everything to the hub."<br/>]]></speak>
+        <not_all />
+        <hintlist type="stringlist">
+          <value>Hint 1:  RH is just a bad pseudonym.  I made him run off with the planet disk.  It's not his fault.</value>
+          <value>Hint 2:  If you're stuck here, you may want to investigate that Strange Pouch...</value>
+        </hintlist>
+        <alt type="stringlist">
+          <value>rh</value>
+        </alt>
+        <look type="script"><![CDATA[
+          msg ("Richard Headkid stand 5' 10\" tall, and he probably weighs around a buck-fifty.<br/><br/>Something is definitely off about him, though...<br/>")
+          DisplayHttpLink ("Visit Richard Headkid's profile page.", "https://textadventures.co.uk/user/view/gudejtsx9komagj-tffyfg/richard-headkid", false)
+        ]]></look>
+        <askdefault type="script">
+          msg ("RH just shrugs.")
+        </askdefault>
+        <telldefault type="script">
+          msg ("RH nods approvingly, but his thoughts seem to be elsewhere.")
+        </telldefault>
+        <telltodefault type="script">
+          msg ("\"Nah, you can handle things yourself,\" says RH.")
+        </telltodefault>
+        <ask type="scriptdictionary">
+          <item key="group project"><![CDATA[
+            msg ("You ask RH about the project.<br/><br/>\"You're in it,\" says RH. \"Or do you mean the secret one?\"")
+          ]]></item>
+          <item key="secret project"><![CDATA[
+            msg ("You ask RH about the secret project.<br/><br/>\"Well, we kinda thought maybe you deserved a little something for all the effort,\" shrugs RH. \"So, welcome to the zarkin' show!\"<br/>")
+          ]]></item>
+          <item key="clone dl darklizerd clones"><![CDATA[
+            msg ("You ask RH about DL.<br/><br/>\"That damn DL!\" RH exclaims. \"He's a REAL CHARACTER, isn't he?\"<br/>")
+          ]]></item>
+          <item key="the game"><![CDATA[
+            msg ("You ask RH about the game.<br/><br/>\"It's turning out better than I imagined,\" says RH. \"I hope you like it!<br/>\"...and I'm sorry I ran off with the disk,\" he continues. \"Ever since that boring old KV took back over, I've just been bored. What can I say?\"<br/>")
+          ]]></item>
+          <item key="disk"><![CDATA[
+            msg ("You ask RH about the planet disk.<br/><br/>\"Oh, yeah,\" mumbles RH. \"I put it in the pouch. Everything you put into that goes directly to the hub.\"<br/><br/>He gives you an odd look, then asks, \"haven't you checked out the hints?\"<br/>")
+          ]]></item>
+          <item key="XanMag XM Xan"><![CDATA[
+            msg ("You ask RH about XM.<br/>")
+            if (XanMag.TaskCount = 3) {
+              msg ("\"You need to record a dope beat for XM,\" says RH.")
+            }
+            else if (XanMag.TaskCount = 2) {
+              msg ("\"You need to get that guy a beer,\" says RH.")
+            }
+            else if (XanMag.TaskCount = 1) {
+              msg ("\"You'll have to come up with an idea on your own, Pix,\" says RH.")
+            }
+            else if (XanMag.TaskCount = 0) {
+              msg ("\"Did you enjoy all his bits?\" asks RH.  Then, \"that was rhetorical.  Don't really answer.\"")
+            }
+          ]]></item>
+          <item key="rabbit"><![CDATA[
+            if (kv_rabbit.parent = game.pov.parent) {
+              msg ("You ask RH about the rabbit.<br/><br/>RH turns to see what rabbit you're talking about, seems to lose every bit of his temper, begins screaming random profanities, and makes a beeline directly towards towards the rabbit.<br/><br/>The rabbit springs up, does a back flip, and kicks RH right in the balls, causing him to fall to the ground, whining like a little girl with a skinned knee. <br/><br/>Glancing back at the rabbit, you watch as it flattens its ears back along its body, stretches out like a diver, and disappears into a hole. <br/><br/>You rush over to the hole, only to see the last of it shrink down to a dot, then disappear with a soft <i>\"floop\"</i>.<br/><br/>A sound to your right distracts you and you watch as RH stands up, mumbling profanities.<br/><br/>The only thing you understand is at the end of his Yosemite Sam-like rant, when he looks you right in the eyes and says, \"ooh, I hates that zarkin' rabbit!<br/><br/>He then seems to notice that he's completely lost his mind in front of company, and says, \"sorry about that, Pix. Rabbits piss me off!<br/>\"...and I hates meeses to pieces, too!\"<br/>")
+              RemoveObject (kv_rabbit)
+            }
+            else {
+              msg ("You ask RH about the rabbit.<br/><br/>\"I hates rabbits,\" grumbles RH.<br/>")
+            }
+          ]]></item>
+        </ask>
+      </object>
+      <object name="The God Device">
+        <usedefaultprefix type="boolean">false</usedefaultprefix>
+        <displayverbs type="stringlist">
+          <value>Take</value>
+        </displayverbs>
+        <take />
+        <feature_usegive />
+        <look><![CDATA[Click here to examine The God Device:<br/><a href="https://textadventures.co.uk/games/view/v1ojyf53o02l_tnjm1kwoq/the-god-device">https://textadventures.co.uk/games/view/v1ojyf53o02l_tnjm1kwoq/the-god-device</a>]]></look>
+        <hintlist type="stringlist">
+          <value>Hint 1:  Have YOU experienced The God Device?</value>
+        </hintlist>
+        <alias>The God Device</alias>
+        <ontake type="script"><![CDATA[
+          myscript => {
+            do (The God Device, "use")
+          }
+          The God Device.experience = myscript
+          if (not ListContains(The God Device.generatedverbslist, "Experience")) {
+            list add (The God Device.generatedverbslist, "Experience")
+          }
+        ]]></ontake>
+        <use type="script">
+          msg ("Opening The God Device in browser...")
+          JS.goUrl ("https://media.textadventures.co.uk/games/V1ojyf53O02L_tnJm1KWoQ/god_device.html")
+        </use>
+      </object>
+      <command name="glitchHelp">
+        <pattern>hint;hints;wtf;wth</pattern>
+        <script><![CDATA[
+          if (not kv_glitch.parent = game.pov.parent) {
+            msg ("Click on the QUEST PX in the Inventory Pane, then select USE.  The first alert will tell you how to fix the 'glitch'.  (Copy and paste it.) <br/><br/>You can also clear the screen (enter CLEAR).<br/>THIS MESSAGE WILL SELF-DESTRUCT.<br/>")
+            glitchHelp.parent = kv_CommandRoom
+          }
+          else {
+            glitchHelp.parent = kv_CommandRoom
+            invoke (hint.script)
+            glitchHelp.parent = kv_Swedenborgian Space
+          }
+          game.suppressturnscripts = true
+        ]]></script>
+      </command>
+      <object name="kv_rabbit">
+        <scenery />
+        <alias>rabbit</alias>
+        <drop type="boolean">false</drop>
+        <look type="script"><![CDATA[
+          msg ("Before you can get a good look at it, RH turns to see what you're looking at, seems to lose every bit of his temper, begins screaming random profanities, and makes a beeline directly towards towards the rabbit.<br/><br/>The rabbit springs up, does a back flip, and kicks RH right in the balls, causing him to fall to the ground. <br/><br/>Glancing back at the rabbit, you watch as it flattens its ears back along its body, stretches out like a diver, and disappears into a hole. <br/><br/>You rush over to the hole, only to see the last of it shrink down to a dot, then disappear with a soft <i>\"floop\"</i>.<br/><br/>A sound to your right distracts you and you watch as RH stands up, mumbling profanities.<br/><br/>The only thing you understand is at the end of his Yosemite Sam-like rant, when he looks you right in the eyes and says, \"ooh, I hates that zarkin' rabbit!<br/><br/>He then seems to notice that he's completely lost his mind in front of company, and says, \"sorry about that, Pix. Rabbits piss me off!<br/>\"...and I hates meeses to pieces, too!\"")
+          RemoveObject (kv_rabbit)
+        ]]></look>
+        <take type="script"><![CDATA[
+          msg ("Before you can get within reach of it, RH turns to see what you're doing, seems to lose every bit of his temper, begins screaming random profanities, and makes a beeline directly towards towards the rabbit.<br/><br/>The rabbit springs up, does a back flip, and kicks RH right in the balls, causing him to fall to the ground. <br/><br/>Glancing back at the rabbit, you watch as it flattens its ears back along its body, stretches out like a diver, and disappears into a hole. <br/><br/>You rush over to the hole, only to see the last of it shrink down to a dot, then disappear with a soft <i>\"floop\"</i>.<br/><br/>A sound to your right distracts you and you watch as RH stands up, mumbling profanities.<br/><br/>The only thing you understand is at the end of his Yosemite Sam-like rant, when he looks you right in the eyes and says, \"ooh, I hates that zarkin' rabbit!<br/><br/>He then seems to notice that he's completely lost his mind in front of company, and says, \"sorry about that, Pix. Rabbits piss me off!<br/>\"...and I hates meeses to pieces, too!\"")
+          RemoveObject (kv_rabbit)
+        ]]></take>
+      </object>
+    </object>
+    <object name="kv_sky">
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <prefix>the</prefix>
+      <alias>sky</alias>
+      <beforefirstenter type="script">
+      </beforefirstenter>
+      <firstenter type="script"><![CDATA[
+        msg ("As the ostrapode glides effortlessly through the air, you look to the {command:go east:east} and spot Richard Headkid riding a flying carpet just before he disappears from view.")
+        SetTurnTimeoutID (2, "falling") {
+          msg ("<br/>Suddenly, she seems to realize that she's defying the laws of gravity, and the ostrapode panics and begins to fling herself around, causing you to lose your grip from around her neck.<br/><br/>As you plummet towards impending doom, you wonder: 'Why, exactly, are these guys working on this shit instead of the REAL group project?'<br/><br/>Just then, reality flickers around you again.<br/><br/>You are still barrelling down through the sky, but you notice that you are no longer accompanied by the ostrapode. You swing your arms and legs in unison to spin yourself around, and you see a Land Rover just above you.<br/>You immediately wish you'd just stayed back in the hub and never gave The Dickhead Kid that damned disk in the first place.<br/><br/>Just as you realize how much of a waste <b><i>that</i></b> particular wish was, you decide it best to wish for one more thing, but the point quickly becomes moot as you and the Land Rover smash into a rocky promontory.<br/>")
+          MoveObject (player, kv_Darkness)
+        }
+      ]]></firstenter>
+      <command name="kv_fakeEastCommand">
+        <pattern>go east;e;east</pattern>
+        <script><![CDATA[
+          msg ("You attempt to nudge the ostrapode towards the east.<br/>")
+        ]]></script>
+      </command>
+      <object name="sky">
+        <scenery />
+        <look>You're in it!</look>
+        <takemsg>Impossible.</takemsg>
+        <not_all />
+      </object>
+    </object>
+    <object name="kv_meadow">
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <description>This is a peaceful place, covered in lush, green grass.</description>
+      <alias>Meadow</alias>
+      <beforefirstenter type="script">
+      </beforefirstenter>
+      <firstenter type="script">
+        list remove (ostrapode.generatedverbslist, "Ride")
+      </firstenter>
+      <object name="ostrapode">
+        <inherit name="female" />
+        <inherit name="kvtype" />
+        <usedefaultprefix />
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <alias>strange-looking bird</alias>
+        <alt type="stringlist">
+          <value>strange-looking bird</value>
+        </alt>
+        <listalias>strange-looking bird</listalias>
+        <not_all />
+        <hintlist type="stringlist">
+          <value>Hint 1:  Have you examined the animal?</value>
+          <value>Hint 2:  Have you tried to ride her?</value>
+        </hintlist>
+        <takemsg>She wouldn't like that.</takemsg>
+        <look type="script"><![CDATA[
+          if (not GetBoolean(ostrapode, "examined")) {
+            msg ("It looks like a mix between an ostrich and a pterodactyl.<br/><br/>The animal sees you looking and kneels down so you can ride her.<br/>")
+            if (not ListContains(ostrapode.generatedverbslist, "Ride")) {
+              list add (ostrapode.generatedverbslist, "Ride")
+            }
+          }
+          else {
+            msg ("The bird sees you looking at her and kneels down so you can ride her.")
+          }
+        ]]></look>
+        <ride type="script"><![CDATA[
+          msg ("As soon as you mount the ostrapode, she takes off like a bat out of hell!<br/><br/>You wrap your arms around her neck and hold on for dear life as she darts up a nearby hill.<br/><br/>Just before you reach the top, her pace slows a little, and you start to relax a little. Then, the ostrapode does something that takes you completely off guard:<br/>She leaps up into the air!")
+          MoveObject (player, kv_sky)
+          MoveObjectHere (ostrapode)
+          list remove (ostrapode.generatedverbslist, "Ride")
+          myscript => {
+            msg ("You are riding her!")
+          }
+          ostrapode.ride = myscript
+          // ostrapode.scenery = true
+          ostrapode.look = "You look down at the ostrapode and see the ground below you. You immediately look back up. (WAY up!)"
+          ostrapode.description = "You look down at the ostrapode and see the ground below you. You immediately look back up. (WAY up!)"
+        ]]></ride>
+      </object>
+      <object name="kv_grass">
+        <inherit name="kvtype" />
+        <scenery />
+        <look>It's the thickest, greenest grass you've ever seen!</look>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <alias>green grass</alias>
+        <not_all />
+        <hintlist type="stringlist">
+          <value>Hint 1:  You can't burn it.</value>
+          <value>Hint 2:  You can't take it.</value>
+          <value>Hint 3:  Have you tried eating it?</value>
+          <value>Hint 4:  You can't eat it.</value>
+          <value>Hint 5:  It's only here for those who might try to interact with everything in the room's description.</value>
+          <value>Hint 6:  Are you seriously still reading these hints about a backdrop?</value>
+          <value>Hint 7:  This space intentionally left blank.</value>
+          <value>Hint 8:  Enough!  It's just scenery!  Please move along!</value>
+        </hintlist>
+        <takemsg>You can "take the grass" in XanMag's part of the game.</takemsg>
+      </object>
+    </object>
+    <object name="KVs room">
+      <attr name="feature_startscript" type="boolean">false</attr>
+      <gateway />
+      <alias>The Land of Confusion</alias>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <description>This is a small room, consisting of nothing more than a desk.</description>
+      <dimensionname>The Land of Confusion</dimensionname>
+      <attr name="_initialise_" type="script">
+        AddToHubGateway (this)
+      </attr>
+      <beforefirstenter type="script">
+      </beforefirstenter>
+      <onexit type="script">
+        if (disk.parent = Richard Headkid) {
+          MoveObject (disk, Quest Forum)
+        }
+      </onexit>
+      <beforeenter type="script">
+        QuestComplete (KV, "KVs_World")
+        Log ("KV's world removed from quests")
+      </beforeenter>
+      <object name="KV">
+        <inherit name="namedmale" />
+        <inherit name="kvtype" />
+        <topics type="stringlist">
+          <value>RH</value>
+          <value>the game</value>
+          <value>the phone-booth</value>
+          <value>the planet disk</value>
+          <value>the forum posts</value>
+          <value>JavaScript</value>
+          <value>cloning</value>
+          <value>XanMag</value>
+          <value>DarkLizerd</value>
+        </topics>
+        <takemsg>{once:"I'm about to be taken!" KV exclaims. "Somebody call Liam Neeson!"}{notfirst:{once:Yeah... That was only fun the first time.}{notfirst:You can't do that shit, and you know it!}}</takemsg>
+        <not_all />
+        <nocopy type="string"></nocopy>
+        <feature_startscript />
+        <hintlist type="stringlist">
+          <value>Hint:  Speak to him (or just ASK KV ABOUT something).</value>
+        </hintlist>
+        <kill>"I can see what you're typing, you know," says KV.{notfirst:  "I've already told you that."}</kill>
+        <hitCount type="int">0</hitCount>
+        <listen>{once:You listen to KV for a while, and you eventually decide that he is completely full of shit.}{notfirst:You don't have the energy to listen to him again.</listen>
+        <unlock>{once:You unlock KV's true potential.}{notfirst:You have already unlocked KV's true potential.{once:  (It doesn't seem to have helped much.)}}</unlock>
+        <usestandardverblist />
+        <look type="script"><![CDATA[
+          msg ("K.V. waves at you.<br/><br/>")
+          if (disk.parent = Richard Headkid) {
+            msg ("\"Hi, Pixie!<br/> \"I think I just saw the textual representation of my imaginary self run through here!<br/> \"I hope not, because that guy is TROUBLE!\"<br/>")
+          }
+          DisplayHttpLink ("Visit KV's profile page.", "https://textadventures.co.uk/user/view/3fbmqo02fkkr-emkcwxdma/k-v", false)
+        ]]></look>
+        <speak type="script"><![CDATA[
+          if (disk.parent = Richard Headkid) {
+            msg ("{once:\"I think I just saw my <i>Nomme de Guerre</i> head {command:north:north} from here,\" says KV. \"The bastard's probably up to no good...\"<br/>}{notfirst:\"Try asking me stuff,\" says KV.  \"I'm set up with a menu of choices to pick from.\"<br/>}")
+          }
+          else {
+            msg ("{once:\"Greetings, Pixie!\" KV delivers a warm smile and a firm handshake.<br/>}{notfirst:\"Try asking me stuff,\" says KV.  \"I'm set up with a menu of choices to pick from.\"<br/>}")
+          }
+          ShowMenu ("\"What would you like to ask me about?\"<br/>", KV.topics, true) {
+            DoAskTell (KV, result, "ask", "askdefault", "DefaultAsk")
+          }
+        ]]></speak>
+        <askdefault type="script"><![CDATA[
+          msg ("You ask KV about " + text + ".<br/><br/>\"How could ask about an unknown topic with a menu list, Pixie?\"<br/><br/>K.V. looks you up and down. \"You been drinking XanMag's beer?\"<br/>")
+        ]]></askdefault>
+        <telldefault type="script"><![CDATA[
+          msg ("\"That's nice, Pix,\" says KV.  (You wonder if he even heard you.)<br/>")
+        ]]></telldefault>
+        <telltodefault type="script"><![CDATA[
+          msg ("\"" + CapFirst(text) + "?\" K.V. looks slightly offended. \"I don't know how to do <b><i>that</i></b> !  Looks like it's all up to you!<br/><br/>\"You can do it, Pix!\"<br/>")
+        ]]></telltodefault>
+        <hit type="script"><![CDATA[
+          if (KV.hitCount<9) {
+            KV.hitCount = KV.hitCount + 1
+          }
+          else {
+            KV.hitCount = 9
+            msg ("\"You can't do that anymore,\" says KV.")
+          }
+        ]]></hit>
+        <changedhitCount type="script"><![CDATA[
+          switch (KV.hitCount) {
+            case (1) {
+              msg ("KV leans his head back just enough to avoid your attack, just before you can connect.  \"Cut that shit out, Pixie,\" he warns.  \"I was trained in the arts of Jeet Kune Do in the Mall of Memphis back in the day, you know.\"<br/>")
+            }
+            case (2) {
+              msg ("KV effortlessly deflects your attack.<br/><br/>\"Second warning,\" he sighs.<br/>")
+            }
+            case (3) {
+              msg ("\"Holy shit, it's the Pope!\" you exclaim, pointing behind KV.<br/><br/>You punch him in the arm when he turns to look.<br/><br/>\"Oh, you incredible cock-sucker!\"  KV says with a grin.  \"Since this is your 'thank you' game, I'll let you have that one for free.\"<br/>")
+            }
+            case (4) {
+              msg ("KV dodges left, puts his right foot behind yours, and pushes you down on your ass.<br/><br/>You look up to find him offering you a hand.  \"Sorry, man,\" he says, helping to your feet, \"but you kept on, didn't you?\"<br/><br/><b>[  YOUR HEALTH HAS DECREASED BY 1  ]</b>")
+              DecreaseHealth (1)
+            }
+            case (5) {
+              msg ("KV knocks your hand away.  \"Pix... if you try that shit ONE more time, I'm turning off UNDO!  And I ain't hardly bullshittin!\"<br/>")
+            }
+            case (6) {
+              msg ("KV sees your shoulder move before you even draw back to swing, and he kicks the ever-loving shit out of you, knocking you back onto your ass.<br/><br/>\"Why you gotta try to hit me, man?\"  KV asks, rubbing his hands together as if they were cold.  \"Now I gotta do it.  I gotta undo UNDO!\"<br/><br/>KV begins to chant.  Your surroundings grow darker while he utters the code.<br/><br/>\"<code style=\"color:red;background:lightgray;padding:4px\">kv_undo.script = kv_undo.realscript</code><br/>\"<code style=\"color:red;background:lightgray;padding:4px\">kvScript => @@@open@@@</code><br/>\"<code style=\"color:red;background:lightgray;padding:4px\">msg (\"You can't do that, Hitty McHitterton!\")</code><br/>\"<code style=\"color:red;background:lightgray;padding:4px\">@@@close@@@</code><br/>\"<code style=\"color:red;background:lightgray;padding:4px\">kv_undo.script = kvScript</code>\"<br/><br/><b>[  YOUR HEALTH HAS DECREASED BY 1 ]</b>")
+              kv_undo.realscript = kv_undo.script
+              kvScript => {
+                msg ("You can't do that, Hitty McHitterton!")
+              }
+              kv_undo.script = kvScript
+              DecreaseHealth (1)
+            }
+            case (7) {
+              msg ("KV evades again, countering with a jab to your nose.<br/><br/>\"This really does hurt me worse than it hurts you,\" he says.  \"It <i>is</i> self-defense, though.\"<br/><br/><b>[  YOUR HEALTH HAS DECREASED BY 1  ]</b>")
+              DecreaseHealth (1)
+            }
+            case (8) {
+              msg ("You ball your hand up into a fist.  KV shakes his head, 'no. Please don't.'<br/><br/>You look him straight in the eye and take the swing...<br/><br/>He leans right into it, then just shakes his head at you and laughs.  \"Is that all you've got?  Hell, my ex-wife hits harder than that!\"<br/>")
+            }
+            case (9) {
+              msg ("\"You can't do that anymore\" says KV.  \"Please move along.\"<br/>")
+            }
+          }
+        ]]></changedhitCount>
+        <ask type="scriptdictionary">
+          <item key="RH richard headkid"><![CDATA[
+            if (disk.parent = Richard Headkid) {
+              if (game.pov.parent = KVs room) {
+                msg ("{once:You ask KV about Richard Headkid.<br/><br/>\"He just came through here,\" says KV. }\"He was headed {command:north:north}.\"")
+              }
+              else {
+                msg ("You ask KV about Richard Headkid.<br/><br/>\"Yeah, I'm sorry about him,\" KV sighs. \"He's been getting more and more out of control. I told him he could work on a secret side-project, just to keep him busy, but he just gets crazy when he's coding. What can I say?\"<br/><br/>You can't tell if KV's being serious or not. You ask if he's aware that he and RH are, in fact, one in the same.<br/>\"It's different here,\" he whispers. \"He's darker. More evil...\"<br/><br/>You know what he's saying is completely nonsensical, but something about his tone gives you a chill.<br/>")
+              }
+            }
+            else {
+              msg ("You ask KV about Richard Headkid.<br/><br/>\"Yeah, I'm sorry about him,\" KV sighs. \"He's been getting more and more out of control. I told him he could work on a secret side-project, just to keep him busy, but he just gets crazy when he's coding. What can I say?\"<br/><br/>You can't tell if KV's being serious or not. You ask if he's aware that he and RH are, in fact, one in the same.<br/><br/>\"It's different here,\" he whispers. \"He's darker. More evil....\"<br/><br/>You know what he's saying is completely nonsensical, but something about his tone gives you a chill.<br/>")
+            }
+          ]]></item>
+          <item key="game"><![CDATA[
+            msg ("You ask KV about the game.<br/><br/>\"Do you like it so far?\" KV asks.<br/>")
+            if (DL_Room.visited) {
+              msg ("\"What did you think of DL's room? Wasn't the clone bit hilarious?!?\"<br/>")
+              if (kv_Swedenborgian Space.visited) {
+                msg ("You ask KV about the game.<br/><br/>\"You've done all of my bits already, you know...\"")
+              }
+            }
+          ]]></item>
+          <item key="phone booth phonebooth phone-booth"><![CDATA[
+            msg ("You ask KV about the phone booth.<br/><br/>\"{once:More people should read sticky-notes,\" KV mumbles, completely ignoring your question.}{notfirst: Try turning the sticky note,\" says K.V.}<br/>")
+          ]]></item>
+          <item key="planet disk"><![CDATA[
+            msg ("You ask KV about the planet disk.<br/>")
+            if (disk.parent = Richard Headkid) {
+              msg ("\"Is that what RH was carrying when he came through here?\" KV scratches his head. \"I mean, I don't know what a planet disk is... but he had some sort of round thingy...\"<br/>")
+            }
+            else {
+              msg ("\"A planet disk?\" asks KV. \"I think I heard DL talking to himself about one of those!\"<br/>")
+            }
+          ]]></item>
+          <item key="forum posts"><![CDATA[
+            msg ("You ask KV about The Forum Posts.<br/><br/>\"We could use your help with all the posts on the forum,\" says KV. \"Those things are all over the place!<br/><br/>\"We tried, too! You should have seen us! It was so sad...<br/><br/>\"Someone asked how to use <code>CapFirst</code> in the text processor, and I didn't know... So I told them just to write this long ass script... and that just confused them more.<br/><br/>\"Then, HK popped in and laid out a masterful script, which was similar to mine, but better in every way... BUT that didn't help, because then they asked what the forward slashes were for, and HK, it was so funny... he posted: <code>//This is a note.</code>... and then THEY were all like, \"I know that! But what are the slashes for?\"<br/><br/>KV shakes his head and laughs. \"And <b><i>that's</i></b>  when DL and XM chimed in. Not at the same time, mind you... about two minutes apart. And they both posted two entirely different scripts, and...\"<br/><br/>KV continues to ramble on incessantly while you wonder what you'll have for supper once you've finished playing your game.<br/><br/>Time passes...<br/>")
+          ]]></item>
+          <item key="JS JavaScript"><![CDATA[
+            msg ("You ask KV about JavaScript.<br/>")
+            msg ("K.V. smiles.<br/><br/>\"Do you like being able to use the JavaScript? I thought that would be pretty neat: A coder having to code within the game to pull certain things off!\"<br/>")
+            if (game.gamename = "TRIBUTE") {
+              msg ("\"I see you haven't changed the game's name yet...<br/>\"Do you know how?<br/>\"You can enter: <code style=\"color:red\">gamename Pixie Rules</code>, or something like that...\"<br/>")
+            }
+          ]]></item>
+          <item key="clones clone cloning"><![CDATA[
+            if (not player.can_clone) {
+              msg ("You ask KV about clones.<br/><br/>\"I could set it up so you can clone objects, you know,\" says K.V. \"You'd just need to fix the code. It's a little messed up at the moment, but you can use the SHOWME Spell to view what's currently written. From there, you can use your CHEAT SET command to fix it. Can't you?  (Or have you found all that stuff yet?)\"<br/>")
+            }
+            else {
+              msg ("You ask KV about clones.<br/><br/>\"Congratulations! You fixed the script, and you can clone (most) things now!<br/>\"Great job, Pix!\"<br/>")
+            }
+          ]]></item>
+          <item key="DarkLizerd lizerd dark lizard dl"><![CDATA[
+            msg ("You ask KV about DarkLizerd.<br/><br/>\"DL is a very talented... individual,\" replies KV, a confused look on his face.<br/>")
+          ]]></item>
+          <item key="XanMag xm xan"><![CDATA[
+            if (XanMag.TaskCount = 3) {
+              msg ("You ask KV about XanMag.<br/><br/>\"You need to record a dope beat for him,\" says KV.")
+            }
+            else if (XanMag.TaskCount = 2) {
+              msg ("You ask KV about XanMag.<br/><br/>\"You need to get that guy a beer,\" says KV.")
+            }
+            else if (XanMag.TaskCount = 1) {
+              msg ("You ask KV about XanMag.<br/><br/>\"You'll have to come up with an idea on your own, Pix,\" says KV.")
+            }
+            else if (XanMag.TaskCount = 0) {
+              msg ("You ask KV about XanMag.<br/><br/>\"Did you enjoy all his bits?\" asks KV.  Then, \"that was rhetorical.  Don't really answer.\"")
+            }
+          ]]></item>
+        </ask>
+        <object name="kv_android">
+          <inherit name="kvtype" />
+          <nocopy />
+          <feature_usegive />
+          <hintlist type="stringlist">
+            <value>Hint 1:  I love my Android!</value>
+          </hintlist>
+          <look type="script">
+            msg ("K.V.'s Android doesn't look nearly as cool as the Quest PX!")
+          </look>
+          <use type="script"><![CDATA[
+            msg ("The screen is locked.<br/><br/>(What are you doing anyway?!?! How can you see this??? Are you CHEATING???)<br/>")
+            Log ("Pixie's got my phone!!!")
+            error ("Pixie's messing around with KV's personal stuff!!! (This event has been logged!)")
+            DecreaseScore (1)
+            list add (game.scoreList, "Tried to use KV's phone: -1 point")
+            msg ("<center><b>[ YOUR SCORE HAS DECREASED BY 1 ]</b></center><br/><br/><center><sub>( AUTHOR'S NOTE: This will happen every time you try to use my phone! ) </sub></center>")
+          ]]></use>
+        </object>
+        <object name="kv_token of appreciation">
+          <inherit name="kvtype" />
+          <take />
+          <drop />
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+          </inventoryverbs>
+          <dropmsg><![CDATA[&nbsp]]></dropmsg>
+          <hintlist type="stringlist">
+            <value>Hint 1:  It's just a small token of my appreciation.</value>
+            <value>Hint 2:  Do you remember what all you read about while in the Telemat booth?</value>
+            <value>Hint 3:  Use the token while in the Telemat booth.</value>
+          </hintlist>
+          <alias>token of appreciation</alias>
+          <look type="script"><![CDATA[
+            msg ("<img src=\"" + GetFileURL("kv_token.png")  + "\" />")
+          ]]></look>
+          <ondrop type="script">
+            msg ("You start to throw the token away, but you decide it may come in handy later.")
+            MoveObject (kv_token of appreciation, player)
+          </ondrop>
+        </object>
+      </object>
+      <exit alias="north" to="kv_meadow">
+        <inherit name="northdirection" />
+        <locked type="boolean">false</locked>
+        <runscript />
+        <script type="script"><![CDATA[
+          if (disk.parent = Richard Headkid) {
+            MoveObject (player, kv_meadow)
+            MoveObject (KV, Quest Forum)
+            RemoveObject (RH desk)
+            MoveObject (kv_desk, Quest Forum)
+          }
+          else {
+            msg ("\"You can't go that way right now, Pix,\" says KV. {either not kv_meadow.visited:\"There must be something you haven't done yet!\"|\"You've already done that bit!\"}<br/>")
+        }
+        ]]></script>
+      </exit>
+      <object name="kv_desk">
+        <inherit name="surface" />
+        <inherit name="kvtype" />
+        <alias>KV's desk</alias>
+        <feature_container />
+        <hidechildren />
+        <usedefaultprefix type="boolean">false</usedefaultprefix>
+        <listchildren />
+        <look><![CDATA[&nbsp;]]></look>
+        <not_all />
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <hintlist type="stringlist">
+          <value>Hint:  EXAMINE DESK.</value>
+        </hintlist>
+        <pushable />
+        <object name="kv_cc2">
+          <inherit name="switchable" />
+          <inherit name="kvtype" />
+          <alias>Tandy Color Computer 2</alias>
+          <attr name="feature_container" type="boolean">false</attr>
+          <close type="boolean">false</close>
+          <open />
+          <take type="boolean">false</take>
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+            <value>Take</value>
+            <value>Switch on</value>
+            <value>Use</value>
+          </displayverbs>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+            <value>Open</value>
+          </inventoryverbs>
+          <look>It looks just like a keyboard, only bulkier.</look>
+          <attr name="feature_switchable" type="boolean">false</attr>
+          <programmed type="boolean">false</programmed>
+          <takemsg>You try to take it, but it weighs more than a level 5 crate!!!</takemsg>
+          <feature_usegive />
+          <turnoff>You decide to leave it on.</turnoff>
+          <hintlist type="stringlist">
+            <value>Hint 1:  Have you tried switching it on?</value>
+            <value>Hint 2:  Is the TV switched on?</value>
+            <value>Hint 3:  Have you tried using it?</value>
+          </hintlist>
+          <not_all />
+          <openscript type="script">
+            msg ("It appears to be stuck closed. (Maybe XanMag can get it open...)")
+          </openscript>
+          <onswitchon type="script">
+          </onswitchon>
+          <use type="script"><![CDATA[
+            if (not kv_cc2.switchedon) {
+              msg ("You'll probably do better once you've turned it on.")
+            }
+            else {
+              if (kv_TV.switchedon) {
+                kv_cc2.programmed = true
+                firsttime {
+                  msg ("You use a little bit of what you've learned from Dark Lizerd, hacking away at the keys in BASIC.<br/><br/><code style=\"font-family:monospace\">10 PRINT \"Hello, World!\"<br/><br/>20 END</code><br/>After a few thousand keystrokes (mere childsplay!), you've got a program up and running.<br/>")
+                  msg ("<center><h1>\"Hello, World!\"</h1></center>")
+                  IncreaseScore (1)
+                  list add (game.scoreList, "Used the Tandy: 1 point")
+                  msg ("<center><b>[  YOUR SCORE HAS INCREASED BY 1  ]</b></center>")
+                  MoveObjectHere (Scroll of Destruction)
+                }
+                otherwise {
+                  msg ("You'd rather not mess with the Tandy again right now.<br/>")
+                }
+              }
+              else {
+                msg ("You'll probably do better if the TV is on.")
+              }
+            }
+          ]]></use>
+        </object>
+        <object name="kv_TV">
+          <inherit name="switchable" />
+          <inherit name="kvtype" />
+          <feature_switchable />
+          <attr name="both_on">program.promptmsg</attr>
+          <alias>TV</alias>
+          <feature_usegive />
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+            <value>Switch on</value>
+            <value>Switch off</value>
+          </displayverbs>
+          <hintlist type="stringlist">
+            <value>Hint 1:  Get Lamp is on this TV from 1h00m00s gametime to 3h00m00s gametime every Zorkday!</value>
+            <value>Hint 2:  You know... This hint thing was my idea, but I'm pretty sure no one will ever read most of these...</value>
+            <value>Hint 3:  Turn the TV on.</value>
+            <value>Hint 4:  Look at it when it's on.</value>
+            <value>Hint 5:  If you still need a hint, you haven't been checking out the Tandy!</value>
+          </hintlist>
+          <watch>This TV doesn't show shows.  (Try reading it or examining it.{once:  Or go watch Xan's TV.})</watch>
+          <not_all />
+          <takemsg>That belongs to KV.</takemsg>
+          <look type="script"><![CDATA[
+            if (this.switchedon) {
+              if (kv_cc2.switchedon) {
+                if (kv_cc2.programmed) {
+                  msg ("The program is running flawlessly. The text fills the screen faster than the screen can refresh... It is beautiful.<br/><br/>Hello, World!<br/>")
+                }
+                else {
+                  msg ("You see a command prompt.")
+                }
+              }
+              else {
+                msg ("The screen is black.")
+              }
+            }
+            else {
+              msg ("It isn't switched on.")
+            }
+          ]]></look>
+          <use type="script">
+          </use>
+          <read type="script">
+            do (this, "look")
+          </read>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+            <value>Use</value>
+            <value>Drop</value>
+            <value>Switch on</value>
+            <value>Switch off</value>
+          </inventoryverbs>
+        </object>
+        <object name="Showme Scroll">
+          <inherit name="kvtype" />
+          <hintlist type="stringlist">
+            <value>Hint: Pick it up.</value>
+          </hintlist>
+          <look><![CDATA[SHOWME<br/>SHOWME #object#<br/>SHOWME ALL]]></look>
+          <take type="script"><![CDATA[
+            Showme Spells.scenery = true
+            msg ("You pick it up and copy the spells to your magic book. The scroll inexplicably vanishes.<br/>")
+            MoveObject (Showme Spells, kv_book)
+            kv_showme.parent = null
+            kv_showme_all.parent = Quest Forum.parent
+            kv_showme_it.parent = Quest Forum.parent
+            RemoveObject (Showme Scroll)
+          ]]></take>
+          <object name="Showme Spells">
+            <inherit name="plural" />
+            <look><![CDATA[showme<br/><br/>showme #object#<br/><br/>showme all<br/>]]></look>
+            <displayverbs type="stringlist">
+              <value>Look at</value>
+            </displayverbs>
+            <inventoryverbs type="stringlist">
+              <value>Look at</value>
+            </inventoryverbs>
+            <drop type="boolean">false</drop>
+            <listalias><![CDATA[&nbsp;&nbsp;&nbsp;- Showme Spells]]></listalias>
+          </object>
+          <command name="kv_showme_all">
+            <pattern>showme all</pattern>
+            <script>
+              foreach (o, AllObjects()) {
+                msg (o + "Parent: " + o.parent)
+              }
+            </script>
+          </command>
+          <command name="kv_showme_it">
+            <pattern>showme #text#</pattern>
+            <script><![CDATA[
+              o = GetObject(text)
+              if (o <> null){
+                if (HasAttribute (o, "parent")){
+                  msg (o + " Current location: " + o.parent)
+                }
+                foreach (b, AllObjects()) {
+                  if (b = GetObject(text)) {
+                    // msg (b.name)
+                    if (not b.name = null) {
+                      game.attnames = GetAttributeNames(b, true)
+                      msg ("<br><b>ChildObjects:</b>")
+                      binv = (GetAllChildObjects(b))
+                      foreach (obj, binv) {
+                        msg (obj)
+                      }
+                      ShowMenu ("View the object's attributes?", Split("yes;no", ";"), true) {
+                        if (result = "yes") {
+                          DisplayList (game.attnames, false)
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]]></script>
+          </command>
+          <command name="kv_showme">
+            <pattern>showme</pattern>
+            <script>
+              // DisplayList ((GetAllChildObjects(game.pov.parent)), false)
+              foreach (o, (GetAllChildObjects(game.pov.parent))) {
+                if (HasAttribute (o, "parent")){
+                  msg (o + ", parent: " + o.parent)
+                }
+              }
+            </script>
+          </command>
+        </object>
+      </object>
+      <object name="px_blue_telemat_booth2">
+        <inherit name="kvtype" />
+        <alias>blue Telemat booth</alias>
+        <usedefaultprefix />
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Enter</value>
+        </displayverbs>
+        <attr name="not_all" type="string"></attr>
+        <nocopy type="string"></nocopy>
+        <linkcolour>MidnightBlue</linkcolour>
+        <hintlist type="stringlist">
+          <value>Hint 1:  You'll have to examine the Telemat booth for more information.</value>
+        </hintlist>
+        <look type="script"><![CDATA[
+          msg ("It's just a perfectly normal {popup:TeleMat&nbsp;booth:TeleMat booths offer instant travel around the world; just step inside, dial the number of your destination, and you will be instantly teleported there.}.")
+        ]]></look>
+        <enterverb type="script"><![CDATA[
+          MoveObject (game.pov, this)
+          kv_token of appreciation.use => {
+            HandleSingleCommand ("put token in slot")
+          }
+          kv_token of appreciation.generatedverbslist = NewStringList()
+          list add (kv_token of appreciation.generatedverbslist, "Use")
+        ]]></enterverb>
+        <onexit type="script"><![CDATA[
+          kv_token of appreciation.use => {
+            msg ("You can't do that.")
+          }
+          if (ListContains(kv_token of appreciation.generatedverbslist, "Use")) {
+            list remove (kv_token of appreciation.generatedverbslist, "Use")
+          }
+        ]]></onexit>
+        <exit alias="out" to="KVs room">
+          <inherit name="outdirection" />
+        </exit>
+        <object name="kv_phone2">
+          <alias>phone</alias>
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+          </displayverbs>
+          <attr name="not_all" type="string"></attr>
+          <hintlist type="stringlist">
+            <value>Hint 1:  The phone is strictly cosmetic.  You can't do anything with it.</value>
+          </hintlist>
+        </object>
+        <command name="kv_dialing2">
+          <pattern>dial #text#</pattern>
+          <script>
+            switch (text) {
+              case ("42") {
+                MoveObject (player, px_blue_telemat_booth)
+              }
+              case ("69105") {
+                msg ("It's engaged.")
+              }
+              case ("911") {
+                msg ("The line is busy.")
+              }
+              case ("home") {
+                msg ("Oh, no... No E.T. jokes!")
+              }
+              default {
+                msg ("That didn't work.")
+              }
+            }
+          </script>
+        </command>
+        <object name="kv_sticky note2">
+          <alias>sticky note</alias>
+          <take type="boolean">false</take>
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+          </displayverbs>
+          <attr name="not_all" type="string"></attr>
+          <hintlist type="stringlist">
+            <value>Hint 1:  Have you tried turning it?</value>
+          </hintlist>
+          <look type="script"><![CDATA[
+            msg ("What is the Answer to Life, the Universe, and Everything?<br/><br/>(Dial the Answer.)")
+            kv_sticky note2.turn = "There's a number on the back: <h3>{command:dial 42:42}</h3>"
+            kv_sticky note2.generatedverbslist = Split("Turn", ";")
+          ]]></look>
+        </object>
+        <object name="kv_slot2">
+          <inherit name="container_open" />
+          <feature_container />
+          <open type="boolean">false</open>
+          <close type="boolean">false</close>
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+          </displayverbs>
+          <alias>slot</alias>
+          <attr name="not_all" type="string"></attr>
+          <hintlist type="stringlist">
+            <value>Hint 1:  Examining the slot should give you the only clue you'll need.</value>
+            <value>Hint 2:  If you don't know what to do with this slot, you haven't done something yet.</value>
+          </hintlist>
+          <addscript type="script"><![CDATA[
+            if (object = kv_token of appreciation) {
+              msg ("You put the token into the slot, but it pops right back out of the the machine. You grab it, then reality flickers<a href=\"#\" style=\"text-decoration:none\" title=\"FOOTNOTE: Reality didn't flicker because you grabbed the token. It flickered because you put the token into the slot!\">*</a>...")
+              MoveObject (player, kv_Crate Mart)
+            }
+            else {
+              msg ("You can't do that.")
+            }
+          ]]></addscript>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+            <value>Use</value>
+            <value>Drop</value>
+            <value>Open</value>
+            <value>Close</value>
+          </inventoryverbs>
+        </object>
+        <object name="kv_buttons2">
+          <alias>buttons</alias>
+          <attr name="not_all" type="string"></attr>
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+          </displayverbs>
+          <usedefaultprefix type="boolean">false</usedefaultprefix>
+          <scenery />
+          <hintlist type="stringlist">
+            <value>Hint 1:  The buttons are useless.  They're only here so you won't say I was too lazy to include them!</value>
+          </hintlist>
+        </object>
+        <command name="kv_dial42">
+          <pattern>42</pattern>
+          <script>
+            HandleSingleCommand ("dial 42")
+          </script>
+        </command>
+      </object>
+      <exit alias="in" to="px_blue_telemat_booth2">
+        <inherit name="indirection" />
+        <scenery />
+      </exit>
+      <object name="projector">
+        <look><![CDATA[It's a projector with DVD player and speaker built into it.  It is pointed towards the {object:canvas screen}.{once:  It also has the connections for yellow, white, and red cables.<br/><br/>It has "ZOOMBOX" printed on top of it.  (It's a pretty neat idea, really.)}]]></look>
+        <turnon>It's already on.</turnon>
+        <turnoff>"Leave that alone, please," KV asks politely.</turnoff>
+        <touch>It's warm.</touch>
+        <not_all />
+        <takemsg>That's KV's.</takemsg>
+      </object>
+      <object name="canvas screen">
+        <look><![CDATA[KV is watching {if game.turns<120:Quentin Tarantino's "Death Proof".  {either game.turns< 48:They're still in the bar.  {if game.turns>40:It's the lap-dance scene.}|It's the good part.  The rest of the movie is a car chase!}}{if game.turns>120:{if game.turns<255:a Bruce Lee movie.  {either game.turns<210:It's The Way of the Dragon.|It's the REAL, unfinished version of The Game of Death.}}{if game.turns>255:{either game.turns<375:Young Frankenstein|Blazing Saddles}.}}]]></look>
+        <takemsg>KV wouldn't appreciate that very much.</takemsg>
+        <not_all />
+      </object>
+    </object>
+    <object name="kv_post_time">
+      <alias>FORUM POST: time</alias>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+      </inventoryverbs>
+      <scenery />
+      <look type="script"><![CDATA[
+        msg ("<img src='" + GetFileURL("timepost.png") + "' width=\"100%\" height=\"344\" /><br/><a href=\"https://textadventures.co.uk/forum/quest/topic/u_n5otugokquhpmnu0bdzw/how-do-i-get-time-to-work#d57928f9-27c4-4a93-9083-5892fc1d9cd8\">View this post in your browser.</a>")
+        RemoveObject (kv_post_time)
+        // UpdateInv2
+        list add (kv_device.favorites, kv_post_time)
+        JS.scrollToEnd ()
+        list remove (kv_device.alertsnow, this)
+        JS.updateLocation (game.locationmsg)
+      ]]></look>
+      <fav type="script"><![CDATA[
+        msg ("<img src='" + GetFileURL("timepost.png") + "' width=\"100%\" height=\"344\" /><br/><a href=\"https://textadventures.co.uk/forum/quest/topic/u_n5otugokquhpmnu0bdzw/how-do-i-get-time-to-work#d57928f9-27c4-4a93-9083-5892fc1d9cd8\">View this post in your browser.</a>")
+      ]]></fav>
+    </object>
+
+    <object name="kv_complete_alert">
+      <alias>ALERT: KV's world completed!</alias>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+      </inventoryverbs>
+      <scenery />
+      <look type="script"><![CDATA[
+        kv_complete_alert.alias = "KV's world completed! (viewed alert)"
+        msg ("<p style=\"border:1px solid black;border-radius:65px;background:black;color:white;font-family:'Droid Sans';padding:19px\"><br/>Pix,<br/><br/>Great job! <br/><br/>You've completed all of my parts!{if not kv_green_shard.hasbeenmoved:<br/><br/>...except for finding the {colour:darkgreen:shard} I've hidden...<br/><br/>I'll send you a link to a forum post with a hidden hint.}<br/><br/>(See you in the sequel!)<br/><br/>KV<br/><br/></p>")
+        RemoveObject (kv_complete_alert)
+        if (not ListContains(kv_device.alerts, kv_complete_alert)) {
+          list add (kv_device.alerts, kv_complete_alert)
+        }
+        if (not kv_green_shard.hasbeenmoved) {
+          MoveObject (kv_post_time, kv_device)
+          msg ("{b:YOU HAVE A NEW ALERT!}<br/>")
+        }
+        list remove (kv_device.alertsnow, this)
+        JS.updateLocation (game.locationmsg)
+      ]]></look>
+    </object>
+    <object name="kv_69105alert">
+      <alias>ALERT: Welcome to KV's world!</alias>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+      </inventoryverbs>
+      <scenery />
+      <look type="script"><![CDATA[
+        kv_69105alert.alias = "Welcome to KV's world! (viewed alert)"
+        msg ("<p style=\"border:1px solid black;border-radius:65px;background:black;color:white;font-family:'Droid Sans';padding:19px\"><br/>Pix,<br/><br/>Great job! You used the phone booth! (It's not quite up to snuff, but it got you here, right?)<br/><br/>Oh, by the way: When you travel in the phone booth, you can't really tell your location changes (or even where you're at) until you go out and look!<br/><br/></p>")
+        RemoveObject (kv_69105alert)
+        if (not ListContains(kv_device.alerts, kv_69105alert)) {
+          list add (kv_device.alerts, kv_69105alert)
+        }
+        list remove (kv_device.alertsnow, this)
+        JS.updateLocation (game.locationmsg)
+      ]]></look>
+    </object>
+    <object name="kv_Crate Mart">
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <alias>Crate Mart</alias>
+      <crateTable />
+      <description><![CDATA[<br/>This place seems to go on forever in almost every direction.<br/>]]></description>
+      <beforefirstenter type="script"><![CDATA[
+        set (rh_mini_crate, "push", rh_mini_crate.take)
+        rh_mini_crate.take => {
+          msg ("ErRoR rUnNiNg ScRipT: rh_mini_crate.take Not GetBoolean String Function: Attribute kv_RH : XM: HK/hegemonkhan :{either The Trick Bag.parent = game.pov.parent:Use your  SHOWME Spell and your CHEAT SET Spell!| Try pushing it!}")
+        }
+        rh_mini_crate.open = false
+      ]]></beforefirstenter>
+      <firstenter type="script">
+      </firstenter>
+      <enter type="script"><![CDATA[
+        if (not player.thanked) {
+          msg ("\"What do you think you're doing in here,\" The Cratesman explodes, making a bee-line towards you.  \"We're not open yet!\"<br/><br/>With that, he escorts you back to the hub.<br/>")
+          MoveObject (player, Quest Forum)
+        }
+      ]]></enter>
+      <onexit type="script">
+      </onexit>
+      <beforeenter type="script">
+        game.turnsInCrateMart = 0
+      </beforeenter>
+      <object name="rh_mini_crate">
+        <inherit name="container_closed" />
+        <inherit name="container_lockable" />
+        <inherit name="kvtype" />
+        <volume type="int">1</volume>
+        <weight type="int">8</weight>
+        <feature_container />
+        <attr name="carry_cap" type="int">250</attr>
+        <stack type="int">12000</stack>
+        <hidechildren />
+        <listchildren />
+        <alias>mini crate</alias>
+        <keycount type="int">1</keycount>
+        <nokeymessage>(You'll have to complete KV's world before you can open this!)</nokeymessage>
+        <nocopy />
+        <look><![CDATA[It's the smallest crate here.<br/><br/>It's made of wood and can be opened and closed.{if kv_green_shard.parent=rh_mini_crate:<br/><br/>A green light emanates from within it.}<br/><br/>For more information, see {command:showcratetable:the table}.<br/>]]></look>
+        <open type="boolean">false</open>
+        <hintlist type="stringlist">
+          <value>Hint 1:  Sorry, but you'll just have to use your CHEAT SET spell to get the mini crate open.</value>
+          <value>Hint 2:  The CHEAT SET spell is in your bag of tricks.</value>
+          <value>Hint 3:  Can't find the bag of tricks?  (See hint 4)</value>
+          <value>Hint 4:  Try to PUSH THE MINI CRATE</value>
+        </hintlist>
+        <key type="object">kv_token of appreciation</key>
+        <take type="script"><![CDATA[
+          if (not kv_green_shard.parent = rh_mini_crate) {
+            msg ("You pick it up.")
+            MoveObject (rh_mini_crate, player)
+          }
+          else {
+            firsttime {
+              MoveObjectHere (The Trick Bag)
+              msg ("<br/>{object:The Trick Bag:Your bag of tricks} appears out of thin air!<br/>")
+            }
+            msg ("You can't do that. (<code>rh_mini_crate.open = AllMessedUp!!!)br/><br/>Try cheat setting open to true.")
+            error ("" + kv_green_shard + "'s take, OPEN, and push attributes are currently set incorrectly.  (You may have to use your CHEAT Spells to get it OPEN!!!)")
+          }
+        ]]></take>
+        <onopen type="script"><![CDATA[
+          msg ("")
+          if (kv_green_shard.parent = rh_mini_crate) {
+            firsttime {
+              if (not kv_Cratesman.saidit) {
+                msg ("\"Do you see that {colour:green;SHARD}?!?\" The Cratesman explodes. \"Nowhere on that crates table is there a green piece of crystal mentioned! NOWHERE!!!\"<br/><br/>He then stomps around, apparently in search of some poorly made crates table...<br/>")
+                kv_Cratesman.saidit = true
+              }
+            }
+          }
+        ]]></onopen>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+          <value>Open</value>
+          <value>Close</value>
+        </displayverbs>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+          <value>Drop</value>
+          <value>Open</value>
+          <value>Close</value>
+        </inventoryverbs>
+        <object name="kv_green_shard">
+          <inherit name="kvtype" />
+          <alias>green shard of {colour:darkgreen:∞}</alias>
+          <listalias><![CDATA[<span style="color:darkgreen">green shard of &infin;</span>]]></listalias>
+          <linkcolour>DarkGreen</linkcolour>
+          <take />
+          <nocopy />
+          <touchedonce type="boolean">false</touchedonce>
+          <look><![CDATA[{colour:darkgreen:A beautiful, green SHARD OF <span style="font-size:999%">&infin;</span>}]]></look>
+          <dropmsg>You can't drop that!                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               </dropmsg>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+            <value>Drop</value>
+          </inventoryverbs>
+          <hintlist type="stringlist">
+            <value>Hint 1:  It's KV's hidden object!  Whoo-hoo!</value>
+            <value>Hint 2:  All you need to do is take it.</value>
+          </hintlist>
+          <drop type="boolean">false</drop>
+          <ontake type="script"><![CDATA[
+            firsttime {
+              IncreaseScore (50)
+              list add (game.scoreList, "Made it into Crate Mart: 50 points")
+              QuestComplete (KV, "cratemart")
+              kv_green_shard.touchedonce = true
+              msg ("<br/>You feel an immense power surge through you.<br/><br/>You are now more 'one with the dimensions'.<br/><br/><h1><center>CONGRATULATIONS!<br/><span style=\"color:darkgreen\">You have collected the green Shard of Infinity!</span></center></h1><br/>")
+              msg ("<br/><center><b>[ YOUR SCORE HAS INCREASED BY 50 ]</b></center><br/><br/><h3>DIMENSION COMPLETE!</h3><br/>")
+            }
+          ]]></ontake>
+        </object>
+      </object>
+      <object name="rh_small_crate">
+        <inherit name="container_closed" />
+        <inherit name="kvtype" />
+        <volume type="int">8</volume>
+        <weight type="int">31</weight>
+        <attr name="carry_cap" type="int">350</attr>
+        <stack type="int">10000</stack>
+        <feature_container />
+        <hidechildren />
+        <listchildren />
+        <take />
+        <alias>small crate</alias>
+        <hintlist type="stringlist">
+          <value>Hint 1:  Have you tried entering the small crate, by any chance?</value>
+        </hintlist>
+        <beforeenter type="script">
+          JS.setGameWidth ("33%")
+          JS.uiHide ("#gamePanes")
+          JS.eval ("$('#status').css('width', '33%')")
+        </beforeenter>
+        <onexit type="script">
+          JS.setGameWidth ("948px")
+          JS.uiShow ("#gamePanes")
+          JS.eval ("$('#status').css('width', '948px')")
+        </onexit>
+        <look type="script"><![CDATA[
+          msg ("It's the second smallest crate here.<br/><br/>It's made of wood, and it can be opened or closed. {once:<br/><br/>\"That crate there's the one people disappear into,\" says The Cratesman, matter-of-factly.}<br/><br/>For more information, see {command:msg (kv_Crate Mart.crateTable):the table}.<br/>")
+        ]]></look>
+        <onopen type="script">
+        </onopen>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+          <value>Open</value>
+          <value>Close</value>
+        </displayverbs>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+          <value>Drop</value>
+          <value>Open</value>
+          <value>Close</value>
+        </inventoryverbs>
+      </object>
+      <object name="rh_medium_crate">
+        <inherit name="container_closed" />
+        <inherit name="kvtype" />
+        <volume type="int">27</volume>
+        <attr name="carry_cap" type="int">3000</attr>
+        <weight type="int">63</weight>
+        <stack type="int">10000</stack>
+        <feature_container />
+        <hidechildren />
+        <listchildren />
+        <take />
+        <alias>medium crate</alias>
+        <look><![CDATA[A medium-sized crate, made of wood.<br/><br/>For more information, see {command:msg (kv_Crate Mart.crateTable):the table}.<br/>]]></look>
+        <hintlist type="stringlist">
+          <value>Hint:  Have you checked out the crate table?</value>
+        </hintlist>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+          <value>Open</value>
+          <value>Close</value>
+        </displayverbs>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+          <value>Drop</value>
+          <value>Open</value>
+          <value>Close</value>
+        </inventoryverbs>
+      </object>
+      <object name="rh_extra_large_cube_crate">
+        <inherit name="container_closed" />
+        <inherit name="kvtype" />
+        <volume type="int">125</volume>
+        <weight type="int">161</weight>
+        <attr name="carry_cap" type="int">3500</attr>
+        <stack type="int">7000</stack>
+        <notall />
+        <look><![CDATA[An extra-large crate, which is shaped like a cube and made of wood.<br/><br/>For more information, see {command:msg (kv_Crate Mart.crateTable):the table}.<br/>]]></look>
+        <feature_container />
+        <hidechildren />
+        <listchildren />
+        <alias>extra large cube crate</alias>
+        <hintlist type="stringlist">
+          <value>Hint:  Have you checked out the crate table?</value>
+        </hintlist>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+          <value>Open</value>
+          <value>Close</value>
+        </displayverbs>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+          <value>Drop</value>
+          <value>Open</value>
+          <value>Close</value>
+        </inventoryverbs>
+      </object>
+      <object name="rh_extra_large_long_crate">
+        <inherit name="container_closed" />
+        <inherit name="kvtype" />
+        <inherit name="container_lockable" />
+        <volume type="int">128</volume>
+        <weight type="int">200</weight>
+        <notall />
+        <attr name="carry_cap" type="int">3500</attr>
+        <stack type="int">7000</stack>
+        <look><![CDATA[An extra-large crate, which is oblong and made of wood.<br/><br/>For more information, see {command:msg (kv_Crate Mart.crateTable):the table}.<br/>]]></look>
+        <feature_container />
+        <hidechildren />
+        <listchildren />
+        <alias>extra large long crate</alias>
+        <hintlist type="stringlist">
+          <value>Hint:  Have you checked out the crate table?</value>
+        </hintlist>
+        <push>You push it a little.  If it moved, you can't tell that it did.</push>
+        <keycount type="int">1</keycount>
+        <nokeymessage>You do not have the required object.</nokeymessage>
+        <unlockmessage><![CDATA[<b>[ SYSTEM MESSAGE: DO NOT ENTER THIS CRATE!!! ]</b><br/>]]></unlockmessage>
+        <lockmessage>How'd you do that?</lockmessage>
+        <key type="object">kv_green_shard</key>
+        <onopen type="script"><![CDATA[
+          MakeExitVisible (rh_xl_long_crate)
+          firsttime {
+            msg ("\"That crate there's the one people disappear into,\" says The Cratesman, matter-of-factly.<br/>")
+          }
+        ]]></onopen>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+          <value>Open</value>
+          <value>Close</value>
+        </displayverbs>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+          <value>Drop</value>
+          <value>Open</value>
+          <value>Close</value>
+        </inventoryverbs>
+      </object>
+      <object name="rh_large_crate">
+        <inherit name="container_closed" />
+        <inherit name="kvtype" />
+        <volume type="int">64</volume>
+        <notall />
+        <weight type="int">107</weight>
+        <attr name="carry_cap" type="int">3000</attr>
+        <stack type="int">9000</stack>
+        <look><![CDATA[An large crate, made of wood.<br/><br/>For more information, see {command:msg (kv_Crate Mart.crateTable):the table}.<br/>]]></look>
+        <feature_container />
+        <hidechildren />
+        <listchildren />
+        <alias>large crate</alias>
+        <hintlist type="stringlist">
+          <value>Hint:  Have you checked out the crate table?</value>
+        </hintlist>
+        <pushable />
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+          <value>Open</value>
+          <value>Close</value>
+        </displayverbs>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+          <value>Drop</value>
+          <value>Open</value>
+          <value>Close</value>
+        </inventoryverbs>
+      </object>
+      <object name="kv_Cratesman">
+        <inherit name="namedmale" />
+        <inherit name="kvtype" />
+        <usedefaultprefix type="boolean">false</usedefaultprefix>
+        <look><![CDATA[The cratesman is walking around and inspecting the crates.<br/>]]></look>
+        <alias>The Cratesman</alias>
+        <notall />
+        <saidit type="boolean">false</saidit>
+        <hintlist type="stringlist">
+          <value>Hint 1:  The Cratesman just wants the game to be the best it can be!  He's not a bad guy!</value>
+        </hintlist>
+        <speak type="script"><![CDATA[
+          firsttime {
+            msg ("\"Have you SEEN the state of things around here?!?\" the Cratesman explodes. \"There's only one of each crate! Good God, man! What has become of Quest games?!?\"<br/>")
+          }
+          otherwise {
+            msg ("{random:\"Bugger off, Pixie,\" groans The Cratesman.:\"Did you say something?\" asks The Cratesman.:\"Some crates can be picked up, and some can't,\" says The Cratesman.:\"You ever heard of the folks that get into one of these crates and disappear?\" asks The Cratesman. \"That shit is CRAZY!\"}<br/>")
+          }
+        ]]></speak>
+        <askdefault type="script"><![CDATA[
+          msg ("The Cratesman just shrugs.<br/>")
+        ]]></askdefault>
+        <telldefault type="script">
+          msg ("The Cratesman just shrugs.")
+        </telldefault>
+        <telltodefault type="script">
+          msg ("The Cratesman gives you the finger.")
+        </telltodefault>
+        <ask type="scriptdictionary">
+          <item key="crate crates"><![CDATA[
+            msg ("You ask Cratesman about crates.<br/><br/>\"Someone is FINALLY giving them the attention they deserve!\" the Cratesman replies.<br/>")
+          ]]></item>
+        </ask>
+      </object>
+      <object name="Creation Scroll">
+        <inherit name="container_open" />
+        <inherit name="kvtype" />
+        <feature_container />
+        <open type="boolean">false</open>
+        <close type="boolean">false</close>
+        <isopen type="boolean">false</isopen>
+        <transparent />
+        <hidechildren />
+        <listchildren />
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+        </displayverbs>
+        <hintlist type="stringlist">
+          <value>Hint:  Pick it up.</value>
+        </hintlist>
+        <look type="script">
+          msg ("create (\"#text#\")")
+        </look>
+        <take type="script"><![CDATA[
+          msg ("You pick it up and copy the spell to your magic book. The scroll inexplicably vanishes.<br/>")
+          MoveObject (kv_CreationSpell, kv_book)
+          kv_create.parent = Quest Forum.parent
+          RemoveObject (Creation Scroll)
+        ]]></take>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+          <value>Drop</value>
+          <value>Open</value>
+          <value>Close</value>
+        </inventoryverbs>
+        <object name="kv_CreationSpell">
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+          </displayverbs>
+          <drop type="boolean">false</drop>
+          <notall />
+          <scenery />
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+          </inventoryverbs>
+          <alias>Creation Spell</alias>
+          <listalias><![CDATA[&nbsp;&nbsp;&nbsp;- Creation Spell]]></listalias>
+          <look type="script"><![CDATA[
+            msg ("Command Pattern:<br/><br/><code style=\"color:black;background:lightgray;padding:4px\">create (\"#text#\")</code><br/>{once:<br/>(NOTE:  This isn't really any good for anything. Unless you'd just like to create a pet rock or something...)}")
+          ]]></look>
+        </object>
+        <command name="kv_create">
+          <pattern>create ("#text#")</pattern>
+          <script>
+            create (text)
+            obj = GetObject(text)
+            obj.created = true
+          </script>
+        </command>
+      </object>
+      <exit alias="north" to="kv_glitch">
+        <inherit name="northdirection" />
+      </exit>
+      <exit alias="northwest" to="kv_glitch">
+        <inherit name="northwestdirection" />
+      </exit>
+      <exit alias="northeast" to="kv_glitch">
+        <inherit name="northeastdirection" />
+      </exit>
+      <exit alias="west" to="kv_glitch">
+        <inherit name="westdirection" />
+      </exit>
+      <exit alias="east" to="kv_glitch">
+        <inherit name="eastdirection" />
+      </exit>
+      <exit alias="south" to="kv_glitch">
+        <inherit name="southdirection" />
+      </exit>
+      <exit alias="southwest" to="kv_glitch">
+        <inherit name="southwestdirection" />
+      </exit>
+      <exit alias="southeast" to="kv_glitch">
+        <inherit name="southeastdirection" />
+      </exit>
+      <exit alias="up" to="kv_glitch">
+        <inherit name="updirection" />
+      </exit>
+      <exit alias="down" to="kv_glitch">
+        <inherit name="downdirection" />
+      </exit>
+      <object name="Extras Scroll">
+        <inherit name="kvtype" />
+        <hintlist type="stringlist">
+          <value>Hint 1: Pick it up.</value>
+        </hintlist>
+        <look><![CDATA[<b>Do Spell</b><br/><br/><b>GetFileData Spell</b><br/>]]></look>
+        <take type="script"><![CDATA[
+          DoSpell.scenery = true
+          GetFileData Spell.scenery = true
+          msg ("You pick it up and copy the spells to your magic book. The scroll inexplicably vanishes.<br/>")
+          MoveObject (GetFileData Spell, kv_book)
+          MoveObject (DoSpell, kv_book)
+          kv_GetFileData.parent = null
+          kv_do.parent = null
+          RemoveObject (Extras Scroll)
+        ]]></take>
+        <object name="DoSpell">
+          <alias>Do Spell</alias>
+          <listalias><![CDATA[&nbsp;&nbsp;&nbsp;- Do Spell]]></listalias>
+          <drop type="boolean">false</drop>
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+          </displayverbs>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+          </inventoryverbs>
+          <look><![CDATA[Command pattern:<br/><br/><code>do (#object#, #text#)</code><br/>]]></look>
+        </object>
+        <object name="GetFileData Spell">
+          <drop type="boolean">false</drop>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+          </inventoryverbs>
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+          </displayverbs>
+          <listalias><![CDATA[&nbsp;&nbsp;&nbsp;- GetFileData Spell]]></listalias>
+          <look><![CDATA[Command pattern:<br/><br/><code>GetFileData (#text#)</code><br/>]]></look>
+        </object>
+        <command name="kv_do">
+          <pattern>do (#text#)</pattern>
+          <script>
+            obj = ListItem(Split(text, ","), 0)
+            obj = GetObject(obj)
+            msg (obj)
+            t2 = ListItem(Split(text, ","), 1)
+            param = Split(t2, "\"")
+            parameter = ListItem(param, 1)
+            msg ("Parameter: " + parameter)
+            do (obj, parameter)
+          </script>
+        </command>
+        <command name="kv_GetFileData">
+          <pattern>GetFileData (#text#)</pattern>
+          <script><![CDATA[
+            if (StartsWith(text, "\"")) {
+              ts = Split(text, "\"")
+              text = ListItem(ts, 1)
+            }
+            msg ("<pre style=\"word-wrap: break-word;white-space:pre-wrap;\">" + GetFileData(text) + "</pre>")
+            JS.scrollTo (0, 0)
+          ]]></script>
+        </command>
+      </object>
+      <command name="kv_enterCrate">
+        <pattern>enter #object#</pattern>
+        <script>
+          if (object = rh_extra_large_long_crate) {
+            if (rh_extra_large_long_crate.open) {
+              HandleSingleCommand ("in")
+            }
+            else {
+              msg ("It isn't open")
+            }
+          }
+          else {
+            msg ("You can't enter " + object.article + ".")
+          }
+        </script>
+      </command>
+      <command name="crateMartHelp">
+        <pattern>hint;hints;wtf;wth;what the hell</pattern>
+        <script>
+          if (not rh_extra_large_long_crate.isopen) {
+            if (not kv_green_shard.parent = player) {
+              if (not kv_green_shard.hasbeenmoved) {
+                if (not rh_mini_crate.isopen) {
+                  if (not rh_mini_crate.open) {
+                    if (not px_cheatSpells.parent = kv_Crate Mart) {
+                      if (not The Trick Bag.hasbeenmoved) {
+                        msg ("Try pushing the mini crate.")
+                      }
+                      else {
+                        if (The Trick Bag.parent = game.pov.parent) {
+                          msg ("Have you opened the bag of tricks?")
+                        }
+                      }
+                    }
+                    else {
+                      msg ("Use your CHEAT spells.  CHEAT SET rh_mini_crate.open = true")
+                    }
+                  }
+                  else {
+                    msg ("Open the mini crate.")
+                  }
+                }
+                else {
+                  msg ("Get the shard")
+                }
+              }
+              else {
+              }
+            }
+            else {
+              msg ("Open the extra large long crate.")
+            }
+          }
+          else {
+            msg ("Enter the extra long crate.")
+          }
+          game.suppressturnscripts = true
+        </script>
+      </command>
+      <exit name="rh_xl_long_crate" alias="into the extra large long crate" to="Cave Entrance">
+        <inherit name="indirection" />
+        <visible type="boolean">false</visible>
+        <suffix type="string"></suffix>
+      </exit>
+      <command name="kv_showcratetable">
+        <pattern>showcratetable</pattern>
+        <script><![CDATA[
+          msg ("<table style=\"border: 1px solid black;\"> <thead style=\"border: 1px solid black;\"> <tr style=\"border: 1px solid black;\"> <th  style=\"border: 1px solid black;\">Crate</th> <th style=\"border: 1px solid black;\">LxWxH(ft)<br>(outside dim.)</th> <th style=\"border: 1px solid black;\">Weight (lbs)</th> <th style=\"border: 1px solid black;\">Carrying Capacity (lbs)</th> <th style=\"border: 1px solid black;\">Stacking Strength (lbs)</th> </tr> </thead> <tbody style=\"border: 1px solid black;\"> <tr style=\"border: 1px solid black;\"> <td style=\"border: 1px solid black;\">mini</td> <td style=\"border: 1px solid black;\">1 x 1 x 1</td> <td style=\"border: 1px solid black;\">8</td> <td style=\"border: 1px solid black;\">250</td> <td style=\"border: 1px solid black;\">12,000</td> </tr> <tr style=\"border: 1px solid black;\"> <td style=\"border: 1px solid black;\">small</td> <td style=\"border: 1px solid black;\">2 x 2 x 2</td> <td style=\"border: 1px solid black;\">31</td> <td style=\"border: 1px solid black;\">350</td> <td style=\"border: 1px solid black;\">10,000</td> </tr> <tr style=\"border: 1px solid black;\"> <td style=\"border: 1px solid black;\">medium</td> <td style=\"border: 1px solid black;\">3 x 3 x 3</td> <td style=\"border: 1px solid black;\">63</td> <td  style=\"border: 1px solid black;\">2,000</td> <td style=\"border: 1px solid black;\">10,000</td> </tr> <tr style=\"border: 1px solid black;\"> <td style=\"border: 1px solid black;\">large</td> <td style=\"border: 1px solid black;\">4 x 4 x 4</td> <td style=\"border: 1px solid black;\">107</td> <td style=\"border: 1px solid black;\">3,000</td> <td style=\"border: 1px solid black;\">9,000</td> </tr> <tr style=\"border: 1px solid black;\"> <td style=\"border: 1px solid black;\">extra large (cube)</td> <td style=\"border: 1px solid black;\">5 x 5 x 5</td> <td style=\"border: 1px solid black;\">161</td> <td style=\"border: 1px solid black;\">3,500</td> <td style=\"border: 1px solid black;\">7,000</td> </tr> <tr style=\"border: 1px solid black;\"> <td style=\"border: 1px solid black;\">extra large (long)</td> <td style=\"border: 1px solid black;\">8 x 4 x 4</td> <td style=\"border: 1px solid black;\">200</td> <td style=\"border: 1px solid black;\">3,500</td> <td style=\"border: 1px solid black;\">7,000</td> </tr> </tbody> </table> <p><sub><strong>1/4\" Thick Plywood</strong></sub></p> <hr>")
+        ]]></script>
+      </command>
+    </object>
+    <object name="Richard Headkid">
+      <inherit name="namedmale" />
+      <inherit name="kvtype" />
+      <alt type="stringlist">
+        <value>rh</value>
+        <value>kv</value>
+        <value>dickhead kid</value>
+        <value>kavin</value>
+        <value>richard</value>
+      </alt>
+      <listalias>RH</listalias>
+      <scenery type="boolean">false</scenery>
+      <inroomdescription type="string"></inroomdescription>
+      <takemsg><![CDATA[RH knocks your hands away.<br />"I will not be pawed at, thank you," he grumbles.]]></takemsg>
+      <nocopy />
+      <hintlist type="stringlist">
+        <value>Hint 1:  You can examine him.</value>
+        <value>Hint 2:  You can speak to him.</value>
+        <value>Hint 3:  You could try asking him about the project.</value>
+      </hintlist>
+      <alias>Richard Headkid</alias>
+      <kill>"I'm just an idea," shrugs RH.  "You can't kill an idea, Pixie."</kill>
+      <throw>"You can't do that," says RH.</throw>
+      <listen>You can't do that.  (Or you shouldn't, at any rate!  (RH is a bit off his rocker!))</listen>
+      <push>"You can't do that," says RH.</push>
+      <attack>{once:You tell RH that Reor's Bush-Cave is the dumbest damned game you've ever played in your life.  He pretends he didn't hear you.}{notfirst:"You can't attack me with words," says RH.}</attack>
+      <watch>He's all over the place.  You don't have enough energy (or patience) to watch him.</watch>
+      <hitCount type="int">0</hitCount>
+      <hit type="script"><![CDATA[
+        if (Richard Headkid.hitCount < 5) {
+          Richard Headkid.hitCount = Richard Headkid.hitCount + 1
+        }
+        else {
+          msg ("\"Why do you keep trying to hit me, man?  That's not very Fonzie-like.\"  RH shakes his head and goes back to {random:work on the group project.:trying to help people on the forum.}")
+        }
+      ]]></hit>
+      <speak type="script"><![CDATA[
+        if (disk.parent = game.pov) {
+          msg ("\"Yeah, yeah,\" interrupts RH. \"Just lemme check out that disk, Pixie... Please???\"<br/>")
+        }
+        else {
+          firsttime {
+            msg ("\"Hello,\" RH mumbles, tossing back an inverse nod. He then goes back to work on the project, leaning just enough to one side to keep you from seeing it.<br/>")
+          }
+          otherwise {
+            msg ("RH nods as you speak to him. (He doesn't look you directly in the eye, but you get the feeling he's still listening.)<br/>")
+          }
+        }
+      ]]></speak>
+      <look type="script"><![CDATA[
+        if (Got(disk)) {
+          msg ("\"Can I see that disk, please?\" asks RH.<br/>")
+        }
+        else {
+          msg ("RH is currently {random:asking a dumb question.:trying to tell someone how to customize CSS.:showing someone how to hide the side panes.:editing a post, and cursing because he didn't {random:remove:add} enough characters and it says, 'You can't post that here.':cursing the messenger because it doesn't like the HTML code he just wrote.:working on a group project with others from the Quest Forum, but it doesn't look like it's DIMENSIONS OF INFINITY...}<br/>")
+          DisplayHttpLink ("Visit Richard Headkid's profile page.", "https://textadventures.co.uk/user/view/gudejtsx9komagj-tffyfg/richard-headkid", false)
+        }
+      ]]></look>
+      <telldefault type="script">
+        msg ("RH doesn't seem to be listening to you. (He's arguing with HK about a script at the moment.)")
+      </telldefault>
+      <askdefault type="script">
+        msg ("RH shrugs.")
+      </askdefault>
+      <telltodefault type="script"><![CDATA[
+        msg ("\"I'm sorry, Pix, but I'm a little busy at the moment,\" says RH. \"Ask HK to do it.\"<br/>")
+      ]]></telltodefault>
+      <changedhitCount type="script">
+        switch (Richard Headkid.hitCount) {
+          case (1) {
+            msg ("Your hand goes right through him.  \"Pseudonym,\" says RH, pointing a thumb at himself.")
+          }
+          case (2) {
+            msg ("\"You can't hit me.  Just give up,\" says RH.")
+          }
+          case (3) {
+            msg ("\"How many times do you think I'll give a different response?\" asks RH.")
+          }
+          case (4) {
+            msg ("\"This is fun, isn't it?\" sighs RH.")
+          }
+          case (5) {
+            msg ("\"Why do you keep trying to hit me, man?  That's not very Fonzie-like.\"  RH shakes his head and goes back to work on the group project.")
+          }
+        }
+      </changedhitCount>
+      <ask type="scriptdictionary">
+        <item key="project"><![CDATA[
+          msg ("You ask RH about the group project.<br/><br/>\"What do you mean?\" RH looks around nervously. When no one comes to his rescue, he says, \"{random:look! There's a GRUE behind you!:watch out! XanMag's over there MacGuyvering stuff!}\"<br/><br/>He then goes back to work on the 'group project', not even looking to see if he's fooled you into turning around.")
+        ]]></item>
+        <item key="XanMag xm xan">
+          if (XanMag.TaskCount = 3) {
+            msg ("\"You need to record a dope beat for him,\" says RH.")
+          }
+          else if (XanMag.TaskCount = 2) {
+            msg ("\"You need to get that guy a beer,\" says RH.")
+          }
+          else if (XanMag.TaskCount = 1) {
+            msg ("\"You'll have to come up with an idea on your own, Pix,\" says RH.")
+          }
+          else if (XanMag.TaskCount = 0) {
+            msg ("\"Did you enjoy all his bits?\" asks RH.  Then, \"that was rhetorical.  Don't really answer.\"")
+          }
+        </item>
+      </ask>
+    </object>
+    <object name="kv_scroll_keeper">
+      <hintlist type="stringlist">
+        <value>You can't even see this!</value>
+      </hintlist>
+      <object name="Scroll of Destruction">
+        <inherit name="container_open" />
+        <inherit name="kvtype" />
+        <feature_container />
+        <scenery type="boolean">false</scenery>
+        <open type="boolean">false</open>
+        <close type="boolean">false</close>
+        <isopen type="boolean">false</isopen>
+        <transparent type="boolean">false</transparent>
+        <hidechildren type="boolean">false</hidechildren>
+        <listchildren type="boolean">false</listchildren>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+        </displayverbs>
+        <hintlist type="stringlist">
+          <value>Hint: Pick it up.</value>
+        </hintlist>
+        <look type="script">
+          do (kv_destroy spell, "look")
+        </look>
+        <take type="script"><![CDATA[
+          kv_destroy spell.scenery = true
+          msg ("You pick it up and copy the spell to your magic book. The scroll inexplicably vanishes.<br/>")
+          MoveObject (kv_destroy spell, kv_book)
+          kv_destroy.parent = Quest Forum.parent
+          RemoveObject (Scroll of Destruction)
+        ]]></take>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+          <value>Drop</value>
+          <value>Open</value>
+          <value>Close</value>
+        </inventoryverbs>
+        <object name="kv_destroy spell">
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+          </displayverbs>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+          </inventoryverbs>
+          <listalias><![CDATA[&nbsp;&nbsp;&nbsp;- Destroy Spell]]></listalias>
+          <alias>Destroy Spell</alias>
+          <look type="script"><![CDATA[
+            msg ("Command pattern:<br/><br/><code style=\"background:lightgray;padding:4px\">destroy (#text#)</code><br/>{once:<br/>(NOTE:  This isn't really any good for anything.  KV is just trying to learn how to play with spells!)}")
+          ]]></look>
+        </object>
+        <command name="kv_destroy">
+          <pattern>destroy (#text#)</pattern>
+          <script>
+            cando = isClone(GetObject(text))
+            if ((cando) and not HasAttribute(GetObject(text), "created")) {
+              destroy (text)
+              msg ("Destroying " + GetObject(text))
+              msg ("Done.")
+            }
+            else {
+              error (GetObject(text) + " is a default game object.")
+            }
+          </script>
+        </command>
+      </object>
+      <object name="The Trick Bag">
+        <inherit name="kvtype" />
+        <inherit name="openable" />
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Drop</value>
+        </inventoryverbs>
+        <usedefaultprefix type="boolean">false</usedefaultprefix>
+        <alias>Pixie's Bag of Tricks</alias>
+        <hintlist type="stringlist">
+          <value>Hint:  Open it.</value>
+        </hintlist>
+        <take type="boolean">false</take>
+        <look>It's your bag of tricks!  You should definitely USE it!</look>
+        <attr name="feature_usegive" type="boolean">false</attr>
+        <use type="boolean">false</use>
+        <feature_container />
+        <takemsg>You can't take it.  It's too dangerous to pick up.{notfirst:  Try opening it.}</takemsg>
+        <openscript type="script"><![CDATA[
+          msg ("You decide to pull out all the stops and open up your bag of tricks. The bag inexplicably vanishes, but you now have access to your CHEAT commands!<br/>")
+          MoveObject (px_cheatSpells, kv_Crate Mart)
+          px_cheat.parent = kv_Crate Mart
+          RemoveObject (The Trick Bag)
+        ]]></openscript>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+          <value>Open</value>
+          <value>Close</value>
+        </displayverbs>
+        <command name="px_cheat">
+          <pattern type="string"><![CDATA[^cheat (?<text1>move|set|get) (?<text2>.+)$]]></pattern>
+          <script><![CDATA[
+            switch (LCase(text1)) {
+              case ("move") {
+                o = GetObject(text2)
+                if (o = null) {
+                  error ("I cannot find a location called " + text2)
+                }
+                else {
+                  game.pov.parent = o
+                }
+              }
+              case ("get") {
+                o = GetObject(text2)
+                if (o = null) {
+                  error ("I cannot find an object called " + text2)
+                }
+                else {
+                  o.parent = player
+                }
+              }
+              case ("set") {
+                msg ("Doing " + text2)
+                regex = "(?<object>.+)\\.(?<attribute>\\S+)\\s*=\\s*(?<value>.+)"
+                if (not IsRegexMatch(regex, text2)) {
+                  error ("Sorry, wrong format")
+                }
+                dict = Populate(regex, text2)
+                obj = GetObject(StringDictionaryItem(dict, "object"))
+                if (obj = null) {
+                  error ("Sorry, object not recognised")
+                }
+                att = StringDictionaryItem(dict, "attribute")
+                value = Eval(StringDictionaryItem(dict, "value"))
+                set (obj, att, value)
+                msg ("Done")
+              }
+            }
+            // NOW YOU CAN:
+            // CHEAT MOVE My bedroom
+            // CHEAT GET lantern
+            // CHEAT SET player.health=60
+            // CHEAT SET Mary.parent = lounge
+            // CHEAT SET bronze sword.inventoryverbs = Split("Lookat;Drop;Destroy", ";")
+          ]]></script>
+        </command>
+        <object name="px_cheatSpells">
+          <inherit name="plural" />
+          <alias>CHEAT Spells</alias>
+          <listalias><![CDATA[&nbsp;&nbsp;&nbsp;- CHEAT Spells]]></listalias>
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+          </displayverbs>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+          </inventoryverbs>
+          <drop type="boolean">false</drop>
+          <usedefaultprefix type="boolean">false</usedefaultprefix>
+          <prefix>your</prefix>
+          <look type="script"><![CDATA[
+            msg ("<br/><pre><code>CHEAT GET #object#</code></pre><br/><br/><pre><code>CHEAT MOVE #room#</pre></code><br/><br/><pre><code>CHEAT SET ????????????</pre></code><br/>")
+          ]]></look>
+        </object>
+      </object>
+    </object>
+    <object name="kv_emptyObject" />
+    <object name="kv_CommandRoom">
+      <visible type="boolean">false</visible>
+    </object>
+  </object>
+
+
+  <turnscript name="kv_locationAlerts">
+    <enabled type="boolean">false</enabled>
+    <script>
+      if (kv_device.parent = player) {
+        gotalert = false
+        alertcount = 0
+        alerts = GetAllChildObjects(kv_device)
+        foreach (o, alerts) {
+          if (o.visible) {
+            gotalert = true
+            alertcount = alertcount + 1
+          }
+        }
+        if (gotalert) {
+          if (alertcount = 1) {
+            txt = "a new alert!"
+          }
+          else {
+            txt = "new alerts!"
+          }
+          game.locationmsg = game.locationmsg + " | You have " + txt + " (USE the Quest device.)"
+          // JS.updateLocation (CapFirst(GetDisplayName(game.pov.parent)) + " | You have " + txt + " (USE the Quest device.)")
+        }
+        else {
+          game.locationmsg = CapFirst(GetDisplayName(game.pov.parent))
+        }
+      }
+      else {
+        game.locationmsg = CapFirst(GetDisplayName(game.pov.parent))
+      }
+    </script>
+  </turnscript>
+  <command name="kv_rot">
+    <pattern type="string"><![CDATA[^(?<text1>cipher|decipher|code|decode|scramble|decipher) \(\"(?<text2>.*)\", (?<text3>.*)\)$]]></pattern>
+    <script><![CDATA[
+      text3 = ToInt(text3)
+      switch (text1) {
+        case ("code") {
+          text1 = "cipher"
+        }
+        case ("scramble") {
+          text1 = "cipher"
+        }
+        case ("decode") {
+          text1 = "decipher"
+        }
+        case ("descramble") {
+          text1 = "decipher"
+        }
+      }
+      switch (text1) {
+        case ("cipher") {
+          if (text3 > 26 or (text3 < 1)) {
+            msg ("You must use a number from 1 to 26.")
+          }
+          else {
+            msg ("Your output:")
+            msg (Rot(text2, text3))
+          }
+        }
+        case ("decipher") {
+          text3 = 26 - text3
+          if (text3 > 25 or (text3 < 0)) {
+            msg ("You must use a number from 1 to 26.")
+          }
+          else {
+            msg ("<br/><b>Your output:</b>")
+            msg (Rot(text2, text3))
+            if (Rot(text2, text3) = notepad pencil.unscrambled) {
+              msg ("<br/>You read the text and write your best, well-thought-out responses to XM's questions and stuff and seal the envelope.")
+              notepad pencil.translatedXM = true
+            }
+          }
+        }
+        default {
+          msg ("I didn't understand your command.")
+        }
+      }
+    ]]></script>
+  </command>
+  <command name="kv_real_help">
+    <pattern>real help;wtf;wth;what the fuck;what the hell;actual help</pattern>
+    <script><![CDATA[
+      JS.showPopupFullscreen ("HELP", "This game was designed specifically for The Pixie, so there are MANY commands that are normally not included in a Quest game. <hr/> <b>COMMANDS (*require Scrolls)</b> <table style=\"border:1px solid;font-size:12px\"> <thead style=\"border:1px solid\"> <tr style=\"border:1px solid\"> <th style=\"border:1px solid\">Command</th> <th style=\"border:1px solid\">Pattern(s)</th> <th>Description</th> </tr> </thead> <tbody style=\"border:1px solid\"> <tr style=\"border:1px solid\"> <td style=\"border:1px solid\">ls</td> <td style=\"border:1px solid\">ls;dir</td> <td style=\"border:1px solid\">Prints a list of files accessible from 'the local drive'.</td> </tr> <tr style=\"border:1px solid\"> <td style=\"border:1px solid\">cat FILENAME</td> <td style=\"border:1px solid\"><code>cat #text#;print #text#</code></td> <td style=\"border:1px solid\">Prints the contents of a file on 'the local drive'.</td> </tr> <tr style=\"border:1px solid\"> <td style=\"border:1px solid\">dance</td> <td style=\"border:1px solid\"><code>dance</code></td> <td style=\"border:1px solid\">You will get down.</td> </tr> <tr style=\"border:1px solid\"> <td style=\"border:1px solid\">travel*</td> <td style=\"border:1px solid\"><code>travel;t</code></td> <td style=\"border:1px solid\">You will be transported to the hub. (NOTE: This only works while in Crate Mart.)</td> </tr> <tr style=\"border:1px solid\"> <td style=\"border:1px solid\">clear</td> <td style=\"border:1px solid\"><code>clear;clr;cls</code></td> <td style=\"border:1px solid\">Clears the screen.</td> </tr> <tr style=\"border:1px solid\"> <td style=\"border:1px solid\">showme*</td> <td style=\"border:1px solid\"><code>showme</code></td> <td style=\"border:1px solid\">Prints all child items of the current location.</td> </tr> <tr style=\"border:1px solid\"> <td style=\"border:1px solid\">showme it*</td> <td style=\"border:1px solid\"><code>showme #text#</code></td> <td style=\"border:1px solid\">Displays information about a specific object</td> </tr> <tr style=\"border:1px solid\"> <td style=\"border:1px solid\">showme all*</td> <td style=\"border:1px solid\"><code>showme all</code></td> <td style=\"border:1px solid\">Prints a list of all game objects.</td> </tr> <tr style=\"border:1px solid\"> <td style=\"border:1px solid\">msg</td> <td style=\"border:1px solid\"><code>msg (#text#)</code></td> <td style=\"border:1px solid\">Prints a message OR an attribute.</td> </tr> <tr style=\"border:1px solid\"> <td style=\"border:1px solid\">JS...</td> <td style=\"border:1px solid\"><code>JS.#text#</code></td> <td style=\"border:1px solid\">If you don't know what this can do, don't fool with it!</td> </tr> <tr style=\"border:1px solid\"> <td style=\"border:1px solid\">CloneObject*</td> <td style=\"border:1px solid\"><code>cloneobject (#text#)</code></td> <td style=\"border:1px solid\">Clones an object.<br>(NOTE: This does not MOVE the object!)</td> </tr> <tr style=\"border:1px solid\"> <td style=\"border:1px solid\">destroy*</td> <td style=\"border:1px solid\"><code>destroy (#text#)</code></td> <td style=\"border:1px solid\">Destroys an object.</td> </tr> <tr style=\"border:1px solid\"> <td style=\"border:1px solid\">gamename</td> <td style=\"border:1px solid\"><code>gamename #text#</code></td> <td style=\"border:1px solid\">Changes the game's name (takes immediate effect)</td> </tr> <tr style=\"border:1px solid\"> <td style=\"border:1px solid\">CHEAT*</td> <td style=\"border:1px solid\"><code>^cheat (?move|set|get) (?.+)$</code></td> <td style=\"border:1px solid\">Pixie knows what this does. (It's his command, after all!)</td> </tr></tbody></table> <hr/>  There is also a QUEST device in the player's inventory.(Just enter USE QUEST DEVICE to access the available options.) <hr/> IF YOU GET STUCK... Enter HINT or <a href=\"https://textadventures.co.uk/forum/quest/post\">ask for help on the forum</a>.                        ")
+      game.suppressturnscripts = true
+    ]]></script>
+  </command>
+  <command name="kv_reverse">
+    <pattern>reverse #text#</pattern>
+    <script><![CDATA[
+      l = Split(text, " ")
+      msg (l)
+      n = ListCount(l)
+      n = n - 1
+      msg ("<br/><b>Your output:</b>")
+      textString = ""
+      while (not n < 0) {
+        foreach (w, l) {
+          // OutputTextNoBr (ListItem(l, n) + " ")
+          textString = textString + ListItem(l, n) + " "
+          n = n - 1
+        }
+      }
+      msg (textString)
+      if (textString = notepad pencil.unreversed) {
+        msg ("<br/>You read the text and write your best, well-thought-out responses to XMs questions and stuff and seal the envelope.")
+        notepad pencil.translatedXM = true
+      }
+    ]]></script>
+  </command>
+  <command name="kv_view_docs">
+    <pattern>view the Quest documentation</pattern>
+    <script>
+      msg ("Opening the Quest documentation in your browser...")
+      JS.goUrl ("https://docs.textadventures.co.uk/quest/]")
+    </script>
+  </command>
+  <command name="kv_viewAlerts">
+    <pattern>view alerts</pattern>
+    <script>
+      HideOutputSection (game.menuoutputsection)
+      viewAlerts
+    </script>
+  </command>
+  <command name="kv_view_bookmarks">
+    <pattern>view bookmarks;bookmarks</pattern>
+    <script><![CDATA[
+      HideOutputSection (game.menuoutputsection)
+      if (ListCount(kv_device.favorites) > 0) {
+        ShowMenu ("What bookmark would you like to view?", kv_device.favorites, true) {
+          msg ("> " + result)
+          x = GetObject(result)
+          // HandleSingleCommand ("X " + x)
+          if (HasAttribute(x, "fav")) {
+            do (x, "fav")
+          }
+          else {
+            msg ("{img:internalError.png}")
+          }
+        }
+      }
+      else {
+        msg ("You have no bookmarks.")
+      }
+    ]]></script>
+  </command>
+  <command name="kv_clone">
+    <pattern>cloneobject (#text#)</pattern>
+    <script><![CDATA[
+      if (player.can_clone) {
+        foreach (o, AllObjects()) {
+          if (o = GetObject(text)) {
+            if (StartsWith(o.name, "Dark")) {
+              Ask ("Are you sure you want to do that?  (Don't you think there are enough of him already?)<br/><br/>Would you REALLY like to clone DL?") {
+                msg ("@@@open@@@ OK, fine! Be that way! @@@close@@@<br/><br/>Another clone of DarkLizerd springs into existence and runs off to join the rest to translate Basic to Quest... (hopefully, unless they start fighting again about who is the original and who is the clone.)")
+              }
+            }
+            else if (HasAttribute(o, "nocopy")) {
+              if (o.nocopy) {
+                msg ("You can't clone " + GetDisplayName(o) + " due to copy-protection.")
+              }
+              else {
+                CloneObject (o)
+                msg ("Done.")
+                o.clone = true
+              }
+            }
+            else if (o = kv_token of appreciation) {
+              MoveObject (kv_token of appreciation1, player)
+            }
+            else {
+              CloneObject (o)
+              msg ("Done.")
+              o.clone = true
+            }
+          }
+        }
+      }
+      else {
+        msg ("<pre><code style=\"color:red;background:lightgray;padding:4px\">player.can_clone = false</code></pre>")
+      }
+    ]]></script>
+  </command>
+  <command name="kv_cat">
+    <pattern>cat #text#;print #text#</pattern>
+    <script><![CDATA[
+      if (StartsWith(text, "\"")) {
+        ts = Split(text, "\"")
+        text = ListItem(ts, 1)
+      }
+      if (EndsWith(text, "aslx")) {
+        error ("You can't view .aslx files, Pixie!")
+      }
+      msg ("Displaying file content...<br/><iframe  id=\"iframepre\" style=\"background:khaki;color:green;font-family:'Droid Sans Mono';border-radius:25px\" width=\"100%\" height=\"550px\" src=\"" + GetFileURL("" + text + "") + "\" />")
+    ]]></script>
+  </command>
+  <command name="kv_JSrequest">
+    <pattern>request (#text#)</pattern>
+    <script>
+      // msg (text)
+      text = Split(text, ",")
+      // msg (StringListItem(text, 0))
+      t1 = (StringListItem(text, 0))
+      // msg (StringListItem(text, 1))
+      t2 = (StringListItem(Split((StringListItem(Split((StringListItem(text, 1)), " "), 1)), "\""), 1))
+      // msg (t2)
+      switch (t1) {
+        case ("Hide") {
+          request (Hide, t2)
+          if (t2 = "Panes") {
+            game.showpanes = false
+          }
+        }
+        case ("Show") {
+          request (Show, t2)
+          if (t2 = "Panes") {
+            game.showpanes = true
+          }
+        }
+        default {
+          msg ("\"We're still working on setting up everything, Pix. (You know how THAT is, right?)\"")
+        }
+      }
+      game.suppressturnscripts = true
+    </script>
+  </command>
+  <command name="kv_gamename">
+    <pattern>gamename #text#</pattern>
+    <script><![CDATA[
+      request (GameName, text)
+      game.gamename = text
+      ClearScreen
+      PrintCentered ("<br/>{img:px_avatar.png}<br/><span style=\"font-size:260%\">{game.gamename}</span><br/><span style=\"font-size:145%\">by {game.author}</span><br/>")
+      ShowRoomDescription
+      game.suppressturnscripts = true
+    ]]></script>
+  </command>
+  <command name="kv_msg_attribute">
+    <pattern>msg (#text#)</pattern>
+    <script>
+      text = "{" + text + "}"
+      msg (text)
+    </script>
+  </command>
+  <command name="kv_log">
+    <pattern>log #text#</pattern>
+    <script>
+      Log (text)
+      game.suppressturnscripts = true
+    </script>
+  </command>
+  <command name="kv_ls">
+    <pattern>ls</pattern>
+    <script><![CDATA[
+      msg ("<iframe style=\"background:ghostwhite;box-shadow:0px 0px 8px black;text-shadow:0px 0px 4px green;font-family:monospace;border-radius:25px\" width=\"100%\" height=\"350px\"  src=\"" + GetFileURL("ls.txt") + "\" />")
+      // msg ("This doesn't work...<br/><br/><br/><style><br/>  .thumb {<br/>    height: 75px;<br/>    border: 1px solid #000;<br/>    margin: 10px 5px 0 0;<br/>  }</style><br/><br/><input type=\"file\" id=\"files\" name=\"files[]\" multiple /><br/><output id=\"list\"></output><br/><br/><script><br/><br/><br/>  function handleFileSelect(evt) {  var files = evt.target.files;    for (var i = 0, f; f = files[i]; i++) {   continue;   var reader = new FileReader();      reader.onload = (function(theFile) {       return function(e) { var span = document.createElement('span');     span.innerHTML = '"+GetFileData(theFile.name)+"';         document.getElementById('list').insertBefore(span, null);      };     })(f);     reader.readAsDataURL(f);    }  }  document.getElementById('files').addEventListener('change', handleFileSelect, false);</script>")
+    ]]></script>
+  </command>
+  <command name="kv_scopecommands">
+    <pattern>scopecommands;scopecommands();scopecommands ()</pattern>
+    <script><![CDATA[
+      HideOutputSection (game.menuoutputsection)
+      msg ("Remember: you can use <code style=\"color:red\">msg (kv_clone.pattern)</code> to view attributes!<br/><br/>")
+      wait {
+        msg ("<br/><b>[ Listing commands... ]</b><br/>")
+        // game.menuoutputsection = StartNewOutputSection()
+        foreach (cmd, ScopeCommands()) {
+          msg (cmd.name)
+          // msg ("")
+        }
+        // EndOutputSection (game.menuoutputsection)
+        // wait {
+          // HideOutputSection (game.menuoutputsection)
+          // /}
+      }
+    ]]></script>
+  </command>
+  <command name="kv_SetForegroundColour">
+    <pattern>SetForegroundColour ("#text#");SetForegroundColor ("#text#")</pattern>
+    <script>
+      SetForegroundColour (text)
+      game.suppressturnscripts = true
+    </script>
+  </command>
+  <command name="kv_setbackgroundcolour">
+    <pattern>SetBackgroundColour ("#text#");SetBackgroundColor ("#text#")</pattern>
+    <script>
+      SetBackgroundColour (text)
+      game.suppressturnscripts = true
+    </script>
+  </command>
+  <command name="kv_dir">
+    <pattern>dir</pattern>
+    <script><![CDATA[
+      msg ("<iframe style=\"background:darkkhaki;font-family:monospace;border-radius:25px\" width=\"100%\" height=\"550px\"  src=\"" + GetFileURL("dir.txt") + "\" />")
+    ]]></script>
+  </command>
+  <command name="kv_glitchTest">
+    <pattern>statusmove;glitch test</pattern>
+    <script>
+      statusmove
+    </script>
+  </command>
+  <turnscript name="kv_command_prompt_randomness">
+    <enabled type="boolean">false</enabled>
+    <script><![CDATA[
+      if (not game.pov.currentcommand = null) {
+        if (game.pov.currentcommand <> "quit") {
+          cmdprompt = (PickOneString(game.cmdprompts))
+          request (SetInterfaceString, "TypeHereLabel=" + cmdprompt + "")
+        }
+      }
+    ]]></script>
+  </turnscript>
+  <turnscript name="kv_scoring_gamename">
+    <enabled type="boolean">false</enabled>
+    <script><![CDATA[
+      switch (game.gamename) {
+        case ("Pixie Kicks Ass") {
+          firsttime {
+            IncreaseScore (2)
+            list add (game.scoreList, "Changed the game's name to Pixie Kicks Ass: 2 points")
+            msg ("<center>{b:[ Your score has increased by 2. ]}</center>")
+          }
+        }
+      }
+    ]]></script>
+  </turnscript>
+  <turnscript name="kv_shardintheroom">
+    <enabled type="boolean">false</enabled>
+    <script>
+      if (game.pov.parent = kv_green_shard.parent) {
+        JS.eval ("$('#divOutput').css('text-shadow', '0 0 2px green,0 0 5px black,0 0 15px darkgreen')")
+      }
+      else if (rh_mini_crate = kv_green_shard.parent and rh_mini_crate.isopen) {
+        JS.eval ("$('#divOutput').css('text-shadow', '0 0 2px green,0 0 5px black,0 0 15px darkgreen')")
+      }
+      else {
+        JS.eval ("$('#divOutput').css('text-shadow', 'none')")
+      }
+    </script>
+  </turnscript>
+  <command name="kv_fake_travel">
+    <pattern>travel;t</pattern>
+    <script>
+      msg ("Surprisingly, nothing happens.")
+    </script>
+  </command>
+  <command name="kv_dance_anywhere">
+    <pattern>dance;get down;boogie;get jiggy with it</pattern>
+    <script><![CDATA[
+      msg ("You do a little dance.<br/>")
+      if (ListContains(ScopeReachable(), Richard Headkid)) {
+        msg ("<br/>RH taps his foot and bobs his head as he works on the group project.<br/>")
+      }
+      else if (KV.parent = game.pov.parent) {
+        msg ("<br/>KV throws down a piece of cardboard. <br/><br/>You bust a couple of moves on it.<br/>")
+      }
+      if (ListContains(ScopeReachable(), DarkLizerd)) {
+        msg ("<br/>DL walks the dinosaur.<br/>")
+      }
+      if (ListContains(ScopeReachable(), Dark_Lizerd)) {
+        msg ("<br/>DL walks the dinosaur.<br/>")
+      }
+      if (ListContains(ScopeReachable(), XanMag)) {
+        msg ("<br/>XM sips his beer and dances along to the lack of a beat.<br/>")
+      }
+    ]]></script>
+  </command>
+  <command name="kv_Asking the room about">
+    <pattern>ask about #text#</pattern>
+    <script>
+      npcs = NewObjectList()
+      opts = NewStringDictionary()
+      foreach (o, GetDirectChildren(game.pov.parent)) {
+        if (HasAttribute(o, "ask")) {
+          list add (npcs, o)
+          dictionary add (opts, o.name, GetDisplayAlias(o))
+        }
+      }
+      if (ListCount(npcs) = 0) {
+        msg ("You can ask, but no one is here to tell you anything.")
+      }
+      else if (ListCount(npcs) = 1) {
+        DoAskTell (ObjectListItem(npcs, 0), text, "ask", "askdefault", "DefaultAsk")
+      }
+      else {
+        game.askabouttext = text
+        ShowMenu ("Ask who?", opts, true) {
+          if (not result = null) {
+            o = GetObject(result)
+            DoAskTell (o, game.askabouttext, "ask", "askdefault", "DefaultAsk")
+          }
+        }
+      }
+    </script>
+  </command>
+  <turnscript name="kv_watchforhelp">
+    <enabled />
+    <script><![CDATA[
+      if (not game.pov.currentcommand = null) {
+        if (game.pov.currentcommand = "help") {
+          msg ("<hr/><center><b>You can enter {command:REAL HELP} for more game-specific information.</b></center><hr/><br/>")
+        }
+      }
+    ]]></script>
+  </turnscript>
+  <turnscript name="kv_panesOption">
+    <enabled type="boolean">false</enabled>
+    <script>
+      alertCheck
+    </script>
+  </turnscript>
+  <turnscript name="kv_hasalerts">
+    <enabled type="boolean">false</enabled>
+    <script><![CDATA[
+      kv_device.havealerts = false
+      kv_device.alertsnow = GetDirectChildren(kv_device)
+      // msg ("kv_hasalerts:")
+      // msg (kv_device.alertsnow)
+      if (ListCount(kv_device.alertsnow) > 0) {
+        kv_device.havealerts = true
+      }
+    ]]></script>
+  </turnscript>
+
+  <command name="kv_clear">
+    <pattern>Clear the screen;clear;clr;cls</pattern>
+    <script>
+      ClearScreen
+      JS.setCss ("#txtCommand", "outline:none;box-shadow:0px 0px 5px 5px #296231;")
+      JS.setCss ("#location, #status, .ui-widget-header", "background-color:#296231;border:1px solid #296231;background-image:none;")
+    </script>
+  </command>
+  <command name="kv_JStext">
+    <pattern>JS.#text#</pattern>
+    <script>
+      msg (text)
+      JS.addText (text)
+      JS.eval (text)
+      if (text = "uiShow('#gamePanes')") {
+        game.showpanes = true
+      }
+      if (text = "uiHide('#gamePanes')") {
+        game.showpanes = false
+      }
+      if (text = "eval (\"$('#gamePanes').css('display', 'none')\")") {
+        game.showpanes = false
+        // msg ("WORKED")
+      }
+      if (text = "eval (\"$('#gamePanes').css('display', 'block')\")") {
+        game.showpanes = true
+        // msg ("WORKED")
+      }
+      game.notarealturn = true
+    </script>
+  </command>
+
+  <type name="kvtype">
+    <hintlist type="stringlist">
+      <value>This object has no hints.</value>
+    </hintlist>
+  </type>
+
+</library>
