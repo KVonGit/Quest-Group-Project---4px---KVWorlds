@@ -1,0 +1,664 @@
+<?xml version="1.0"?>
+
+<!--
+      QFQFunctionsLib
+      For the Quest Group Project
+      WORKING TITLE: Dimensions of ∞
+      Written for Quest 5.7.2
+      ASL Version 550
+      © 2017-2025 Quest Forum Questers
+-->
+
+<library>
+  <function name="HideOutputSection2" parameters="name"><![CDATA[
+    JS.uiHide ("#location")
+    ClearScreen
+    JS.uiHide ("#txtCommand")
+    JS.setBackground ("black")
+    msg ("<center><image width=\"80%\" src=\"" + GetFileURL("qdk-background.jpg") + "\" onload=\"$(this).fadeOut(4300);\" /></center>")
+    JS.uiHide ("#gamePanes")
+    SetBackgroundImage ("px_avatar.png")
+    SetBackgroundOpacity (0.8)
+    SetBackgroundColour ("black")
+    JS.setCss ("#gameBorder", "box-shadow:0px 0px 15px 5px #fac4ff;")
+    JS.setCss ("#txtCommand", "outline:none;box-shadow:0px 0px 2px 2px #296231;")
+    ChangePOV (player)
+    RemoveObject (player1)
+    // FinishTurn
+  ]]></function>
+  <function name="AddToHubGateway" parameters="room">
+    if (not ListContains(Quest Forum.destinations, room)) {
+      list add (Quest Forum.destinations, room)
+    }
+  </function>
+  <function name="HandleButtonClick" parameters="s"><![CDATA[
+    msg ("")
+    msg (">" + s)
+    msg ("")
+    params = NewDictionary()
+    HandleCommand (s, params)
+    JS.scrollToEnd ()
+  ]]></function>
+  <function name="AddQuest" parameters="author, quest, description">
+    qst = quest
+    if (not EndsWith (qst, "_questComplete")) {
+      qst = qst + "_questComplete"
+    }
+    if (not HasAttribute (author, "incompleteQuests")) {
+      author.incompleteQuests = 0
+    }
+    if (not HasAttribute (author, qst)) {
+      set (author, qst, false)
+      author.incompleteQuests = author.incompleteQuests + 1
+      player.activeQuests = player.activeQuests + 1
+      dictionary add (player.activeQuestList, GetDisplayName(author) + quest, description)
+    }
+  </function>
+  <function name="AreAllQuestsCompleted" type="boolean"><![CDATA[
+    alldone = true
+    foreach (obj, AllObjects()) {
+      if (HasAttribute(obj, "incompleteQuests")) {
+        // msg (obj)
+        // msg (obj.incompleteQuests)
+        if (obj.incompleteQuests > 0) {
+          // msg ("Checking quest count")
+          alldone = false
+        }
+      }
+    }
+    // msg ("Checking ALLDONE")
+    // msg (alldone)
+    if (alldone) {
+      player.allQuestsComplete = true
+      if (DictionaryContains(player.statusattributes, "activeQuests")) {
+        dictionary remove (player.statusattributes, "activeQuests")
+      }
+      // msg ("<br/>All current Quests have been completed!<br/><br/>")
+    }
+    else {
+      player.allQuestsComplete = false
+      if (not DictionaryContains(player.statusattributes, "activeQuests")) {
+        dictionary add (player.statusattributes, "activeQuests", "<a onclick=\"ASLEvent('HandleButtonClick', 'quest');\" style=\";cursor:pointer;\" title=\"Click here to view a list of active Quests!\">Active Quests: !</a>")
+      }
+    }
+    return (alldone)
+  ]]></function>
+  <function name="QuestComplete" parameters="author, quest"><![CDATA[
+    // msg ("Completing quest...")
+    // msg ("")
+    qst = quest
+    if (not EndsWith(quest, "_questComplete")) {
+      qst = qst + "_questComplete"
+      // msg (qst)
+    }
+    if (HasAttribute(author, qst)) {
+      set (author, qst, true)
+      // msg ("Quest complete: " + GetDisplayName(author) + quest)
+      msg ("")
+      if (not HasAttribute(player, "activeQuestList")) {
+        player.activeQuestList = NewStringDictionary()
+      }
+      msg ("<center><b>[ Quest complete: " + DictionaryItem(player.activeQuestList, "" + GetDisplayName(author) + quest + "") + " ]</b></center>")
+      // msg ("set to true")
+      // msg (author.incompleteQuests)
+      author.incompleteQuests = author.incompleteQuests - 1
+      // msg ("Decreased incomplete quests")
+      player.activeQuests = player.activeQuests - 1
+      n = ListCount(player.completedQuests)
+      list add (player.completedQuests, n + ".  " + quest)
+      dictionary remove (player.activeQuestList, "" + GetDisplayName(author) + quest + "")
+      AreAllQuestsCompleted
+    }
+    else {
+      Log (author + qst + " does not exist!\"")
+    }
+  ]]></function>
+  <function name="QuestFailed" parameters="author, quest"><![CDATA[
+    // msg ("Completing quest...")
+    // msg ("")
+    qst = quest
+    if (not EndsWith(quest, "_questComplete")) {
+      qst = qst + "_questComplete"
+      // msg (qst)
+    }
+    // set (author, qst, true)
+    // msg ("Quest complete: " + GetDisplayName(author) + quest)
+    if (HasAttribute(author, qst)) {
+      msg ("")
+      msg ("<b>[ Quest FAILED: " + Eval(DictionaryItem(player.activeQuestList, "" + GetDisplayName(author) + quest + "")) + " ]</b>")
+      // msg ("set to true")
+      // msg (author.incompleteQuests)
+      author.incompleteQuests = author.incompleteQuests - 1
+      // msg ("Decreased incomplete quests")
+      player.activeQuests = player.activeQuests - 1
+      dictionary remove (player.activeQuestList, "" + GetDisplayName(author) + quest + "")
+      if (not HasAttribute(player, "failedQuests")) {
+        player.failedQuests = NewStringList()
+      }
+      list add (player.failedQuests, quest)
+      AreAllQuestsCompleted
+    }
+    else {
+      Log (author + qst + " does not exist!")
+    }
+  ]]></function>
+  <function name="ShowMenuNoNumbers" parameters="caption, options, allowCancel, callback"><![CDATA[
+    outputsection = StartNewOutputSection()
+    msg (caption)
+    count = 0
+    game.menuoptionskeys = NewStringList()
+    foreach (option, options) {
+      list add (game.menuoptionskeys, option)
+      count = count + 1
+      if (TypeOf(options) = "stringlist") {
+        optionText = option
+      }
+      else {
+        optionText = StringDictionaryItem(options, option)
+      }
+      msg ("<a class=\"cmdlink\" style=\"" + GetCurrentLinkTextFormat() + "\" onclick=\"ASLEvent('ShowMenuResponse','" + option + "')\">" + optionText + "</a>")
+    }
+    game.menuopt = option
+    EndOutputSection (outputsection)
+    game.menuoptions = options
+    game.menuallowcancel = allowCancel
+    game.menucallback = callback
+    game.menuoutputsection = outputsection
+  ]]></function>
+  <function name="showHint" parameters="object"><![CDATA[
+    if (HasAttribute(object, "hintlist")) {
+      game.this = object
+      optNo = 0
+      choices = NewStringList()
+      game.hintmenulist = object.hintlist
+      foreach (h, object.hintlist) {
+        optNo = optNo + 1
+        opt = optNo + ": " + h
+        list add (choices, "Hint " + optNo)
+      }
+      if ((ListCount(choices)) > 1) {
+        hint = "Hints"
+      }
+      else {
+        hint = "Hint"
+      }
+      ShowHintMenu ("<br>" + hint + " for " + GetDisplayName(game.this) + ":", choices, true) {
+        r = Split(result, " ")
+        thehint = ListItem(r, 1)
+        thehint = ToInt(thehint)
+        thehint = thehint -1
+        msg (ListItem(game.this.hintlist, thehint))
+        if (thehint +1 < (ListCount(game.this.hintlist))) {
+          // msg ("RERUN MENU")
+          // msg (game.this)
+          HandleSingleCommand ("hint " + game.this.alias + "")
+        }
+      }
+    }
+    else {
+      msg ("There are no hints set up for this item.")
+    }
+  ]]></function>
+  <function name="addHint" parameters="object, string">
+    if (not HasAttribute(object, "hintlist")) {
+      object.hintlist = NewStringList()
+    }
+    hn = (ListCount(object.hintlist)) + 1
+    string = "Hint " + hn + ": " + string
+    list add (object.hintlist, string)
+  </function>
+  <function name="HandleHintClick" parameters="s"><![CDATA[
+    // msg (game.this)
+    // msg (s)
+    game.hintOptNo = s
+    s = ToInt(s) - 1
+    ClearMenu
+    msg (game.caption)
+    msg (ListItem(game.this.hintlist, s))
+    if (ListCount(game.this.hintlist) > s + 1) {
+      do (game.this, "hint")
+    }
+    JS.scrollToEnd ()
+  ]]></function>
+  <function name="ShowHintMenu" parameters="caption, options, allowCancel, callback"><![CDATA[
+    outputsection = StartNewOutputSection()
+    msg (caption)
+    count = 0
+    game.menuoptionskeys = NewStringList()
+    foreach (option, options) {
+      list add (game.menuoptionskeys, option)
+      count = count + 1
+      if (TypeOf(options) = "stringlist") {
+        optionText = option
+      }
+      else {
+        optionText = StringDictionaryItem(options, option)
+      }
+      msg ("<button class=\"cmdlink\" style=\"background:#296231;color:#fac4ff;padding:4px;margin:6px\" onclick=\"ASLEvent('ShowMenuResponse','" + option + "')\">" + optionText + "</button>")
+    }
+    game.menuopt = option
+    EndOutputSection (outputsection)
+    game.menuoptions = options
+    game.menuallowcancel = allowCancel
+    game.menucallback = callback
+    game.menuoutputsection = outputsection
+  ]]></function>
+  <function name="checkMaxScore">
+    game.maxScore = 0
+    foreach (o, AllObjects()) {
+      if (HasAttribute(o, "maxScore")) {
+        game.maxScore = game.maxScore + o.maxScore
+      }
+    }
+    // msg (game.maxScore)
+  </function>
+  <function name="Rot" parameters="s, n" type="string">
+    result = ""
+    for (i, 1, LengthOf(s)) {
+      result = result + _Rot(Mid(s, i, 1), n)
+    }
+    return (result)
+  </function>
+  <function name="_Rot" parameters="c, n" type="string">
+    // For just one character
+    if (c = UCase(c)) {
+      upper = true
+    }
+    else {
+      upper = false
+      c = UCase(c)
+    }
+    x = IndexOf(game.alphabet, c)
+    if (x = -1) {
+      return (c)
+    }
+    x = (x + n) % 26
+    c = StringListItem(game.alphabet, x)
+    if (upper) {
+      return (c)
+    }
+    else {
+      return (LCase(c))
+    }
+  </function>
+  <function name="SetCss" parameters="id, css">
+    JS.setCss (id, css)
+  </function>
+  <function name="alertCheck"><![CDATA[
+    if (player.activeQuests > 0) {
+      game.stats = "<span class=\"game-stats\" style=\"background:black;border:1px solid;float:right;margin-right:4px;box-shadow:0 0 2px black;\">&nbsp;&nbsp; Health: " + player.health + " |   Score: " + game.score + "| Turns: " + game.turns + " | <a onclick=\"ASLEvent('HandleNavCmdClick', 'quest');\" style=\"cursor:pointer;\" title=\"Click here to view a list of active Quests&#33;\">Quests</a>: " + player.activeQuests + "&nbsp; &nbsp;  </span>"
+    }
+    else {
+      game.stats = "<span  class=\"game-stats\" style=\"background:black;border:1px solid;text-align:right;margin-right:4px;box-shadow:0 0 2px black;\">&nbsp;&nbsp; Health: " + player.health + " |   Score: " + game.score + "| Turns: " + game.turns + "&nbsp; &nbsp;  </span>"
+    }
+    if (not game.showpanes) {
+      if (kv_device.havealerts) {
+        if (ListCount(kv_device.alertsnow) > 1) {
+          kv_device.S = "YOU HAVE NEW ALERTS!"
+          game.locationmsg = ""+ CapFirst(GetDisplayName(game.pov.parent)) + "       |       <a onclick=\"ASLEvent('HandleButtonClick', 'use PX');\" style=\";cursor:pointer;\">" + kv_device.S + "</a> | <a onclick=\"ASLEvent('HandleButtonClick', 'panes');\" style=\";cursor:pointer;\">     SHOW PANES</a> " + game.stats + ""
+        }
+        else if (ListCount(kv_device.alertsnow) = 1) {
+          kv_device.S = "YOU HAVE A NEW ALERT!"
+          // msg ("alertCheck:")
+          // msg (kv_device.alertsnow)
+          game.locationmsg = ""+ CapFirst(GetDisplayName(game.pov.parent)) + "       |       <a onclick=\"ASLEvent('HandleButtonClick', 'use PX');\" style=\";cursor:pointer;\">" + kv_device.S + "</a> | <a onclick=\"ASLEvent('HandleButtonClick', 'panes');\" style=\";cursor:pointer;\">     SHOW PANES</a> " + game.stats + ""
+        }
+        else {
+          kv_device.S = "     CLICK HERE TO SHOW THE SIDE PANES"
+          game.locationmsg = "" + CapFirst(GetDisplayName(game.pov.parent)) + " | <a onclick=\"ASLEvent('HandleButtonClick', 'panes');\" style=\";cursor:pointer;\">     SHOW PANES</a></a> " + game.stats + ""
+        }
+      }
+      else {
+        game.locationmsg = ""+ CapFirst(GetDisplayName(game.pov.parent)) + " | <a onclick=\"ASLEvent('HandleButtonClick', 'panes');\" style=\";cursor:pointer;\">     SHOW PANES</a>" + game.stats+ ""
+      }
+    }
+    else {
+      game.locationmsg = "" + CapFirst(GetDisplayName(game.pov.parent)) + " " + game.stats + ""
+    }
+    request (UpdateLocation, game.locationmsg)
+  ]]></function>
+  <function name="viewAlerts"><![CDATA[
+    if (ListCount(kv_device.alerts) > 0) {
+      ShowMenu ("What alert would you like to view?", kv_device.alerts, true) {
+        msg ("> " + result)
+        x = GetObject(result)
+        do (x, "look")
+        JS.scrollToEnd ()
+      }
+    }
+    else {
+      msg ("You have no alerts.")
+    }
+  ]]></function>
+  <function name="statusmove">
+    JS.eval ("$('#status').css('top', '95%')")
+  </function>
+  <function name="isClone" parameters="subject" type="boolean"><![CDATA[
+    copied = false
+    if (HasAttribute(subject, "clone")) {
+      copied = true
+    }
+    if (copied) {
+      msg (subject + ": Flagged!<br/>")
+    }
+    return (copied)
+  ]]></function>
+  <function name="ageCheck"><![CDATA[
+    ClearScreen
+    JS.setForeground ("white")
+    JS.setBackground ("red")
+    JS.setCss ("body", "background:black")
+    JS.uiHide ("#gamePanes")
+    JS.uiHide ("#location")
+    JS.setCss ("#status", "background:none;border:none")
+    JS.eval ("$('#status').css('max-height','0');")
+    JS.setInterfaceString ("TypeHereLabel", "Please enter YES or NO.")
+    msg ("<center style=\"text-shadow:0px 0px 2px black;padding:60px;margin:60px;text-align:justify;color:white;\"><h2>WARNING:</h2><h3>This game contains explicit language, adult situations, scary monsters, puzzles, middle-aged people, one hot lady, computer programming, more explicit language, and lots of other things that are inappropriate for people under the age of 18.</h3></center><center style=\"color:white\"><h3>Do you agree that you are 18 years of age or older and that nothing at all offends you?<br/><br/>(Enter <a id=\"verblinkyes\" style=\"font-family:'Source Sans Pro', Georgia, serif;color:White;font-size:12pt;\" class=\"cmdlink commandlink\" data-elementid=\"\" data-command=\"YES\">YES</a> or <a id=\"verblinkno\" style=\"font-family:'Source Sans Pro', Georgia, serif;color:White;font-size:12pt;\" class=\"cmdlink commandlink\" data-elementid=\"\" data-command=\"NO\">NO</a>)</h3><h4>(Remember: Santa Claus is watching you!)</h4></center>")
+    JS.setCss ("#txtCommand", "outline:none;box-shadow:0px 0px 5px 5px red;")
+    get input {
+      switch (LCase(result)) {
+        case ("yes", "y") {
+          JS.uiShow ("#gamePanes")
+          JS.uiShow ("#location")
+          JS.setBackground ("white")
+          JS.setCss ("#txtCommand", "outline:none;box-shadow:0px 0px 2px 2px gold;")
+          JS.setCss ("#status", "background:#5c9ccc url(\"images/ui-bg_gloss-wave_55_5c9ccc_500x100.png\") 50% 50% repeat-x;border:1px solid #4297d7")
+          ClearScreen
+        }
+        case ("no", "n") {
+          ClearScreen
+          JS.setForeground ("white")
+          JS.setBackground ("red")
+          JS.setCss ("body", "background:black")
+          // JS.uiShow ("#commandPane")
+          JS.uiShow ("#gamePanes")
+          create ("notOldEnough")
+          notOldEnough.alias = ""
+          notOldEnough.usedefaultprefix = false
+          MoveObject (game.pov, notOldEnough)
+          ClearScreen
+          msg ("<center><h3>SORRY! (THIS GAME IS NO GOOD ANYWAY!)</h3></center>")
+          finish
+        }
+        case ("bool", "kv", "dl", "xm", "px") {
+          game.devMode = true
+          px_cheat.parent = null
+          kv_showme.parent = null
+          kv_showme_it.parent = null
+          JS.uiShow ("#gamePanes")
+          JS.uiShow ("#location")
+          JS.setBackground ("white")
+          JS.setCss ("#txtCommand", "outline:none;box-shadow:0px 0px 2px 2px gold;")
+          JS.setCss ("#status", "background:#5c9ccc url(\"images/ui-bg_gloss-wave_55_5c9ccc_500x100.png\") 50% 50% repeat-x;border:1px solid #4297d7")
+          ClearScreen
+        }
+        default {
+          ClearScreen
+          ageCheck
+        }
+      }
+    }
+  ]]></function>
+  <function name="LoadFile" parameters="filename">
+    s = GetFileData (filename)
+    current_object = null
+    game.setUp = false
+    foreach (line, Split(s, "\n")) {
+      line = Crop(line)
+      if (not line = "" and not StartsWith(line, "#")) {
+        bits = Split(line, "=")
+        if (StringListItem(bits, 0) = "new") {
+          if (ListCount(bits) = 2) {
+            create (StringListItem(bits, 1))
+            current_object = GetObject(StringListItem(bits, 1))
+          }
+          else {
+            create (StringListItem(bits, 2), StringListItem(bits, 1))
+            current_object = GetObject(StringListItem(bits, 2))
+          }
+        }
+        else if (StringListItem(bits, 0) = "find") {
+          current_object = GetObject(StringListItem(bits, 1))
+          if (current_object = null) {
+            error ("Failed to find " + StringListItem(bits, 1) + " in the game world. Things will go badly...")
+          }
+        }
+        else if (StringListItem(bits, 0) = "exit") {
+          create exit (StringListItem(bits, 2), null, null, null, StringListItem(bits, 1))
+          current_object = GetObject(StringListItem(bits, 2))
+        }
+        else if (StringListItem(bits, 0) = "parent") {
+          newParent = StringListItem(bits, 1)
+          if (newParent = "game.pov") {
+            current_object.parent = game.pov.name
+            game.setUp = true
+            list remove (bits, "game.pov")
+            list add (bits, game.pov.name)
+          }
+          else if (newParent = "game.pov.parent") {
+            current_object.parent = game.pov.parent.name
+            game.setUp = true
+            list remove (bits, "game.pov.parent")
+            list add (bits, game.pov.parent.name)
+          }
+          else if (newParent = "here") {
+            current_object.parent = game.pov.parent.name
+            game.setUp = true
+            list remove (bits, "here")
+            list add (bits, game.pov.parent.name)
+          }
+          else if (newParent = "player.parent") {
+            current_object.parent = player.parent.name
+            game.setUp = true
+            list remove (bits, "player.parent")
+            list add (bits, player.parent.name)
+          }
+          current_object.parent = GetObject(StringListItem(bits, 1))
+          if (current_object.parent = null) {
+            error ("Failed to find " + StringListItem(bits, 1) + " in the game world. Things will go badly...")
+          }
+        }
+        else if (StringListItem(bits, 0) = "to") {
+          current_object.to = GetObject(StringListItem(bits, 1))
+          if (current_object.to = null) {
+            error ("Failed to find " + StringListItem(bits, 1) + " in the game world. Things will go badly...")
+          }
+        }
+        else {
+          if (LCase(StringListItem(bits, 1)) = "false") {
+            set (current_object, StringListItem(bits, 0), false)
+          }
+          else if (LCase(StringListItem(bits, 1)) = "true") {
+            set (current_object, StringListItem(bits, 0), true)
+          }
+          else if (IsInt(StringListItem(bits, 1))) {
+            set (current_object, StringListItem(bits, 0), ToInt(StringListItem(bits, 1)))
+          }
+          if (not game.setUp) {
+            set (current_object, StringListItem(bits, 0), StringListItem(bits, 1))
+          }
+          else {
+            set (current_object, StringListItem(bits, 0), game.pov)
+          }
+        }
+      }
+    }
+    msg ("Done.")
+  </function>
+  <function name="Crop" parameters="s" type="string"><![CDATA[
+    start = 1
+    end = LengthOf(s)
+    for (i, 1, LengthOf(s)) {
+      if (Asc(Mid(s, i, 1)) < 33) {
+        if (start = i) {
+          start = i + 1
+        }
+      }
+      else {
+        end = i
+      }
+    }
+    return (Mid(s, start, end - start + 1))
+  ]]></function>
+  <function name="UpdateContentsInLists"><![CDATA[
+    foreach (o, ListExclude(ScopeVisible(),game.pov)) {
+      if (not HasAttribute(o, "listalias")) {
+        o.listalias = GetDisplayAlias(o)
+      }
+      o.listalias = Replace(o.listalias,"&nbsp;","")
+      containers = ListExclude(ListParents(o), game.pov)
+      containers = ListExclude(containers, ListParents(game.pov))
+      foreach (c, containers) {
+        o.listalias = "&nbsp;&nbsp;" + o.listalias
+      }
+    }
+  ]]></function>
+  <function name="PrettyInventory"><![CDATA[
+    stuff = ScopeInventory()
+    list = ""
+    int = 0
+    foreach (o, stuff) {
+      int = int + 1
+      o.prettyalias = "&nbsp;&nbsp;" + GetDisplayNameLink(o, "object")
+      foreach (c, ListExclude(ListParents(o), game.pov)) {
+        if (ListContains (stuff, c)) {
+          o.prettyalias = "&nbsp;&nbsp;" + o.prettyalias
+        }
+      }
+      br = ""
+      if (int > 1) {
+        br = "<br/>"
+      }
+      list = list + br + o.prettyalias
+    }
+    msg ("You are carrying:")
+    msg (list)
+  ]]></function>
+  <function name="FinishGame" parameters="message"><![CDATA[
+    message = "<h3>GAME OVER</h3>" + message
+    ShowGameOverMenu (message)
+  ]]></function>
+  <function name="ShowGameOverMenu" parameters="message"><![CDATA[
+    ShowMenu (message + "<br/>What would you like to do?", Split("UNDO your last command;RESTART from the beginning;QUIT the game", ";"), false) {
+      switch (result) {
+        case ("UNDO your last command") {
+          invoke (undo.script)
+        }
+        case ("RESTART from the beginning") {
+          // FIXME when updating to 5.8!!!
+          // JS.RestartGame ()
+          msg ("Press CTRL+R to restart!")
+          ShowGameOverMenu
+        }
+        case ("QUIT the game") {
+          JS.setCss ("#gamePanes", "display:block;background:transparent")
+          JS.uiHide ("#sidenav-open")
+          finish
+        }
+        default {
+          ShowGameOverMenu
+        }
+      }
+    }
+  ]]></function>
+  <function name="SetupSidenav"><![CDATA[
+    // Setup navCmdClick() function to handle sideNav command link clicks
+    JS.eval ("function navCmdClick(cmd){if (_waitMode || isElementVisible('#gamePanesFinished')){return;}ASLEvent('HandleNavCmdClick', cmd);}")
+    // Add the CSS
+    JS.addScript ("<style> .sidenav  {  height: 100%;    width: 0;    position: fixed;  transition: 0.5s;  z-index: 999;    top: 0;    right: 0;    background-color:#296231;    overflow-x: hidden;    padding-top: 60px;   } .sidenav a {   padding: 8px 8px 8px 32px;    text-decoration: none;  transition: 0.5s;  font-size: 25px;    color: #fac4ff;    display: block;   } .sidenav a:hover {   color: #f1f1f1;  } .sidenav .closebtn {   position: absolute;    top: 0;    right: 25px;    font-size: 36px;    margin-left: 50px; }#sidenav-open{top:25px;}</style>")
+    // Add the sidenav element
+    mySidenav = ""
+    // Move it to the body element
+    JS.eval ("$('#mySidenav').remove(); $('body').append(\"<div id='mySidenav' class='sidenav'><br/>    <a href='' class='closebtn' onclick='closeNav();'>&times;</a> <center><span id='map-holder' /></center></div><span id='sidenav-open' style='font-size:30px;cursor:pointer;top:0;right:0;color:white;background:#296231;border:2px solid #fac4ff;position:fixed;z-index:998;opacity:0.7;' onclick='openNav()'>&#9776;</span>\");")
+    // Move the button, too.
+    JS.eval ("$('body').append($('#sidenav-open'));")
+    // Set up the openNav() and closeNav() functions
+    JS.eval ("function openNav() { $('#mySidenav').width(($(window).width() - $('#gameBorder').width()) / 2);}; function closeNav() {  $('#mySidenav').width('0');};if(isMobilePlayer()){closeNav();}")
+    AddSidenavCmdLink ("Look")
+    AddSidenavCmdLink ("Get all")
+    AddSidenavCmdLink ("Undo")
+    AddSidenavCmdLink ("Wait")
+    AddSidenavCmdLink ("Save")
+    AddSidenavCmdLink ("Clear")
+    AddSidenavCmdLink ("Panes")
+    AddSidenavCmdLink ("HINTS")
+    AddSidenavContactLink
+  ]]></function>
+  <function name="AddSidenavCmdLink" parameters="cmd"><![CDATA[
+    // Add a link with "cmd" as the text, which will handle the command on click
+    JS.eval ("$('#mySidenav').append('<a href=\"\" class=\"sidenav-cmdlink\" onclick=\"navCmdClick($(this).html());\">"+cmd+"</a><br/>');")
+  ]]></function>
+  <function name="AddSidenavContactLink"><![CDATA[
+    // Add a link with a mailto href, which pulls the email address from game.contactaddress
+    JS.eval ("$('#mySidenav').append('<a href=\"mailto:"+game.contactaddress+"?subject="+JSSafe(game.gamename)+"\">Contact</a><br/>');")
+  ]]></function>
+  <function name="HandleNavCmdClick" parameters="cmd">
+    // game.runturnscripts = true
+    params = NewDictionary()
+    dictionary add (params, "object", cmd)
+    HandleCommand (cmd, params)
+    JS.scrollToEnd ()
+  </function>
+  <function name="FilterTakeDisplayVerbs">
+    foreach (obj, FilterByAttribute(AllObjects(),"take", false)) {
+      obj.displayverbs = ListExclude(obj.displayverbs, "Take")
+    }
+  </function>
+  <function name="AslSet" parameters="data"><![CDATA[
+    if (not HasAttribute (game, "runturnscripts")) {
+      game.suppressturnscripts = true
+    }
+    data = Split(data,"||")
+    foreach (bit, data) {
+      stuff = Split(bit,"=")
+      obj_attr = stuff[0]
+      obj_attr = Split(obj_attr,".")
+      if (ListCount(obj_attr)>2) {
+        exclude = obj_attr[ListCount(obj_attr)-1]
+        obj = Join(ListExclude(obj_attr,exclude),".")
+        obj_attr = NewStringList()
+        list add (obj_attr, obj)
+        list add (obj_attr, exclude)
+      }
+      else {
+        obj = obj_attr[0]
+      }
+      if (obj = "game.pov") {
+        obj = game.pov
+      }
+      else if (obj = "game.pov.parent") {
+        obj = game.pov.parent
+      }
+      else {
+        obj = GetObject(obj)
+      }
+      attr = obj_attr[1]
+      val = stuff[1]
+      if (EndsWith(val,"_toInt")) {
+        val = ToInt(Replace(val,"_toInt",""))
+      }
+      else if (EndsWith(val,"_toDouble")) {
+        val = ToDouble(Replace(val,"_toDouble",""))
+      }
+      else if (LCase(val)="false") {
+        val = false
+      }
+      else if (LCase(val)="true") {
+        val = true
+      }
+      set (obj, attr, val)
+    }
+    FinishTurn
+  ]]></function>
+  <function name="FinishTurn">
+    if (not GetBoolean(game, "suppressturnscripts")) {
+      RunTurnScripts
+    }
+    game.suppressturnscripts = false
+    UpdateStatusAttributes
+    CheckDarkness
+    UpdateObjectLinks
+  </function>
+
+
+</library>

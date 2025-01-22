@@ -1,0 +1,361 @@
+<?xml version="1.0"?>
+
+<!--
+      DLLib
+      For the Quest Group Project
+      WORKING TITLE: Dimensions of ∞
+      Written for Quest 5.7.2
+      ASL Version 550
+      © 2017-2025 DarkLizerd
+-->
+
+<library>
+
+  <object name="DL_Room">
+    <description><![CDATA[You are in a large field covered by an off-green grass, and a pale orange sun hangs in the cloudless sky over head. Before you is a desk with scattered {object:papers} all around. There is an {object:DL_umbrella:umbrella} shading the desk.<br/>Behind the desk is a person working hard on some sort of problem.  You watch as he picks up one paper, looks at another, then scribbles a note on both before setting them to the side. You watch as one of the papers slides off the edge of the desk and floats softly to the ground. You watch as the {object:DL_Bast:creature} grabs a paper from the ground and hands it to the person behind the desk, who {random: nods his head after taking the paper.: shakes his head and points to another one.}<br/>In the corners of the room are {object:trees} casting dark shadows underneath. Every now and then, you think you see something move!<br/><br/>]]></description>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <attr name="implementation_notes"><![CDATA[This world is not on this planet...<br/><br/>Side note... Extra Dark Lizerds hiding in other worlds could be "fun"...<br/>(but not lizards that are "extra dark"...)<br/>]]></attr>
+    <alias>DL's Room</alias>
+    <beforefirstenter type="script">
+    </beforefirstenter>
+    <beforeenter type="script">
+      msg ("You step through the doorway and feel like you just stepped onto a descending elevator . You stumble a few steps before catching your balance, but you still feel light headed.")
+      QuestComplete (DarkLizerd, "Visit Dark Lizerds room")
+      AddQuest (DarkLizerd, "Get the Planet Disk", "Find the Planet Disk")
+    </beforeenter>
+    <object name="DarkLizerd">
+      <inherit name="namedmale" />
+      <alt type="stringlist">
+        <value>DL</value>
+        <value>dark</value>
+        <value>lizard</value>
+        <value>lizerd</value>
+      </alt>
+      <listalias>Dark Lizerd</listalias>
+      <inroomdescription type="string"></inroomdescription>
+      <usestandardverblist type="boolean">false</usestandardverblist>
+      <useindividualverblist type="boolean">false</useindividualverblist>
+      <look><![CDATA[You see a person wearing a dark grey or black cowl that hides most of his features. For some strange reason, you are not totally comfortable around him. You almost get the feeling he is not quite human.<br/>]]></look>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Take</value>
+      </displayverbs>
+      <project>"I'm helping with a secret project for a friend as a way of saying 'thank you'. ...but it's a secret so you can't tell anyone, OK?"</project>
+      <papers><![CDATA["I'm trying to translate Basic to Quest, so that I can submit all the Basic projects I've been working on and a few more that I can translate. But the problem is that 'print' is now 'msg', and 'select case' is now 'switch' and 'switch' is also for turning things on and off, and 'input' is now 'GetInput' but there is no variable to collect the answer from, and Quest can convert Arabic to Roman, but only the numbers, and Spaces(5) will print 5 spaces, (or will it'msg' 5 spaces?) and there are objects that can be objects, or not objects, then there is no way to save data to a text file, but there is a way to read that file, but you cannot tell Quest how you want to read it, then you gotta figure out what you read which is hidden in some variable that is pre-programmed into Quest..."<br/><br/>  (5 minutes later, although it felt like hours)... you back away.]]></papers>
+      <clones><![CDATA[You ask if there is any way you could help with the work he is working on, to which he replies, "I tried to create a clone of me to help with this work, but it did not turn out so well and I had to lock it away."<br/><br/>From one of the dark trees you hear a voice call out, "I am not the clone you stupid lizard! I am!"<br/><br/>"NO YOU ARE NOT!!!" DL yells back.  "Would a clone know what happened before he was cloned???!!! I think not! Therefore I am the original and not YOU!"<br/><br/>From another tree, you hear, "IDIOT!!! When you were cloned from ME, you learned everything I knew, INCLUDING WHAT HAPPENED BEFORE!!!"<br/><br/>The one at the desk yells back, "Yea??? What about this scar across my forehead! Why would that get cloned?"<br/><br/>(You suspect there is nothing to be gained by listening to any more of this.)]]></clones>
+      <story>"The ancient Bastet had a history that covered over a million years," DL explains, "and they had a lifespan of 3000 years, but a disaster crashed their society and, after the fall, their lifespan is only about 50 years. I am still trying to sort out all the details, but, from what I can tell, they were a very peaceful race that never knew wars, crimes or any of that."</story>
+      <take type="script"><![CDATA[
+        msg ("You pick him up and hold him for a moment but feel silly, so you set him back down. \"Was it fun for you?\" he asks. You notice the creature giggle as she watches what you did.")
+        firsttime {
+          IncreaseScore (1)
+          list add (game.scoreList, "Picked up DL: 1 point")
+          msg ("<center><b>[  YOUR SCORE HAS INCREASED BY 1  ]</b></center>")
+        }
+      ]]></take>
+      <askdefault type="script"><![CDATA[
+        msg ("\"Can't you see I'm just a little busy translating Quest to Basic... No, that's not right, I'm translating something to Quest Basic, or was it to Basic Quest??? KILETA FRO KIM TAT!!! Now I confused!! Thanks!!! Now I gotta start over!!! \"<br/><br/>(You back up wondering just how far the tantrum will extend...)<br/>")
+      ]]></askdefault>
+      <telldefault type="script"><![CDATA[
+        msg ("\"Can't you see I'm just a little busy translating Quest to Basic... No, that's not right, I'm translating something to Quest Basic, or was it to Basic Quest??? KILETA FRO KIM TAT!!! Now I confused!! Thanks!!! Now I gotta start over!!! \"<br/><br/>(You back up wondering just how far the tantrum will extend...)<br/>")
+      ]]></telldefault>
+      <creature type="script"><![CDATA[
+        msg ("\"So, what is this creature you have here?\" you ask.<br/><br/>Dark Lizerd looks up at you, then at the creature. \"She is a Bast, or rather, a Child of Bastet. From some research on ancient Earth and ancient Egypt, I discovered that they visited there and taught your people agriculture among other things. Well, the Bastet did, but her people's story is rather a bit sad.\"")
+        // set (DL_Bast, alias, Bast)
+      ]]></creature>
+      <ask type="scriptdictionary">
+        <item key="project">
+          HandleSingleCommand ("project DL")
+        </item>
+        <item key="papers">
+          HandleSingleCommand ("papers DL")
+        </item>
+        <item key="clones">
+          HandleSingleCommand ("clones DL")
+        </item>
+        <item key="story">
+          HandleSingleCommand ("story DL")
+        </item>
+        <item key="creature">
+          HandleSingleCommand ("creature DL")
+        </item>
+      </ask>
+    </object>
+    <exit alias="west" to="Quest Forum">
+      <inherit name="westdirection" />
+      <message type="string"></message>
+      <runscript />
+      <script type="script">
+        msg ("You stumble out through the door and almost fall down. You feel like a heavy weight is pressing down on you. (strange!)")
+        MakeObjectVisible (Dark_Lizerd)
+        MoveObject (player, Quest Forum)
+      </script>
+    </exit>
+    <exit name="DLN" alias="north" to="DL_Room">
+      <inherit name="northdirection" />
+      <lookonly type="boolean">false</lookonly>
+      <look>You start to wander to the north to see just how far the field extends when you suddenly run smack into a clear wall. (You hear a snickering behind you) You examine the wall but discover that the view beyond is not painted on the wall, but is instead beyond it.</look>
+      <lockmessage>You start to wander to the north to see just how far the field extends when you suddenly run smack into a clear wall. (You hear a snickering behind you.) You examine the wall but discover that the view beyond is not painted on the wall, but is instead beyond it.</lockmessage>
+      <locked />
+    </exit>
+    <exit name="DLE" alias="east" to="DL_Room">
+      <inherit name="eastdirection" />
+      <lookonly type="boolean">false</lookonly>
+      <look>You start to wander to the north to see just how far the field extends when you suddenly run smack into a clear wall. (You hear a snickering behind you) You examine the wall but discover that the view beyond is not painted on the wall, but is instead beyond it.</look>
+      <locked />
+      <lockmessage>You start to wander to the east to see just how far the field extends when you suddenly run smack into a clear wall. (You hear a snickering behind you.) You examine the wall but discover that the view beyond is not painted on the wall, but is instead beyond it.</lockmessage>
+    </exit>
+    <exit name="DLS" alias="south" to="DL_Room">
+      <inherit name="southdirection" />
+      <lookonly type="boolean">false</lookonly>
+      <look>You start to wander to the north to see just how far the field extends when you suddenly run smack into a clear wall. (You hear a snickering behind you.) You examine the wall but discover that the view beyond is not painted on the wall, but is instead beyond it.</look>
+      <locked />
+      <lockmessage>You start to wander to the south to see just how far the field extends when you suddenly run smack into a clear wall. (You hear a snickering behind you.) You examine the wall but discover that the view beyond is not painted on the wall, but is instead beyond it.</lockmessage>
+    </exit>
+    <object name="trees">
+      <inherit name="plural" />
+      <scenery />
+      <look>You start to examine the trees, but something about them makes you nervous so you back away.</look>
+      <usestandardverblist type="boolean">false</usestandardverblist>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist" />
+    </object>
+    <object name="papers">
+      <inherit name="plural" />
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <inroomdescription type="string"></inroomdescription>
+      <take type="boolean">false</take>
+      <takemsg>You reach for the paper, but a long green arm snatches it first. "Thanks, I was looking for that one," he says.</takemsg>
+      <look>The scattered papers have all sorts of writing and scribbles, with boxes and arrows pointing to other boxes with circles pointing to other shapes... For a moment you almost understood what you are looking at... Almost.</look>
+      <scenery type="boolean">false</scenery>
+      <ontake type="script">
+      </ontake>
+    </object>
+    <object name="desk">
+      <inherit name="surface" />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <feature_container />
+      <hidechildren />
+      <listchildren type="boolean">false</listchildren>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Drop</value>
+      </inventoryverbs>
+      <look type="script"><![CDATA[
+        msg ("The desk is made out of a dark wood, oak perhaps. On top are several piles of {object:papers} with strange writings and scribbles everywhere. {if disk.taken=False:{if globe.visible: Over to one side, sitting on a stack of papers, is a floating, spinning {object:globe} of a planet you don't recognize. He watches you for a moment before speaking. \"That is a globe of my home world, where we are now. If you like it, take it, I got more around here.\"} {if disk.visible: There is a {object:disk} about the size of a hockey puck sitting here.}}<br/>")
+        firsttime {
+          IncreaseScore (1)
+          list add (game.scoreList, "Examined DL's desk: 1 point")
+          msg ("<center><b>[ YOUR SCORE HAS INCREASED BY 1 ]</b></center>")
+        }
+      ]]></look>
+      <object name="globe">
+        <takemsg>You reach for the globe, but your hand passes right through it. Although you could not get it, it felt like you hand passed through a bubble of water, but you hand is still dry!</takemsg>
+        <scenery type="boolean">false</scenery>
+        <usedefaultprefix />
+        <look>It is a floating, spinning globe of a planet you don't recognize. There are strange land masses with large and small, blue oceans with green tint.</look>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Drop</value>
+        </inventoryverbs>
+        <hintlist type="stringlist">
+          <value>HINT 1: Try taking it.</value>
+          <value>HINT 2:  Try pressing the button.</value>
+        </hintlist>
+        <visible />
+        <take type="script">
+          msg ("You reach for the globe, but your hand passes right through it. Although you could not get it, it felt like your hand passed through a bubble of water, but your hand is still dry!")
+          msg ("\"Here,\" he says and reaches out and touches a {object:disk:disk} that you didn't notice under the globe, and the planet disappears.")
+          MakeObjectInvisible (globe)
+          MakeObjectVisible (disk)
+        </take>
+        <changedscenery type="script">
+        </changedscenery>
+      </object>
+      <object name="disk">
+        <inherit name="surface" />
+        <take />
+        <visible type="boolean">false</visible>
+        <usedefaultprefix type="boolean">false</usedefaultprefix>
+        <look>It is a disk, about the same size as a hockey puck.  In fact, you would have thought it was one except for the small raised bump on one face.</look>
+        <feature_container />
+        <scenery type="boolean">false</scenery>
+        <alt type="stringlist" />
+        <alias>planet disk</alias>
+        <feature_usegive />
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Drop</value>
+        </inventoryverbs>
+        <nocopy type="string"></nocopy>
+        <taken type="boolean">false</taken>
+        <dropmsg>You watch as the disk hovers in mid air for a moment, then plummets to the ground with a soft thud.</dropmsg>
+        <hidechildren />
+        <listchildren />
+        <listchildrenprefix>It has</listchildrenprefix>
+        <ontake type="script">
+          SetObjectFlagOn (disk, "taken")
+          AddQuest (KV, "giveDiskToRH", "Let a friend check out that planet disk.")
+          QuestComplete (DarkLizerd, "Get the Planet Disk")
+        </ontake>
+        <givesingle type="script">
+          if (Richard Headkid.parent = game.pov.parent) {
+            HandleSingleCommand ("give disk to rh")
+          }
+          else {
+            msg ("You try to give the disk to no one in particular.")
+          }
+        </givesingle>
+        <ondrop type="script"><![CDATA[
+          if (player.loadedrh) {
+            if (Richard Headkid.parent = game.pov.parent) {
+              msg ("<br>\"What the hell, Pix?!?\" RH asks politely. \"If you're just gonna drop it, you could at least let me see it!\"<br/><br/>You decide he's right, so you pick the disk back up and hand it over.<br/>")
+              HandleSingleCommand ("give disk to rh")
+            }
+          }
+        ]]></ondrop>
+        <giveto type="scriptdictionary">
+          <item key="Richard Headkid"><![CDATA[
+            RemoveObject (Richard Headkid)
+            QuestComplete (KV, "giveDiskToRH")
+            msg ("As soon as you hand the disk over to RH, he produces a Strange Pouch, reaches one hand into it, and disappears!<br/><br/>(You now have access to his {object:RH desk:desk}.)<br/>")
+            // MakeObjectVisible (RH desk)
+            MoveObject (disk, Richard Headkid)
+            SetObjectFlagOn (disk, "been_taken_by_rh")
+            list remove (disk.generatedverbslist, "Give to RH")
+          ]]></item>
+        </giveto>
+        <object name="planetdiskbutton">
+          <look>A small black button that almost blends into the surface.</look>
+          <take type="boolean">false</take>
+          <takemsg>How do you expect to take the button off the disk?</takemsg>
+          <alias>button</alias>
+          <scenery />
+          <alt type="stringlist">
+            <value>button</value>
+            <value>bump</value>
+          </alt>
+          <drop type="boolean">false</drop>
+          <hintlist type="stringlist">
+            <value>HINT:  Try pressing the button.</value>
+          </hintlist>
+          <push type="script"><![CDATA[
+            firsttime {
+              IncreaseScore (1)
+              list add (game.scoreList, "Pressed the planet disk's button: 1 point")
+              msg ("<center><b>[  YOUR SCORE HAS INCREASED BY 1  ]</b></center>")
+            }
+            if (not ListContains(ScopeVisible(), globe)) {
+              MakeObjectVisible (globe)
+              msg ("The planet re-appears, and starts to rotate slowly.")
+            }
+            else {
+              MakeObjectInvisible (globe)
+              msg ("The planet disappears from view.")
+            }
+          ]]></push>
+          <press type="script">
+            do (planetdiskbutton, "push")
+          </press>
+        </object>
+      </object>
+    </object>
+    <object name="DL_umbrella">
+      <alias>umbrella</alias>
+      <scenery type="boolean">false</scenery>
+      <takemsg>You try to take the umbrella, but it is firmly attached to the ground... Dark Lizerd watches you for a moment as you struggle with it. "Are you done messing with that?" he asks in a rather flat tone. He then moves it to put its shadow back to where he had it in the first place.</takemsg>
+      <look>You look at the umbrella and notice the entertaining red and white stripes that start in the center and extend all the way to the edges. There are also some red and gold tassels that hang from around the edges, along with several, foot-long flaps that gently sway in the breeze. Oddly, looking around, you don't notice any other effects of a breeze, nor do you feel one.</look>
+    </object>
+    <object name="DL_Bast">
+      <inherit name="female" />
+      <alias>creature</alias>
+      <look type="script">
+        msg("You look over the rather short, tan fur covered, cat-like creature. She is wearing a simple leather skirt with wide straps that go over her shoulders. There is another leather piece connecting the straps that covers her chest. You notice her watching you intently, and it kinda makes you nervous, but you are not sure why. Maybe it is the way her tail slowly swings from side to side. You almost expect her to jump you at any moment.")
+        this.prefix = "the"
+      </look>
+      <alt type="stringlist">
+        <value>cat</value>
+        <value>cat person</value>
+        <value>cat girl</value>
+      </alt>
+      <takemsg>You reach for her, but she hisses and backs up, placing the desk between you and her. "That was a warning, maybe after she knows you better you could do that," DL says. "Otherwise, she could be very affectionate."</takemsg>
+      <visible />
+      <listalias>creature</listalias>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Speak to</value>
+        <value>Take</value>
+      </displayverbs>
+      <useindividualverblist type="boolean">false</useindividualverblist>
+      <speak><![CDATA[When you try to talk to her, she blinks as she slowly shakes her head, <i>'no.'</i>]]></speak>
+    </object>
+  </object>
+  <verb name="dl_project">
+    <property>project</property>
+    <pattern>project</pattern>
+    <defaultexpression>"You can't project " + object.article + "."</defaultexpression>
+  </verb>
+  <verb name="dl_papers">
+    <property>papers</property>
+    <pattern>papers</pattern>
+    <defaultexpression>"You can't papers " + object.article + "."</defaultexpression>
+  </verb>
+  <verb name="dl_help">
+    <property>help</property>
+    <pattern>help</pattern>
+    <defaultexpression>"You can't help " + object.article + "."</defaultexpression>
+  </verb>
+  <verb name="dl_otherone">
+    <property>otherone</property>
+    <pattern>other one</pattern>
+    <defaultexpression>"You can't other one " + object.article + "."</defaultexpression>
+  </verb>
+  <verb name="dl_clones">
+    <property>clones</property>
+    <pattern>clones</pattern>
+    <defaultexpression>"You can't clones " + object.article + "."</defaultexpression>
+  </verb>
+
+  <verb name="dl_creature">
+    <property>creature</property>
+    <pattern>creature</pattern>
+    <defaultexpression>"You can't creature " + object.article + "."</defaultexpression>
+  </verb>
+  <verb name="dl_story">
+    <property>story</property>
+    <pattern>story</pattern>
+    <defaultexpression>"You can't story " + object.article + "."</defaultexpression>
+  </verb>
+
+
+  <verb name="dl_attack">
+    <property>attack</property>
+    <pattern>attack</pattern>
+    <defaultexpression>"You can't attack " + object.article + "."</defaultexpression>
+  </verb>
+  <verb name="dl_reynard">
+    <property>reynard</property>
+    <pattern>reynard </pattern>
+    <defaultexpression>"You can't reynard  " + object.article + "."</defaultexpression>
+  </verb>
+  <verb name="dl_treasure">
+    <property>treasure</property>
+    <pattern>treasure</pattern>
+    <defaultexpression>"You can't treasure " + object.article + "."</defaultexpression>
+  </verb>
+  <verb name="dl_fight">
+    <property>fight</property>
+    <pattern>fight</pattern>
+    <defaultexpression>"You can't fight " + object.article + "."</defaultexpression>
+  </verb>
+  <verb name="dl_who">
+    <property>who</property>
+    <pattern>who</pattern>
+    <defaultexpression>"You can't who " + object.article + "."</defaultexpression>
+  </verb>
+
+
+</library>

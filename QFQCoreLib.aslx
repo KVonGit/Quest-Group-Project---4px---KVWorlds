@@ -1,0 +1,2565 @@
+<?xml version="1.0"?>
+
+<!--
+      QFQCoreLib
+      For the Quest Group Project
+      WORKING TITLE: Dimensions of ∞
+      Written for Quest 5.7.2
+      ASL Version 550
+      © 2017-2025 Quest Forum Questers
+-->
+
+<library>
+  <command name="help">
+    <pattern type="string">^help$|^\?$</pattern>
+    <script><![CDATA[
+      msg ("<center><a href='http://pr-if.org/doc/play-if-card/play-if-card-300dpi.png'><img onload=\"scrollToEnd();\" onerror=\"ASLEvent('P','"+Template("DefaultHelp")+"');$(this).remove();\" src='http://pr-if.org/doc/play-if-card/play-if-card-300dpi.png' width='100%'/></a></center>")
+      game.suppressturnscripts = true
+    ]]></script>
+  </command>
+  <command name="version_cmd">
+    <pattern>version;info;about</pattern>
+    <script><![CDATA[
+      s = "<b>TITLE: </b>" + game.gamename + "<br/>"
+      if (HasAttribute (game, "author")) {
+        s = s + "<b>AUTHOR: </b>" + game.author + "<br/>"
+      }
+      s = s + "<b>VERSION: </b>" + game.version + "<br/>"
+      s = s + "<b>IFID: </b>" + game.gameid
+      msg (s)
+      game.suppressturnscripts = true
+    ]]></script>
+  </command>
+  <verb name="push">
+    <pattern type="string"><![CDATA[^(?<text>push) (?<object>.*)$]]></pattern>
+    <property>push</property>
+    <defaulttemplate>DefaultPush</defaulttemplate>
+  </verb>
+  <verb name="pull">
+    <property>pull</property>
+    <pattern type="string"><![CDATA[^(?<text>pull) (?<object>.*)$]]></pattern>
+    <defaulttemplate>DefaultPull</defaulttemplate>
+  </verb>
+  <verb name="move">
+    <property>move</property>
+    <pattern type="string"><![CDATA[^(?<text>move) (?<object>.*)$]]></pattern>
+    <defaulttemplate>DefaultMove</defaulttemplate>
+  </verb>
+  <object name="dreamRegion">
+    <object name="room">
+      <description>You have made your way through most of the Wumpus cavern and are nearing in on the most foul creature itself. You recheck your sword: sharp as ever. Your shield: at the ready. Your armor:  not a single gap.</description>
+      <alias>Cave</alias>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <exitslistprefix>There is an exit to the</exitslistprefix>
+      <beforeenter type="script">
+        JS.setCss ("#gameBorder", "background:white")
+        JS.setCss ("body", "background:white")
+        JS.eval ("$('#status').css('max-height','none');")
+        JS.setInterfaceString ("TypeHereLabel", "Type here...")
+      </beforeenter>
+      <beforefirstenter type="script">
+        ageCheck
+        on ready {
+          SetBackgroundOpacity (1.0)
+          SetForegroundColour ("Black")
+          SetBackgroundColour ("White")
+          JS.setCss ("body", "background:white")
+          JS.setCss ("body", "background-image:none")
+          JS.uiHide ("#commandPane")
+        }
+      </beforefirstenter>
+      <firstenter type="script"><![CDATA[
+        msg ("<br/>You are startled when a fox jumps up onto a rock in front of you. You quickly draw your sword to defend yourself, then chuckle at being startled by an animal. Just as you relax a bit, the fox stands on its hind legs, and places a Robin Hood-like hat on his head.  He then draws a two-foot rapier, swishes it around, and takes a fencing pose facing you.")
+      ]]></firstenter>
+      <object name="player1">
+        <inherit name="namedmale" />
+        <alias>The Pixie</alias>
+        <attr name="pov_look">You think back to the last reflective surface you came across. Chiseled good looks, a body that would make Mr. Universe envious, and the stamina to out perform even the best horses around, and charm that would best any man around.</attr>
+        <money type="int">1000000</money>
+        <object name="sword">
+          <alt type="stringlist">
+            <value>blade</value>
+          </alt>
+          <feature_usegive />
+          <look><![CDATA[Your trusty blade.<br/><br/>Forged from the iron the holistic metallurgist extracted from the blood of your enemies.<br/><br/>It has a red glow emanating from it.  (That means there's either a Grue nearby... or a WUMPUS!!!)]]></look>
+          <take />
+          <drop type="boolean">false</drop>
+          <dropmsg>You get ready to leave your sword behind, but remember that without it, you could not defeat the Wumpus, and would die here like the many bones of other adventurers have before you.</dropmsg>
+          <usedefaultprefix type="boolean">false</usedefaultprefix>
+          <prefix>your</prefix>
+          <use type="script">
+            msg ("You swing your sword around like a little kid in a He-Man costume.")
+          </use>
+        </object>
+        <object name="shield">
+          <look><![CDATA[It's your jewel-encrusted (yet somehow lightweight) shield, gifted to you by Tanya.<br/>]]></look>
+          <feature_usegive />
+          <take />
+          <drop type="boolean">false</drop>
+          <dropmsg>You start to drop it, then think better of it.</dropmsg>
+          <usedefaultprefix type="boolean">false</usedefaultprefix>
+          <prefix>your</prefix>
+          <use type="script">
+            msg ("You raise your shield. (If any words try to hurt you, you'll be completely safe.)")
+          </use>
+        </object>
+      </object>
+      <exit alias="east" to="Room5">
+        <inherit name="eastdirection" />
+      </exit>
+      <object name="red fox1">
+        <alias>red fox</alias>
+        <look><![CDATA[You admire the shiny, rich, slick coat of the red fox. Not a hair out of place. He looks back at you with his deep, sapphire eyes. You blink, realising that more than a few seconds has transpired. The fox seems to smile a little more and nods his head...<br/>{once:<br/><i>'Was I just hypnotized by him???'</i> you wonder.}<br/>]]></look>
+        <alt type="stringlist">
+          <value>fox</value>
+          <value>Reynard</value>
+        </alt>
+        <takemsg>He ducks under your hand, and spins out of reach. "Ha, Ha, too slow! You gotta be faster than that to catch Reynard the Fox!!" he taunts.</takemsg>
+        <who><![CDATA["Don't you know!!!?? I am the renown Reynard the Fox!  <em>Acquisionaire Extraordinaire</em>!  Collector of fine arts and treasures!  At your service!" he says with a bow.]]></who>
+        <treasure>"Why yes, yes indeed, I do collect treasures. Lots of treasures," replies Reynard.</treasure>
+        <fight>"Why?  There is no need for that."</fight>
+        <attack type="script"><![CDATA[
+          RemoveObject (red fox1)
+          msg ("You draw your sword and prepare to attack the fox, but he just jumps off of the rock and dips out through the exit.  You're kind of disappointed, but you put your sword away, \"Well, maybe next time...\"<br/><br/>You notice two brown rabbits duck in through the exit, following the fox. For a moment, you wonder where they were hiding.")
+        ]]></attack>
+      </object>
+      <object name="dl_rock_kv">
+        <alias>rock</alias>
+        <look>It's just a rock.</look>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <scenery />
+      </object>
+      <command name="kv_nosave1">
+        <pattern>save</pattern>
+        <script>
+          msg ("You can't save the game during the intro.")
+        </script>
+      </command>
+      <command name="kv_noscore1">
+        <pattern>score;check score;get the score</pattern>
+        <script>
+          msg ("Your score:  You broke the game!  You have the maximum score, but it shows 0!")
+        </script>
+      </command>
+    </object>
+    <object name="Room5">
+      <description><![CDATA[You have now made your way to the cavern of the Wumpus. Looking in, you do not see the creature, but you can tell this is its lair. Cautiously, you make your way inside, carefully stepping over the skulls and bones of past explorers, swearing to avoid making the same mistakes they made... whatever they were.<br/>]]></description>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <alias>Outside of the Cavern's Entrance</alias>
+      <exit alias="east" to="Wumpus Cavern">
+        <inherit name="eastdirection" />
+      </exit>
+      <object name="skeletons">
+        <inherit name="plural" />
+        <alias>skulls and bones</alias>
+        <look>You'd rather not look at them too closely.</look>
+        <scenery />
+      </object>
+      <command name="kv_nosave2">
+        <pattern>save</pattern>
+        <script>
+          msg ("You can't save the game during the intro.")
+        </script>
+      </command>
+      <command name="kv_noScoreRoom5">
+        <pattern>score;check score;request score</pattern>
+        <script>
+          msg ("Your score:  You broke the game!  You have the maximum score, but it shows 0!")
+        </script>
+      </command>
+    </object>
+    <object name="Wumpus Cavern">
+      <description><![CDATA[This is the lair of the most feared Wumpus, and unlike most of the other caverns and tunnels, this one is massive!!!<br/><br/>The cavernous roof towers over 40 feet above you! The far wall is over 100 feet away! There is a very large tunnel that leads off to the {command:More}, which seems to be how the creature makes its way here. Looking about the cavern itself, you do not find the Wumpus.  The floor is uneven, but not enough to provide enough cover for it to hide from you. You make your way down towards the center of the cavern to the large brown grass covered hill. You carefully make your way around the hill keeping an eye out for where the creature could be. Without warning, the hill moves! It starts to get bigger!<br/>]]></description>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <alias>Cavern Entrance</alias>
+      <exitslistprefix type="string"></exitslistprefix>
+      <object name="roof">
+        <look>It's at least 40 feet above you.</look>
+        <scenery />
+      </object>
+      <object name="wall">
+        <scenery />
+        <look>It's at least 100 feet away.</look>
+      </object>
+      <object name="tunnel">
+        <scenery />
+        <look>It leads to the More.</look>
+      </object>
+      <object name="floor">
+        <scenery />
+        <look>It's uneven.</look>
+      </object>
+      <object name="hill">
+        <scenery />
+        <look>It's huge!  And it's moving!!!</look>
+      </object>
+      <object name="grass">
+        <scenery />
+        <look>It's coarse and brown.</look>
+      </object>
+      <command name="kv_nosave3">
+        <pattern>save</pattern>
+        <script>
+          msg ("You can't save the game during the intro.")
+        </script>
+      </command>
+      <command name="kv_noScoreWumpusCavern">
+        <pattern>score;check score;request score</pattern>
+        <script>
+          msg ("Your score:  You broke the game!  You have the maximum score, but it shows 0!")
+        </script>
+      </command>
+      <exit alias="More" to="dl_wc2" />
+      <command name="kv_more">
+        <pattern>m;more;go more;go to more;go m; go to m</pattern>
+        <script>
+          game.pov.parent = exit3.to
+        </script>
+      </command>
+    </object>
+    <object name="dl_wc2">
+      <alias>Wumpus Cavern</alias>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <exitslistprefix type="string"></exitslistprefix>
+      <description><![CDATA[The hill keeps getting bigger, and then the large head appears! It is tall, but narrow, and, as it cocks it's head to one side, you see one eye, which is at least four feet across! It looks at you, and, with a beeping-sounding roar, it rises up to its full height so that its long, bunny-rabbit ears scrape across the roof.<br/><br/>It roars again with its beeping sound and rushes down at you!!!<br/><br/>As it nears in on you with more beeping sonic attacks, it opens it's cavernous maw and...]]></description>
+      <exit alias="Beeping" to="Your Bedroom" />
+      <command name="kv_go_beeping">
+        <pattern>beeping;b;go beeping;go to beeping;go b;go to b</pattern>
+        <script>
+          JS.setCss ("#txtCommand", "display:  none")
+          MoveObject (game.pov, Your Bedroom)
+        </script>
+      </command>
+      <object name="hill2">
+        <look><![CDATA[That's no hill!  It's the Wumpus!<br/>]]></look>
+        <alias>hill</alias>
+        <scenery />
+      </object>
+      <object name="head">
+        <scenery />
+        <look><![CDATA[The Wumpus's head is tall, but narrow.<br/>]]></look>
+      </object>
+      <object name="eye">
+        <scenery />
+        <look><![CDATA[It's at least four feet across it!<br/>]]></look>
+      </object>
+      <object name="ears">
+        <look><![CDATA[They are big, bunny-rabbit-like ears.<br/>]]></look>
+        <scenery />
+      </object>
+      <object name="roof2">
+        <alias>roof</alias>
+        <scenery />
+        <look><![CDATA[There is nothing special up there.<br/>]]></look>
+      </object>
+      <command name="kv_nosave4">
+        <pattern>save</pattern>
+        <script>
+          msg ("You can't save the game during the intro.")
+        </script>
+      </command>
+      <command name="kv_noScoreWumpusCavern2">
+        <pattern>score;check score;request score</pattern>
+        <script>
+          msg ("Your score:  You broke the game!  You have the maximum score, but it shows 0!")
+        </script>
+      </command>
+    </object>
+    <object name="Your Bedroom">
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <description type="script"><![CDATA[
+        JS.uiHide ("#gamePanes")
+        JS.eval ("var scrollToEndBak1 = scrollToEnd;scrollToEnd = function(){};")
+        if (game.pov = player1) {
+          game.menuoutputsection = StartNewOutputSection()
+          JS.addText (ProcessText("You sit upright in your bed, breathing hard and clutching your chest! Your covers are scattered around your bed, and your pillow is on your dresser on the other side of the room.  After a few moments, you settle down and push the button on your alarm clock, at which point, the beeping stops.<br/><br/>You get up, get dressed and notice a piece of paper on the floor, which you pick up and read...<br/><b><samp>\"Quest Towers, 3rd floor, 12:00 noon.\"</samp></b><br/><br/>You flip the note over again looking for any other clues. Finding none, you wad up the note and throw it in the trashcan... then you remember the party last night. The group you work with said they almost had the project finished, but they needed your final run through -- your input on a couple of problems they were having.<br/><br/>Looking at your clock, you realize you only have about 30 minutes to get there on time. So, you grab your inventory items, you rush out the door, grab a passing taxi, and arrive at the Quest Towers with 10 minutes to spare.<br/><br/><span onclick=\"sendEndWait()\"><center>" + game.tower + "<center></span><br/><span onclick=\"sendEndWait()\"><b>PRESS ANY KEY TO CONTINUE</b></span>"))
+          EndOutputSection (game.menuoutputsection)
+          wait {
+            JS.eval ("var scrollToEnd = scrollToEndBak1;scrollToEndBak1 = null;")
+            MakeObjectVisible (armor)
+            JS.uiHide ("#txtCommand")
+            HideOutputSection2 (game.menuoutputsection)
+          }
+        }
+        else {
+          JS.uiShow ("#txtCommand")
+          msg ("You sit upright in your bed, breathing hard and clutching your chest! Your covers are scattered around your bed, and your pillow is on your dresser on the other side of the room.<br/><br/>You finally settle down and push the button on your alarm clock, at which point, the beeping stops.<br/><br/>\"Pixie, Pixie! PLEASE tell us you're still working on the group project!\" says KV.<br/><br/>\"Yeah, Pix,\" mumbles XanMag. \"We tried to do it without you, but you should have SEEN what we ended up with!\"<br/><br/>\"Pure crap,\" DL chimes in. \"The player was a Quest programmer, of all things! Can you believe that?\"<br/><br/>\"There were some good bits,\" XM interjects. \"Gal was my favorite.\"<br/><br/>\"I liked DL's parts,\" adds KV.<br/><br/>\"I just had a dream that I was playing a game just like that!\" you exclaim. \"Come to think of it,\" you continue, addressing each member of the group in turn, \"you, and you, and you were there...\"<br/><br/>\"Wait a minute, guys,\" says DL, pointing towards something in your inventory. \"LOOK!!!\"<br/><br/>That's when you see it.<br/><br/>XM's certificate is still in your inventory, and it still contains one of the:<br/><br/><center>{command:l:<h3>SHARDS OF ∞</h3>}<br/><br/><h3><b>PRESS ANY KEY.</b></h3></center>")
+          wait {
+            JS.eval ("var scrollToEnd = scrollToEndBak1;scrollToEndBak1 = null;")
+            ClearScreen
+            JS.goUrl ("https://media.textadventures.co.uk/games/cNFLuCu1cUqmUv0I9_KEIQ/index.html")
+            MoveObject (player, kv_EndGameRoom)
+          }
+        }
+      ]]></description>
+      <beforeenter type="script">
+        ClearScreen
+      </beforeenter>
+      <enter type="script">
+        JS.uiHide ("#txtCommand")
+      </enter>
+      <beforefirstenter type="script">
+      </beforefirstenter>
+      <firstenter type="script">
+      </firstenter>
+    </object>
+    <object name="Cave Entrance">
+      <alias>Cave Entrance</alias>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <triedToLeave type="int">0</triedToLeave>
+      <description><![CDATA[You have made your way through most of the Wumpus cavern and are nearing in on the most foul creature itself. You recheck your sword, sharp as it ever has been. Your shield, at the ready. Your armor does not have a single gap that would let the creature harm you.{if game.pov=player: <br/><br/>You are startled when a fox jumps up on a rock in front of you. Quickly, you draw your sword to defend yourself. You chuckle at being startled by an animal. Just as you relax a bit, the fox stands on its hind legs, places a Robin Hood-like hat on his head, draws a two-foot rapier, swishes it around, then takes a fencing pose facing you. (Did this happen before, or did you dream that part?)<br/>}]]></description>
+      <beforeenter type="script">
+      </beforeenter>
+      <enter type="script">
+        if (not kv_green_shard.parent = game.pov) {
+          ClearScreen
+          msg ("You haven't acquired the shard.")
+          MoveObject (player, kv_Crate Mart)
+        }
+        else {
+        }
+      </enter>
+      <beforefirstenter type="script"><![CDATA[
+        MoveObjectHere (shield)
+        MoveObjectHere (sword)
+        dictionary add (game.povstatusattributes, "money", "Money: !")
+        if (not kv_green_shard.parent = player) {
+          msg ("You haven't acquired the shard.")
+          MoveObject (player, Crate Mart)
+        }
+        else {
+          msg ("You hear a distant beeping sound upon entering the crate.  Your eyelids immediately become heavy and fall closed.<br/><br/>You shake your head to wake yourself up.  That beeping...<br/><br/>It makes you think, <i>'just ten minutes of sleep... That's all I need...'</i><br/><br/>In an effort to convince The Cratesman you're okay, you turn to tell him so, but The Cratesman isn't there anymore.  Neither is Crate Mart.<br/><br/>You spin back around to examine your surroundings, finding your sword, your shield, and your armor.  ...and a treasure!<br/><br/>You pick it all up, promptly donning your armor.<br/>")
+          AddToInventory (sword)
+          AddToInventory (shield)
+          WearGarment (armor)
+          brown rabbits.prefix = "the"
+        }
+        wait {
+          game.pov.atBeginningAgain = true
+        }
+      ]]></beforefirstenter>
+      <object name="armor">
+        <inherit name="wearable" />
+        <inherit name="kvtype" />
+        <look><![CDATA[Slicker than owl shit, lighter than air, more powerful than JavaScript...<br/><br/>Your armor suits you.]]></look>
+        <feature_wearable />
+        <visible type="boolean">false</visible>
+        <worn type="boolean">false</worn>
+        <armour type="int">99</armour>
+        <feature_startscript />
+        <feature_usegive />
+        <hintlist type="stringlist">
+          <value>Hint 1:  Have you tried dropping the armor, then turning it 69,105 times?</value>
+          <value>Hint 2:  Hint 1 won't work unless you have acquired the eye of the Wumpus.</value>
+          <value>Hint 3:  You can't get the eye of the Wumpus on your own.  One of the rabbits has to help you.</value>
+          <value>Hint 4:  The rabbits dwell in the Inbetwixt.</value>
+          <value>Hint 5:  To get to the Inbetwixt, you must befriend a talking fox.</value>
+          <value>Hint 6:  The talking foxes need socks.  If you give them some, they will help you.</value>
+        </hintlist>
+        <usedefaultprefix type="boolean">false</usedefaultprefix>
+        <prefix>your</prefix>
+        <attr name="_initialise_" type="script">
+          CloneObject (armor)
+          WearGarment (armor1)
+          armor1.visible = true
+        </attr>
+        <use type="script">
+          msg ("There's no need to USE your armor.  You either wear it, or you don't!")
+        </use>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+          <value>Drop</value>
+          <value>Wear</value>
+          <value>Remove</value>
+        </inventoryverbs>
+      </object>
+      <exit alias="in" to="Room6">
+        <inherit name="indirection" />
+        <runscript />
+        <script type="script"><![CDATA[
+          if (red fox.parent = game.pov.parent) {
+            msg ("<br/>The fox blocks your path. \"Oh no you don't! We are not finished here! On guard!\"")
+          }
+          else {
+            MoveObject (player, Room6)
+          }
+        ]]></script>
+      </exit>
+      <object name="Treasure">
+        <look>It's a bunch of money.</look>
+        <drop type="boolean">false</drop>
+        <dropmsg>No way!  You're keeping the money!</dropmsg>
+        <take />
+        <usedefaultprefix type="boolean">false</usedefaultprefix>
+        <prefix>{once:some}{notfirst:the}</prefix>
+        <ontake type="script">
+          game.showmoney = true
+          game.pov.money = 1000000
+          RemoveObject (Treasure)
+        </ontake>
+      </object>
+      <object name="brown rabbits">
+        <inherit name="plural" />
+        <visible />
+        <usedefaultprefix type="boolean">false</usedefaultprefix>
+        <prefix>some</prefix>
+        <eat>You'd have to cook them first.</eat>
+        <listen><![CDATA["What's up, Doc?" says one rabbit.<br/>"The world will end," says the other.  "28 days 6 hours 42 minutes 12 seconds."<br/>]]></listen>
+        <touch>Which one?  The rabbit?  Or the rabbit?</touch>
+        <climb>Don't make us call animal control!</climb>
+        <drink>Come on!  You're just trying to find a verb we forgot!</drink>
+        <hit>You're no match against them!</hit>
+        <kill>Your last name isn't Fudd.</kill>
+        <knock>What?  Knock the rabbits? Really?</knock>
+        <lick>This is not that kind of game!</lick>
+        <lock>Locked.</lock>
+        <read>You read the rabbits' auras.  They are a super-intelligent shade of blue.</read>
+        <throw>You'd have to pick them up first.  (Good luck with that!)</throw>
+        <taste>Did you actually enter that command?</taste>
+        <search>Do you mean like a full-body-cavity search?  Because we'll call the Humane Society on you!</search>
+        <tie>You try to tie the rabbits' ears to one another, but the rabbits just shake their heads around just before you get the knot securely tied.</tie>
+        <unlock>{once:You unlock the rabbits' true potential.}{notfirst:You've already unlocked the rabbits' potential.}</unlock>
+        <untie>They're not tied together.</untie>
+        <push>You nudge each rabbit a little with one foot.</push>
+        <move>{once:You ask the rabbits if they'd like you to help them move.  They just look at you quizzically.}{notfirst:The rabbits don't need you to move them.}</move>
+        <usestandardverblist />
+        <takemsg>You try to take them, but the rabbits move too quickly.</takemsg>
+        <look type="script">
+          msg ("There are two of them, and they seem to be whispering something to each other.")
+        </look>
+      </object>
+      <object name="red fox">
+        <visible />
+        <look><![CDATA[You admire the shiny, rich, slick coat of the red fox. Not a hair out of place. He looks back at you with his deep, sapphire eyes. You blink, realising that more than a few seconds has transpired. The fox seems to smile a little more and nods his head...<br/><br/><i>'Was I just hypnotized by him???'</i> you wonder.<br/>(You have this strange de ja view moment...)<br/><br/>]]></look>
+        <takemsg>He ducks under your hand, and spins out of reach. "Ha, Ha, too slow! You gotta be faster than that to catch Reynard the Fox!!" he taunts.</takemsg>
+        <usedefaultprefix />
+        <displayverbs type="stringlist">
+          <value>look at</value>
+          <value>take</value>
+        </displayverbs>
+        <who><![CDATA["Don't you know!!!?? I am the renown Reynard the Fox!  <em>Acquisionaire Extraordinaire</em>!  Collector of fine arts and treasures!  At your service!" he says with a bow.]]></who>
+        <treasure>"Why yes, indeed I am after a certain treasure that you currently have, but I will soon relieve from you. I would ask, but what is the fun in that? After all, I am a thief, not a beggar!" You try to remember what you have that could be so valuable.</treasure>
+        <fight>"Sure, a duel it shall be!!! ON GUARD!" And with that, he swings his rapier again, then waits for your first move.</fight>
+        <attackCount type="int">0</attackCount>
+        <alt type="stringlist">
+          <value>fox</value>
+          <value>Reynard</value>
+        </alt>
+        <attack type="script"><![CDATA[
+          if (red fox.attackCount < 4) {
+            red fox.attackCount = red fox.attackCount + 1
+          }
+        ]]></attack>
+        <changedattackCount type="script"><![CDATA[
+          switch (red fox.attackCount) {
+            case (1) {
+              msg ("You swing at the fox, but he parries, spins, and slashes you across the face. It stings, but did not draw any blood. \"I knew a mouse that fought better than you! Maybe he could give you a few lessons!\" <br/>")
+            }
+            case (2) {
+              msg ("You manage to parry his slow swing, immediately countering with a good solid slash... at nothing!<br/><br/>You turn a three-sixty, but the fox is nowhere to be seen! <br/><br/>Suddenly, a sharp sting across your ass tells you where he is! You turn to face the fox, and find that he is juggling a {colour:green:green shard} in his left hand. <br/><br/>A quick inventory check tells you that it is YOUR {colour:green:green shard}! NOW, you are furious! It's time to get SERIOUS!!!<br/>")
+              RemoveObject (kv_green_shard)
+            }
+            case (3) {
+              msg ("You charge in, swinging left and right, hoping, if nothing else, you will connect with this pest and get your crystal back. <br/><br/>After a few swings, the only thing you manage to connect with is the air in front of you. You hear laughter off to your right. <br/><br/>\"MAN!!! I tell you... The next time I go on a trip through the jungle, I'm bringing you along to clear the brush in the path! I've never seen such a display of devotion to a task than what you just demonstrated!!! But, I got what I was after, and, with that, I bit you a fond farewell...\" <br/><br/>The fox turns and dashes into the cavern.<br/><br/>The rabbits hop along behind him. {popup:*:Find out about Reynard, the rabbits, the holes, and more in SHARDS OF &infin;!}<br/><br/>(Quick!  You should dash after them to get your shard back!)")
+              RemoveObject (red fox)
+              RemoveObject (brown rabbits)
+            }
+            default {
+              msg ("<b>Author's note: Error running fox.changedAttackCount script.</b>")
+              MakeObjectInvisible (red fox)
+            }
+          }
+        ]]></changedattackCount>
+      </object>
+    </object>
+    <object name="kv_EndGameRoom">
+      <alias><![CDATA[&nbsp;]]></alias>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <description type="script"><![CDATA[
+        msg ("<center><h1>SHARDS OF ∞</h1><h3>THE BEGINNING</h3><h4>THANKS FOR PLAYING!</h4></center><hr/><center><h3>IF YOU LIKED THIS, YOU MIGHT ALSO LIKE:</h3><a href=\"https://textadventures.co.uk/user/view/EMxhs1Hs8UaIB5HFBLMp4A/xanmag\">Text adventures by XanMag</a><br/><br/><a href=\"https://textadventures.co.uk/user/view/EAQf-0Zm706miXjTq_GpFw/darklizerd\">Text adventures by DarkLizerd</a><br/><br/><a href=\"https://textadventures.co.uk/user/view/gudejtsx9komagj-tffyfg/richard-headkid\">Text adventures by Richard Headkid</a><br/><br/><a href=\"https://textadventures.co.uk/user/view/_O1rjdv47U2x-bATbXE_tw/the-pixie\">Text adventures by The Pixie</a><br/><br/><a href=\"https://textadventures.co.uk/forum/quest\">The Quest Forum</a></center>")
+        ShowMenu ("GAME OVER<br/>What would you like to do?", Split("UNDO your last command;RESTART from the beginning;QUIT the game;Read your TRANSCRIPT", ";"), false) {
+          switch (result) {
+            case ("UNDO your last command") {
+              invoke (undo.script)
+            }
+            case ("RESTART from the beginning") {
+              // FIXME when updating to 5.8!!!
+              // JS.RestartGame ()
+              ClearScreen
+              ShowRoomDescription
+              msg ("Press CTRL+R to restart!")
+            }
+            case ("QUIT the game") {
+              JS.setCss ("#gamePanes", "display:block;background:transparent")
+              finish
+            }
+            case ("Read your TRANSCRIPT") {
+              ClearScreen
+              ShowRoomDescription
+              JS.showScrollback ()
+            }
+            default {
+              ClearScreen
+              ShowRoomDescription
+            }
+          }
+        }
+      ]]></description>
+    </object>
+    <object name="Room6">
+      <description><![CDATA[You charge into the cavern, hot on the trail of that fox! But you stop in your tracks and look around but can't find him anywhere. Carefully, you make your way into the cavern.  You carefully step over the skulls and bones of past explorers swearing not to make the same mistakes they made... what ever they were. You watch where you step, trying to not to step on any bones to give away your location. You hear a crunch and catch sight of the fox as he ducks out the exit on the far side of the cavern.<br/>]]></description>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <alias>Cave</alias>
+      <exit alias="east" to="Wumpus Cavern">
+        <inherit name="eastdirection" />
+      </exit>
+    </object>
+  </object>
+  <object name="startingup">
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <objectslistprefix type="string"></objectslistprefix>
+    <description type="script">
+    </description>
+    <enter type="script"><![CDATA[
+      ClearScreen
+      JS.setBackground ("black")
+      SetBackgroundImage ("px_avatar.png")
+      SetBackgroundColour ("black")
+      JS.setCss ("#gameBorder", "box-shadow:0px 0px 15px 5px #fac4ff;")
+      JS.setCss ("#txtCommand", "outline:none;box-shadow:0px 0px 2px 2px #296231;")
+      SetBackgroundOpacity(0.8)
+      PrintCentered ("<div onclick=\"sendEndWait()\"><br/><img width=\"10%\" src=\"" + GetFileURL("px_avatar.png") + "\"  onload=\"$(this).fadeIn(10000);\" style=\"display:none;box-shadow:0px 0px 15px 5px #fac4ff;\" /><br/><br/><br/><img src=\"" + GetFileURL("titlesplash.png")  + "\"  onload=\"$(this).fadeIn(1500);\" style=\"display:none;box-shadow:0px 0px 15px 5px #fac4ff;\" /></div><br/><br/><img onclick=\"ASLEvent('HandleNavCmdClick', 'l');\" src=\"" + GetFileURL("Initialising.png")  + "\"  onload=\"$(this).fadeOut(5500);\" /><br/></center><br/>")
+      PrintCentered ("<span onclick=\"sendEndWait()\">  <img src=\"" + GetFileURL("anykeytocontinue.png") + "\" id=\"titleimage\" onload=\"$(this).fadeIn(10000);\" style=\"display:none;box-shadow:0px 0px 15px 5px #fac4ff;\" /></span>")
+      wait {
+        MoveObject (player, startingup2)
+      }
+    ]]></enter>
+    <beforeenter type="script">
+      game.classiclocation = false
+      JS.eval ("$('#location').css('background', '#296231')")
+      JS.eval ("$('#commandPane').insertBefore($('#inventoryLabel'))")
+      JS.setPanes ("black", "white")
+      game.faketurns = 0
+      checkMaxScore
+      JS.setCss ("#gamePanes", "background:black")
+      EnableTurnScript (kv_locationAlerts)
+      EnableTurnScript (kv_panesOption)
+      EnableTurnScript (checkQuests_kv)
+      EnableTurnScript (kv_hasalerts)
+      EnableTurnScript (kv_scoring_gamename)
+      EnableTurnScript (rh_ingame)
+      EnableTurnScript (kv_shardintheroom)
+      EnableTurnScript (kv_watchforhelp)
+      EnableTurnScript (completelyThanked)
+      JS.setCss ("#location, #status, .ui-widget-header", "background-color:#296231;border:1px solid #296231;background-image:none;")
+      AddQuest (DarkLizerd, "Visit Dark Lizerds room", "Visit Dark Lizerd's world")
+      AddQuest (KV, "KVs_World", "Visit KV's gateway.")
+      JS.setCommands ("Look;Get all;UNDO;Wait;Save;ClearScreen;Panes;Hints", "black")
+      //JS.setCss ("#gameContent", "background:url('" + GetFileURL("qdk-background.jpg") + "');")
+      JS.uiHide ("#txtCommand")
+      game.parserignoreprefixes = Split("a;an;the;fucking;damn;damned;the fucking;the damn;the damned", ";")
+    </beforeenter>
+    <object name="startingup2">
+      <objectslistprefix type="string"></objectslistprefix>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <description type="script"><![CDATA[
+        SetBackgroundOpacity (0.8)
+        SetForegroundColour ("Black")
+        SetBackgroundColour ("Black")
+        JS.setCss ("#divOutput", "background:white")
+        JS.eval ("$('#status').css('max-height','0');")
+        ClearScreen
+        JS.uiHide ("#txtCommand")
+        PrintCentered ("{command:look:<br/><img src=\"" + GetFileURL("px_avatar.png")  + "\" id=\"titleimage\" onload=\"$(this).fadeIn(300);\" style=\"box-shadow:0px 0px 15px 5px #fac4ff;display:none\" /><br/><br/>}")
+        PrintCentered ("<span style=\"font-size:260%\">{game.gamename}</span><br/><span style=\"font-size:145%\">by {game.author}</span><br/>")
+        msg ("<span onclick=\"sendEndWait()\"><center>This game is for The Pixie. Thanks for everything you do!</center><br><hr/><br></span>")
+        msg ("")
+        PrintCentered ("<span style=\"background:#296231;padding:6px;box-shadow:0px 0px 15px 5px #fac4ff;;text-shadow:0 0 4px black\"><b>    <span onclick=\"sendEndWait()\">{colour:#fac4ff:PRESS ANY KEY TO BEGIN}</span></b></span><br/>")
+        wait {
+          SetBackgroundOpacity (1.0)
+          JS.uiShow ("#location")
+          JS.uiShow ("#txtCommand")
+          JS.setCss ("div#gameBorder", "box-shadow:0px 0px 15px 5px black;")
+          JS.setCss ("#txtCommand", "outline:none;box-shadow:0px 0px 5px 5px #296231;display:block;")
+          ClearScreen
+          PrintCentered ("")
+          SetBackgroundImage("")
+          MoveObject (player, Quest Forum)
+          UpdateContentsInLists
+          JS.uiShow ("#gamePanes")
+        }
+      ]]></description>
+    </object>
+    <object name="player">
+      <alias>The Pixie</alias>
+      <look>You'll have to find a mirror to do that.</look>
+      <attr name="can_clone" type="boolean">false</attr>
+      <score>Score: !/?</score>
+      <statusattributes type="stringdictionary">
+        <item>
+          <key>activeQuests</key>
+          <value><![CDATA[<a onclick="ASLEvent('HandleNavCmdClick', 'quest');" style=";cursor:pointer;" title="Click here to view a list of active Quests&#33;">Active Quests: !</a>]]></value>
+        </item>
+      </statusattributes>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+      </inventoryverbs>
+      <loadedrh />
+      <allQuestsComplete type="boolean">false</allQuestsComplete>
+      <activeQuests type="int">0</activeQuests>
+      <activeQuestList type="stringdictionary" />
+      <completedQuests type="stringlist">
+        <value><![CDATA[<span style=\"font-size:150%\"><b>Completed Quests:</b></span>]]></value>
+      </completedQuests>
+      <notLow type="boolean">false</notLow>
+      <thanked type="boolean">false</thanked>
+      <favorites type="objectlist"></favorites>
+      <object name="kv_device">
+        <inherit name="container_open" />
+        <feature_usegive />
+        <alias>Quest PX</alias>
+        <feature_container />
+        <transparent type="boolean">false</transparent>
+        <close type="boolean">false</close>
+        <open type="boolean">false</open>
+        <hidechildren type="boolean">false</hidechildren>
+        <listchildren />
+        <isopen />
+        <look><![CDATA[It's just your average, run of the mill, super-awesome Quest device. You don't have any actual service inside of the game world<a style="text-decoration:none" href="#" title="Once you've brought your account up to date, service will be reactivated."><sup>1</sup></a>, but you can still receive incoming messages and such.<br/><br/>{command:use quest device:USE THE QUEST PX}]]></look>
+        <drop type="boolean">false</drop>
+        <dropmsg>They don't make cases for this model, and you don't plan on dropping it until you get one!</dropmsg>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+        </inventoryverbs>
+        <listchildrenprefix>The screen reads:</listchildrenprefix>
+        <contentsprefix>which is displaying</contentsprefix>
+        <entries type="stringlist" />
+        <alt type="stringlist">
+          <value>Quest PX device</value>
+          <value>Quest device</value>
+          <value>PX</value>
+          <value>device</value>
+        </alt>
+        <take />
+        <scenery type="boolean">false</scenery>
+        <visible />
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+        </displayverbs>
+        <attr name="feature_switchable" type="boolean">false</attr>
+        <hintlist type="stringlist">
+          <value>Hint:  USE QUEST PX</value>
+        </hintlist>
+        <use type="script"><![CDATA[
+          game.menuoutputsection = StartNewOutputSection()
+          PrintCentered ("<div style=\"background:inherit;padding:12px\" ><br/><img width=\"10%\" <img src=\"" + GetFileURL("quest_square.png")  + "\"  title=\"QUEST PX\" id=\"titleimage\" onload=\"$(this).fadeIn(2000);\" style=\"display:none;\" /><br/><br/><img src=\"" + GetFileURL("viewalerts.png")  + "\"  title=\"Click here to view your alerts!\" id=\"titleimage\" onload=\"$(this).fadeIn(3000);\" style=\"display:none;box-shadow:0px 0px 15px 5px #269261;\"  onclick=\"ASLEvent('HandleButtonClick','view alerts')\" /><br/><br/><img <img src=\"" + GetFileURL("viewbookmarks.png")  + "\"  title=\"Click here to view your bookmarks!\" id=\"titleimage\" onload=\"$(this).fadeIn(4000);\" style=\"display:none;box-shadow:0px 0px 15px 5px #269261;\"  onclick=\"ASLEvent('HandleButtonClick','view bookmarks')\" /><br/><br/><img src=\"" + GetFileURL("viewdocs.png")  + "\" title=\"Click here to view the online Quest documentation!\"  id=\"titleimage\" onload=\"$(this).fadeIn(5000);\" style=\"display:none;box-shadow:0px 0px 15px 5px #269261;\"  onclick=\"ASLEvent('HandleButtonClick','view the Quest documentation')\" /><br/>{if player.loadedrh:<br/><img <img src=\"" + GetFileURL("consulthints.png")  + "\" title=\"Clicking this is a waste of time!\"  id=\"titleimage\" onload=\"$(this).fadeIn(5500);\" style=\"display:none;box-shadow:0px 0px 15px 5px #269261;\"  onclick=\"ASLEvent('HandleButtonClick','hints')\" /><br/><br/><img <img src=\"" + GetFileURL("viewcommands.png")  + "\" title=\"View the command list (for copying and pasting purposes)!\"  id=\"titleimage\" onload=\"$(this).fadeIn(6000);\" style=\"display:none;box-shadow:0px 0px 15px 5px #269261;\"  onclick=\"ASLEvent('HandleButtonClick','scopecommands')\" /><br/>}</div>")
+          EndOutputSection (game.menuoutputsection)
+          msg ("")
+          SetTimeout(1){
+            JS.scrollToEnd()
+          }
+        ]]></use>
+        <onswitchon type="script">
+          picture ("quest_square.png")
+        </onswitchon>
+        <ask type="scriptdictionary">
+          <item key="time">
+            msg ("\"Time is an illusion,\" says a soft, smooth voice.")
+          </item>
+        </ask>
+        <favorites type="objectlist">The Quest Forum</favorites>
+        <alerts type="objectlist">kv_welcome_alert; kv_js_post</alerts>
+        <object name="kv_welcome_alert">
+          <scenery type="boolean">false</scenery>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+          </inventoryverbs>
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+          </displayverbs>
+          <alias>NEW ALERT: Welcome, Pix!</alias>
+          <look type="script"><![CDATA[
+            RemoveObject (kv_welcome_alert)
+            if (not ListContains(kv_device.alerts, kv_welcome_alert)) {
+              list add (kv_device.alerts, kv_welcome_alert)
+            }
+            msg ("<p style=\"border:1px solid black;border-radius:65px;background:black;color:white;font-family:'Droid Sans';padding:19px\"><br/>Pix,<br/><br/>Welcome to the game!<br/><br/>You can enter: <code style=\"color:red\">GAMENAME title</code> to change the title to whatever you please.<br/><br/>Be sure to USE the Quest PX! (As if you didn't know THAT already!)<br/><br/>Oh, and you may need this before the game is over: <br/><span><code style=\"color:red\">JS.eval (\"$('#status').css('top', '0%')\")</code><br/><br/>R.H.<br/><br/></span></p>")
+            JS.scrollToEnd ()
+            if (HasAttribute(kv_device, "alertsnow")) {
+              if (ListContains(kv_device.alertsnow, kv_welcome_alert)) {
+                list remove (kv_device.alertsnow, kv_welcome_alert)
+              }
+            }
+            alertCheck
+            kv_welcome_alert.alias = "Welcome, Pix! (viewed alert)"
+          ]]></look>
+        </object>
+        <object name="kv_js_post">
+          <alias>post about JS</alias>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+          </inventoryverbs>
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+          </displayverbs>
+          <visible />
+          <scenery type="boolean">false</scenery>
+          <fav type="script"><![CDATA[
+            msg ("<img src='"+GetFileURL("jspost.png") + "' width=\"100%\" height=\"344\" /><br/><a href=\"https://textadventures.co.uk/forum/quest/topic/g60vk5rov0k4uc2sek2nvg/javascript-in-a-command\">View this post in your browser.</a>")
+            JS.scrollToEnd ()
+          ]]></fav>
+          <look type="script"><![CDATA[
+            if (HasAttribute(kv_device,"alerts")) {
+              if (ListContains(kv_device.alerts, kv_js_post)) {
+                list remove (kv_device.alerts, kv_js_post)
+              }
+            }
+            if (HasAttribute(kv_device,"favorites")) {
+              if (not ListContains(kv_device.favorites, kv_js_post)) {
+                list add (kv_device.favorites, kv_js_post)
+                msg ("This post has been automatically added to your Bookmarks. <br>(USE YOUR QUEST DEVICE TO VIEW YOUR BOOKMARKS.)")
+              }
+            }
+            msg ("<img src='"+GetFileURL("jspost.png") + "' width=\"100%\" height=\"344\" /><br/><a href=\"https://textadventures.co.uk/forum/quest/topic/g60vk5rov0k4uc2sek2nvg/javascript-in-a-command\">View this post in your browser.</a>")
+            RemoveObject (kv_js_post)
+            if (HasAttribute(kv_device,"alertsnow")) {
+              list remove (kv_device.alertsnow, kv_js_post)
+            }
+            JS.scrollToEnd ()
+            alertCheck
+          ]]></look>
+        </object>
+      </object>
+      <object name="kv_book">
+        <inherit name="openable" />
+        <alias>Pixie's book of magic</alias>
+        <visible />
+        <feature_container />
+        <look><![CDATA[It's a nice, leather tome with gold letters.<br/><br/>{command:READ BOOK}{colour:.}<br/>]]></look>
+        <drop type="boolean">false</drop>
+        <take />
+        <dropmsg>You're not dropping that!'</dropmsg>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Open</value>
+          <value>Close</value>
+        </inventoryverbs>
+        <alt type="stringlist">
+          <value>book</value>
+        </alt>
+        <hintlist type="stringlist">
+          <value>Hint 1:  Have you tried reading the book?</value>
+          <value>Hint 2:  Did you OPEN it before you tried to read it?</value>
+          <value>Hint 3:  If you have your side panes on, you can directly interact with the spells in the book when it's open.</value>
+        </hintlist>
+        <usedefaultprefix type="boolean">false</usedefaultprefix>
+        <read type="script">
+          if (kv_book.isopen) {
+            scrollsin = NewList()
+            foreach (scroll, GetDirectChildren(kv_book)) {
+              if (not ListContains(scrollsin, scroll)) {
+                list add (scrollsin, GetDisplayAlias(scroll))
+              }
+            }
+            if (ListCount(scrollsin) > 0){
+              ShowMenu ("Known Spells:", scrollsin, true) {
+                HandleSingleCommand ("x " + result)
+              }
+            }
+            else {
+              msg ("You haven't copied any scrolls to it yet.")
+            }
+          }
+          else {
+            msg ("You'll have to open it first.")
+          }
+        </read>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+          <value>Open</value>
+          <value>Close</value>
+        </displayverbs>
+        <object name="MSG spell">
+          <look><![CDATA[{b:Command pattern:}<br/><code style=\"background:lightgray;padding:4px\">msg (#text#)</code>]]></look>
+          <scenery />
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+            <value>Use</value>
+          </inventoryverbs>
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+          </displayverbs>
+          <drop type="boolean">false</drop>
+          <alias>MSG Spell</alias>
+          <feature_usegive />
+          <listalias><![CDATA[&nbsp;&nbsp;&nbsp;- MSG Spell]]></listalias>
+          <use type="script"><![CDATA[
+            msg ("<h1> Please enter a string or an {expression}:</h1><br/><center><h2><b>[ YOU HAVE ONE TURN, THEN PLAY WILL RESUME ] </b></h2></center>")
+            get input {
+              msg ("RESULT:")
+              msg (result)
+            }
+          ]]></use>
+        </object>
+        <object name="DIR spell">
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+          </displayverbs>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+            <value>Use</value>
+          </inventoryverbs>
+          <drop type="boolean">false</drop>
+          <scenery />
+          <feature_usegive />
+          <alias>DIR Spell</alias>
+          <listalias><![CDATA[&nbsp;&nbsp;&nbsp;- DIR Spell]]></listalias>
+          <look type="script"><![CDATA[
+            msg ("{b:Command Pattern:}<br/><br/><code style=\"background:lightgray;padding:4px\">DIR;LS</code><br/>")
+          ]]></look>
+          <use type="script">
+            HandleSingleCommand ("dir")
+          </use>
+        </object>
+        <object name="kv_tor_spell">
+          <alias>TOR Spell</alias>
+          <look><![CDATA[<pre><code>^(?<text1>cipher|decipher|code|decode|scramble|decipher) \(\"(?<text2>.*)\", (?<text3>.*)\)$</code></pre><br/><br/>Example: decipher ("Mjqqt", 5)]]></look>
+          <listalias><![CDATA[&nbsp;&nbsp;&nbsp;- TOR Spell]]></listalias>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+          </inventoryverbs>
+        </object>
+        <object name="kv_reverse_ spell">
+          <alias>Reverse String Spell</alias>
+          <listalias><![CDATA[&nbsp;&nbsp;&nbsp;- Reverse String Spell]]></listalias>
+          <displayverbs type="stringlist">
+            <value>Look at</value>
+          </displayverbs>
+          <inventoryverbs type="stringlist">
+            <value>Look at</value>
+          </inventoryverbs>
+          <look>reverse #text#</look>
+        </object>
+      </object>
+    </object>
+  </object>
+  <object name="Quest Forum">
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <exitslistprefix>You can go to </exitslistprefix>
+    <attr name="implementation_notes"><![CDATA[Dark Lizerd's room installed on 8-12-17<br/>]]></attr>
+    <alias>Hub</alias>
+    <description><![CDATA[{once:So, this is the hub, the nerve center of something that seems very important... }<br/>There are several people wandering around here, working on different things.  <br/>(Sometimes together, sometimes alone.)<br/>{if not DL_Room.visited:<br/>There is a strange, seemingly out of place doorway to the east, which casts an orange light on the floor just this side of it. There is a green field of grass with a desk, which is in the shade of an umbrella and sitting so that it is framed by the doorway. Someone wearing a dark cloak, which covers most of his features, is frantically working at the desk, moving papers around, and sometimes losing one to the ground below. Standing beside him is what looks like a short person covered in fur and wearing a leather skirt.<br/>}{once:<br/>In the southwest corner, by the water cooler, there are two people drinking and talking. When they notice that you are watching them, they excuse themselves and return to work.}<br/>]]></description>
+    <hintlist type="stringlist">
+      <value>Hint 1:  Have you tried going to it?</value>
+      <value>Hint 2:  You can't go to it the first time.</value>
+      <value>Hint 3:  The keypad is a red herring.  DL thought it would be funny to annoy you by stopping you the first time you tried to enter his room, but the keypad actually has nothing at all to do with the strange door.  Just try to go to the door twice.  The second attempt will be a success.</value>
+    </hintlist>
+    <onexit type="script">
+      stop sound
+    </onexit>
+    <enter type="script"><![CDATA[
+      SetBackgroundColour ("White")
+      if (not Richard Headkid.parent = Quest Forum and not Richard Headkid.hasbeenmoved) {
+        MoveObject (Richard Headkid, Quest Forum)
+        msg ("<br/>{object:Richard Headkid:RH} appears out of nowhere, stashes a strange pouch into his pocket, and gets to work on the {object:group project}.<br/>")
+        diskScript => {
+          HandleSingleCommand ("give disk to rh")
+        }
+        disk.givetorh = diskScript
+        list add (disk.inventoryverbs, "Give to RH")
+      }
+      if (GetBoolean(disk, "has_been_taken_by_rh") and Richard Headkid.parent = game.pov.parent) {
+        msg ("<br/>{object:Richard Headkid:Richard Headkid} appears to be waiting for some poor soul to ask a question so he can <del>confuse them</del> try to help them out.<br />")
+      }
+      if (KV.parent = Quest Forum and not kv_token of appreciation.hasbeenmoved) {
+        MoveObject (kv_token of appreciation, player)
+        firsttime {
+          AddQuest (KV, "cratemart", "Visit Crate Mart and collect the hidden item.")
+        }
+        MoveObject (kv_complete_alert, kv_device)
+        msg ("{b:YOU HAVE A NEW ALERT!}<br/><br/>\"Pixie!\" KV walks up and hands you a token.<br/><br/>\"That's just a small token of my appreciation, sir! <br/><br/>\"I don't know why I made you go through all that just to get it... <br/>\"(I think it may have been XanMag's fault...)\"<br/>")
+        msg ("<img width=\"19%\" src=\"" + GetFileURL("kv_token.png")  + "\" />")
+        QuestComplete (KV, "token")
+        IncreaseScore (10)
+        msg ("<center><b>[  YOUR SCORE HAS INCREASED BY 10  ]</b></center>")
+        list add (game.scoreList, "Completed KV's gateway: 10 points")
+      }
+    ]]></enter>
+    <firstenter type="script"><![CDATA[
+      AddQuest (XanMag, "helpXan", "Help XanMag out with a thing or few.")
+      alertCheck
+    ]]></firstenter>
+    <beforefirstenter type="script">
+      addHint (The Quest Forum, "Try examining it.")
+      if (DictionaryContains(game.povstatusattributes, "money")) {
+        dictionary remove (game.povstatusattributes, "money")
+      }
+      JS.setCss ("body", "background-color:#296231")
+      JS.setCss ("#gamePanes", "background-color:black")
+      SetupSidenav
+      JS.setCss ("#status", "display:block")
+      JS.setCss ("#txtCommand", "outline:none;box-shadow:0px 0px 5px 5px #296231;")
+      JS.setCss ("#location, #status, .ui-widget-header", "background-color:#296231;border:1px solid #296231;background-image:none;")
+      EnableTurnScript (kv_command_prompt_randomness)
+      JS.eval ("$('#statusVarsLabel,#statusVarsAccordion').remove();")
+      FinishTurn
+      game.turns = 0
+    </beforefirstenter>
+    <beforeenter type="script">
+      JS.eval ("$('#status').css('max-height','none');")
+    </beforeenter>
+    <destinations type="objectlist"></destinations>
+    <object name="XanMag">
+      <inherit name="namedmale" />
+      <inherit name="container_limited" />
+      <alt type="stringlist">
+        <value>XM</value>
+      </alt>
+      <listalias>XM</listalias>
+      <feature_container />
+      <open type="boolean">false</open>
+      <close type="boolean">false</close>
+      <transparent />
+      <hidechildren />
+      <listchildren />
+      <maxobjects type="int">1</maxobjects>
+      <scenery type="boolean">false</scenery>
+      <TaskCount type="int">3</TaskCount>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Speak to</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Drop</value>
+      </inventoryverbs>
+      <nocopy type="boolean">false</nocopy>
+      <maxScore type="int">115</maxScore>
+      <look type="script">
+        firsttime {
+          msg ("XanMag is a pretty normal fellow upon inspection.  His shirt is old and adorned with two Bells - apparently a beer logo - and his jeans are old and snug around his frumpy waist.  He is bouncing between activities as you would expect an over-caffeinated teenager with A.D.D. would despite the fact that he is not over-caffeinated, not a teenager, and has never been diagnosed as having attention deficit disorder.  Currently he {random:is scouring through the forum posts.:is fiddling with his iPhone.:is taking a long 'sip' from his fancy beer.:is flipping between browser tabs.:is listening to music streaming out of his laptop.:appears to be daydreaming.}")
+        }
+        otherwise {
+          msg ("XanMag is easily distracted by all the stimuli around him.  Currently his focus is on {random:scouring through the forum posts.:fiddling with his iPhone.:\"sipping\" his fancy beer.:flipping between browser tabs.:listening to music streaming out of his laptop.:the enthralling daydream he is having.}")
+        }
+        DisplayHttpLink ("Visit XanMag's profile page.", "https://textadventures.co.uk/user/view/emxhs1hs8uaib5hfblmp4a/xanmag", false)
+      </look>
+      <speak type="script"><![CDATA[
+        if (GetBoolean(XanMag, "aware")) {
+          firsttime {
+            msg ("\"Whoa,\" Xan says, seeming startled again.  \"What's up, Pixie?  Got any questions for me?  I'd love to help.\"  You realize he isn't real good at helping but he certainly does try.")
+          }
+          otherwise {
+            msg ("You startle him with your comment, but he gathers himself and says, \"What's up?  Feel free to ask me about anything.  And I literally mean <i><b>ANYTHING</i></b>\"  You nod, but wonder how much help he could actually be to you.")
+          }
+        }
+        else {
+          msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you said.\"  With that, he returns to his tasks.")
+          SetObjectFlagOn (XanMag, "aware")
+        }
+      ]]></speak>
+      <changedTaskCount type="script"><![CDATA[
+        if (XanMag.TaskCount = 2) {
+          msg ("\"You really are something special, Pixie.  Your wonders know no bounds.  But,\" Xan shrugs and reddens a bit, \"I'm pretty inept as you damn well know.  If there is any chance at all, could you do a couple more things for me?\"  Xan returns to his distractions.<br/><br/>")
+        }
+        else if (XanMag.TaskCount = 1) {
+          msg ("<br/>\"Oh, and, if you don't mind,\" Xan adds, \"There is still one more thing I need help with.  \"Do you mind?\"")
+        }
+        else if (XanMag.TaskCount = 0) {
+          msg ("\"Hmm.\"  A tear wells up in Xan's eye.  \"I don't have the words for your kindness.\"  He thinks a while and disappears behind a curtain.  Odd, you didn't notice that curtain before...<br/><br/>When he returns, Xan hands you a piece of paper and extends you his hand.  You shake it, and with the utmost sincerity, Xan says, \"You, Pixie, are truly appreciated.\"")
+          AddToInventory (certificateofappreciationXM)
+          IncreaseScore (20)
+          PrintCentered ("<b>[Your score has increased by 20!]</b>")
+          list add (game.scoreList, "Completed all of XM's tasks: 20 points")
+          QuestComplete (XanMag, "helpXan")
+        }
+      ]]></changedTaskCount>
+      <ask type="scriptdictionary">
+        <item key="music soundcloud soundation sound bands artists songs"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            firsttime {
+              msg ("\"I love my music,\" XM responds.  \"I've been known to make my own actually.  I've been having some trouble finding that new sound, however.\"  <br/><br/>He looks at you with renewed wonder and continues, \"I'm not sure if you have any experience, but if you run across a cool beat, use this to record it and let me have a listen!\"  With that, he returns to other things.")
+              AddToInventory (flash drive)
+            }
+            otherwise {
+              msg ("\"You have any cool, new beats recorded on that flash drive?  If so, let me have a listen!\"")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="iPhone phone cellphone"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"I love my my phone,\" XM responds.  \"Probably spend too much time on it, but, sometimes...\"  The rest of that sentence trails off in a string of unintelligible mumbling and he returns his attention to his phone.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="posts forumposts"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"What a goddamn mess these are,\" he replies.  \"I'd respond to them, but most of these questions I can't answer.\"<br/><br/>He looks at you as if he once again just realies who you are.  \"Oh, thank god.  It's <b><i>YOU</b></i>!  You mind doing something about all this?\"  Xan motions to the posts,mumbles what sounds like a \"Thanks again, bud...\" and returns his attention elsewhere.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="beer drink drinks libation"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"You like this kind, Pix?\"  He holds up a freshly opened bottle and wiggles it at you.  You see the image of a fish and catch the word 'Hear...' on the label.  \"I love this beer here.  Good stuff.\"  Xan takes a long gulp and returns his attention elsewhere.  ")
+            firsttime {
+              bartender.askedbeerXM = true
+              IncreaseScore (2)
+              PrintCentered ("<b>[Your score has increased by 2!]</b>")
+              list add (game.scoreList, "Asked XM about beer: 2 points")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="laptop"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"Meh.  I use it for just about everything.  You can relate to that right, Pix?  Can't afford my own though so this one is on loan from my school.\"  Xan returns his attention again to his laptop.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="daydream dream"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("After the fourth call of his name, Xan snaps out of whatever trance he was in.  \"Oh, hey, Pix.  Didn't see you there.  Whatcha up to?  Hopefully you plan on hanging out a while.  I'm awfully busy and could use some help around here.\"  He motions to the posts lying around.<br/><br/>By 'help', you understand that he is almost entirely incapable of doing anything on his own with this.  You nod and grin trying to get the patronization out of your mannerisms.<br/><br/>He returns to whatever he was thinking about before you tried conversation.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="browser tabs browsertabs internet"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("He looks over at his laptop.  \"Oh.  You wouldn't be interested in those really.  Just personal browsing.\"  He quickly closes a few... ummm... suspicious looking tabs before you get too nosy.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="fantasy football fantasyfootball"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"I'm sure you have no interest in American Football, Pix, but if you must know...\" Xan rambles on for what feels like hours about his fantasy football team.  He really seems to enjoy verbally eviscerating and demasculating his fellow leaguemates.  It's quite a colorful monologue, but you have no real interest in it and, eventually, after a long while, you notice he has stopped talking and has returned his attention elsewhere.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="teaching teacher teach school students class classroom"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"Oh, hiya, Pix.  It's my job.  It's a love and hate type relationship, but mostly a love thing.  I enjoy teaching, but when it is not summertime, I have a harder time hanging out here in this 'time-sucker' of place.\"  <br/><br/>He returns to one of his many distractions.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="dance dancing"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"I love my music,\" Xan says.  <br/><br/>He flashes a few dance moves that are in perfect rhythm to song streaming from his laptop.  <br/><br/>\"Pretty sweet, huh, Pix?\"  You're not sure if <i>sweet</i> is what you would call that, but you nod your head affirmatively anyway.  Xan smiles and returns to his distractions.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="document worddocument writing author authoring story book"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("Xan looks at you with a skeptical eye.  \"Hm.  You've noticed that, huh?  Well, you are great and all, Pix, but that is kind of personal.  It's writing that I would prefer to keep secret.  <i>No one even knows the <b>name</b> of it yet</i>.\"  Xan looks genuinely concerned and a bit uneasy.  He returns to other things to end the awkwardness.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="anything nothing"><![CDATA[
+          firsttime {
+            player.said_anything = false
+            if (EndsWith(player.currentcommand, "anything")) {
+              player.said_anything = true
+            }
+            msg ("\"Well, that certainly is an interesting concept.  It's almost as interesting as {either player.said_anything:nothing|anything}.  Can you imagine nothing?  Nothing is the absence of anything.  Anything is everything including light and space.  You see, a long, long time ago... like 13.5 billion years ago, there was nothing.  Not even space.  Could you imagine?  Seems bizarre, right?  Well, get this,\" he continues, becoming more and more animated... \"Suddenly there was <i>some</i>thing,\" he gestures, hands flying wildly.  \"Something from... from what?!? What was that what, Pixie?\" He asks, flailing his arms around at... well, at whatever he is seeing in his mind's eye.  \"I'll tell you of the <i>what</i>,\" Xan continues, \"there are these things, called the Higgs-Boson.  I have one right here...\" Xan digs into his pocket and rummages around a bit.<br/><br/>\"Wait.  Look here!\" He pulls his hands violently from his pocket and presents a closed but open palm.  Your attention is drawn to a little brown tablet that inadvertently was ejected from Xan's pocket and has skittered across the floor.  Xan continues, \"You SEE it, Pix?  Do you?\"<br/><br/>You shake your head no.  \"Bingo!  Neither do I!  It has been avoiding me for years and years.  WE <i>know</i> it exists but we haven't been able to isolate it to study it.  Just imagine,\" he continues, still gesturing wildly. \"With this,\" as he references his empty palm, \"We might just be able to explain it ALL!!  There might just be an explanation to the beginning and the end.\"  <br/><br/>Xan trails off and looks around the room as if trying to spot an elusive shadow in a darkened room.  \"Beginning.  End.  What was I saying again?\"  Xan's attention has been redirected to other things. ")
+            IncreaseScore (4)
+            PrintCentered ("<b>[Your score has increased by 4!]</b>")
+            list add (game.scoreList, "Asked XM about {either player.said_anything:nothing|anything}: 4 points")
+            MakeObjectVisible (whitepillXM)
+            SetObjectFlagOn (XanMag, "aware")
+          }
+          otherwise {
+            msg ("Xan begins his lengthy diatribe on space and the Big Bang and the LHC and the evolution of the cosmos...<br/><br/>Hours later, you come to feeling exhausted.  Better get moving.")
+          }
+        ]]></item>
+        <item key="blunt weed marajuana dank drugs smoke smoking cannabis plant joint joints"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            if (GetBoolean(PlantXM, "weedviewedXM")) {
+              firsttime {
+                msg ("\"You ain't the Po are you?\"  Xan looks at you with a skeptical eye.   \"Nah, just kidding, Pixie.  Yeah, I like the occasional puff.  How about you?  Oh, you don't have any on you.  Hmm.  Me either.  I can roll a beauty if you can bring me some.\" Xan returns to pretending to be busy with a thousand things.")
+                SetObjectFlagOn (PlantXM, "weedableXM")
+              }
+              otherwise {
+                if (Got(bluntXM)) {
+                  msg ("\"Smoke 'em if you got 'em.\"  Odd.  He sounds like Rick Moranis in Spaceballs...")
+                }
+                else {
+                  msg ("\"Yep.  Me likey.  You likey?\"  Xan returns to his 'work'.")
+                }
+              }
+            }
+            else if (Got(budsXM)) {
+              msg ("\"Hey, Pix!  Is that what I think it is, or are you carrying a skunk in your pocket?  Let me see that!\"")
+            }
+            else {
+              msg ("\"Yeah.  What about it?\"  Xan goes back to bouncing around like a long-tailed cat on a porch full of rockers.")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="hk hegemon khan hegemonkhan hege heg"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            firsttime {
+              msg ("\"HK does a lot here, Pix.  You know that.  He has certainly been helpful, like you, to the Quest Forums all these years.\"  At this point, Xan lowers his voice a bit.  \"Although...HK is a mystery/enigma/riddle wrapped up in a conundrum/puzzle/perplexity.  If you know what I mean.\"  <br/><br/>Xan winks at you and looks up quickly in the direction he last saw HK.  \"Who knows though.  He might be up to something.\"")
+            }
+            otherwise {
+              msg ("\"Good dude that HK.  Just keep your eyes up.\"  Xan looks around the room at where he last saw HK before returning to accomplishing so little.")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="quest textadventures text adventures forum"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            firsttime {
+              msg ("Xan chuckles.  \"Why are you asking me?  You are the expert.\"  Xan returns to his work, but quickly turns back around again.  \"Oh.  You're serious.\"  Xan smiles.  \"You just must want to humor me, huh?  I love it here.  Good people.  Good friends.  Excellent helpers.  I can't complain.  Those spammers can be quite annoying though.\"<br/><br/>You bore quickly and Xan continues to babble.  Eventually you've noticed he has returned to his 'work'.")
+            }
+            otherwise {
+              msg ("\"I like it here.  It's challenging and enjoyable.  Thank you for all of your help.\"")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="group project groupproject secret secretproject"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            firsttime {
+              msg ("\"Ummm....\" Xan looks around nervously, holding special attention at where he last spotted KV.  \"We aren't really supposed to talk about that here.  At least... not now.\"  Xan returns to his work.")
+            }
+            otherwise {
+              msg ("\"Sorry, Pix.  I've told you once.  We aren't really allowed to talk about it here.  The 'boss',\" XM says while air-quoting the word 'boss', \"says so.\"")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="kavin richard headkid richardheadkid rh"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            firsttime {
+              msg ("\"That bloody twit?\" XM says in his best, yet still terrible, English accent gesturing to where he last saw RH.  \"He's some sort of savant I think.  Quite brilliant but a little...\" XM pauses to think.  \"A little off maybe? Better keep an eye on that one, Pix.\"  With a hardy slap on the shoulder, XM spins and returns to next-to-nothing.")
+            }
+            otherwise {
+              msg ("\"Quite gifted that one.\"  He waves over at RH.  \"<i>This</i> was his idea in the first place and I think it has turned out just right!\"")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="dark lizerd darklizerd darklizard lizard dl"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            firsttime {
+              msg ("\"Odd bird.  Just look at him.\"  He glances over his shoulder to make sure there are no eavesdroppers.  \"He always looks like he is up to something, if you know what I mean.  Or, maybe, he's just thinking up his next great idea.  Either way.  You might want to be wary of that one.\"  Xan returns to his chores.")
+            }
+            otherwise {
+              msg ("\"Good guy, DL.  Right Pix?  Ask him for ideas.  He'll churn up something. Just keep your eyes on him.\"")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="prima primafacie facie"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            if (Contains (pedestalXM,IdeaInAnEnvelopeXM)) {
+              firsttime {
+                msg ("Xan looks at you and freezes.  His eyes widen.  \"Wait!\"<br/><br/>\"Eureka!\"  He shouts.  \"I've done it.  Wait.  No.  <i>You've</i> done it!  No, wait.  I've got it.  You... Me.   I've... Either way, whatever!\"  Xan exclaims excitedly.  \"I need to get to writing!\"")
+                XanMag.TaskCount = XanMag.TaskCount - 1
+                IncreaseScore (20)
+                PrintCentered ("<b>[Your score has increased by 20!]</b>")
+                list add (game.scoreList, "Asked XM about the idea: 20 points")
+              }
+              otherwise {
+                msg ("\"It's coming along nicely thanks to us!\"  Xan gives you a high five and returns quickly to his computer.")
+              }
+            }
+            else {
+              msg ("Xan looks at you with a skeptical eye.  \"Hm.  Yeah.  I'm writing a book.  I'm a little obfuscated... opaqued...\"  He pauses and looks confused.  \"I've got writer's block okay?  Sorry.\"  Xan's face lengthens in sadness.  He returns to work.")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="xm xan mag xanmag himself he"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"Well,\" Xan looks around sheepishly.  \"I yam what I yam,\" he says in a terrible Popeye-like accent.  \"Look at me all you want.  You'll learn everything you need to know.\"")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="posts post forumpost forum"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"There are posts all over this stinking place.  Most are useful but, \"Some are just outright dumb.\"  He laughs and says, \"You know what I mean?\"  Xan returns to doing nothing and somehow makes that look challenging.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="computer pc comp"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"My computer is not too much to brag about.\"  He flicks it with a backhand before returning to his stuff.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+      </ask>
+      <object name="laptopXM">
+        <inherit name="container_limited" />
+        <scenery />
+        <takemsg>This laptop belongs to XanMag.  He is currently at a "six".  You do not want to see him take it to a "ten".</takemsg>
+        <feature_container />
+        <open type="boolean">false</open>
+        <close type="boolean">false</close>
+        <hidechildren />
+        <listchildren />
+        <maxobjects type="int">1</maxobjects>
+        <openmsg>It's already open and the screen can be viewed.</openmsg>
+        <closemsg>No point in closing XM's laptop.</closemsg>
+        <transparent />
+        <nocopy type="boolean">false</nocopy>
+        <alias>laptop</alias>
+        <alt type="stringlist">
+          <value>computer</value>
+          <value>pc</value>
+          <value>labtop</value>
+        </alt>
+        <look type="script">
+          msg ("You take a quick peak at the laptop while XanMag is distracted.  It's sleek and modern and you wonder how XanMag could afford it on his measly teacher's salary.  Many tabs are open across the top of Chrome, but the screen is currently displaying {random:a fantasy football draft page.:some website called TheChive.:the Soundation home page.:the Soundcloud homepage.:a Yahoo! email page.:a website called Beer Advocate.} You also notice that there is a word document open in the background.")
+        </look>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+          <value>Open</value>
+          <value>Close</value>
+        </displayverbs>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+          <value>Drop</value>
+          <value>Open</value>
+          <value>Close</value>
+        </inventoryverbs>
+        <object name="browser tabsXM">
+          <scenery />
+          <look>Just a bunch of seemingly unrelated tabs across the top of XM's laptop.</look>
+          <alias>browser tabs</alias>
+          <alt type="stringlist">
+            <value>tabs</value>
+            <value>browser</value>
+            <value>internet</value>
+          </alt>
+        </object>
+        <object name="word document">
+          <look>It's in the background so you can't see it, but it is definitely there.  You wonder what information it contains...</look>
+          <scenery />
+          <feature_usegive />
+          <nocopy type="boolean">false</nocopy>
+          <read type="script">
+            firsttime {
+              msg ("You move the pointer over the word document icon and just before you are able to click it, Xan shoos you briskly away.  \"Sorry, Pix,\" I'd like to show you what I've been writing, but... but... \"It's kind of personal.\"  Xan's face flushes and he returns to other things.")
+            }
+            otherwise {
+              msg ("Evidently, Xan doesn't want you snooping around his personal documents so you leave it be.")
+            }
+          </read>
+          <use type="script">
+            msg ("This is not your laptop to use.  Sorry.")
+          </use>
+          <exit alias="northeast" to="WorldofBeerXM">
+            <inherit name="northeastdirection" />
+          </exit>
+        </object>
+      </object>
+      <object name="iPhoneXM">
+        <scenery />
+        <takemsg>No way.  XanMag is very protective of his stuff.</takemsg>
+        <alias>iPhone</alias>
+        <nocopy type="boolean">false</nocopy>
+        <look type="script">
+          msg ("It is your standard run-of-the-mill iPhone.")
+        </look>
+      </object>
+      <object name="beerXM">
+        <scenery />
+        <takemsg>That will never happen.  You want to see XanMag go total apeshit?</takemsg>
+        <alias>beer</alias>
+        <drink>You try to snatch a quick libation off of Xan's beer, but he deflects your lips with a sharp backhand.  Looks like you'll be getting none of that.</drink>
+        <nocopy type="string"></nocopy>
+        <look type="script">
+          msg ("It looks like XanMag is currently clutching a {random:Boddington's.:Old Speckled Hen.:Breckenridge Vanilla Porter.:Bell's Two Hearted.:Elysian Space Dust IPA.:Guiness.:Murphy's Irish Stout.}")
+        </look>
+      </object>
+      <object name="musicXM">
+        <scenery />
+        <look>You can't really look at the music XanMag is listening to, can you?</look>
+        <takemsg>The music is on the laptop and the laptop is untakeable.  Therefore, you cannot take the music.</takemsg>
+        <listen>The music is very quiet but it sounds like you can make out the rhythm's of a {random:Tech N9ne:Hopsin:Dirty Heads:XanMag:Dispatch:State Radio:Atmosphere:Mac Lethal:Mayday:Krizz Kaliko:Sublime:Ces Cru} song.</listen>
+        <alias>music</alias>
+        <nocopy type="boolean">false</nocopy>
+      </object>
+      <object name="bluntXM">
+        <alias>blunt</alias>
+        <visible type="boolean">false</visible>
+        <feature_usegive />
+        <smell>It smells like you'll be writing a new text adventure after you smoke it!  (All the words will just FALL INTO PLACE!)</smell>
+        <alt type="stringlist">
+          <value>cigarette</value>
+          <value>joint</value>
+          <value>fatty</value>
+        </alt>
+        <look type="script">
+          if (GetBoolean(bluntXM, "litXM")) {
+            msg ("There are dark embers surrounding a faint orange glow at one end of the blunt.  It appears ready to be smoked.")
+          }
+          else {
+            msg ("It's a big, fat, unlit blunt.  Smells a bit skunky.")
+          }
+        </look>
+        <smoke type="script">
+          msg ("You try and take a hit from a cool and unlit cigarette.  It just doesn't seem to work...")
+        </smoke>
+        <giveto type="scriptdictionary">
+          <item key="GalGadotXM"><![CDATA[
+            firsttime {
+              msg ("\"Thanks, Pix!\"  Gal gives you a light kiss on the cheek.  \"It's a little stressed living in here.  If you know what I mean.\"  She takes the joint from you and it immediately starts to burn.  DAMN.  She <i>IS</i> hot!<br/><br/>She takes a long draw from the cigarette and hands it back to you.  <br/><br/>\"Thanks, dear.\"")
+              firsttime {
+                IncreaseScore (6)
+                PrintCentered ("<b>[Your score has increased by 6!]</b>")
+                list add (game.scoreList, "Passed the doobie to the left-hand side: 6 points")
+              }
+              RemoveObject (bluntXM)
+              MoveObject (litbluntXM, player)
+            }
+            otherwise {
+              msg ("\"Are you trying to take advantage of me, you little devil.\"  She wiggles her finger at you and smiles.  \"Sorry, sexy, I just can't risk another draw on that.\"")
+            }
+          ]]></item>
+          <item key="KV">
+            firsttime {
+              msg ("\"Nah, I don't want RH to show back up.\"  KV shrugs.")
+            }
+            otherwise {
+              msg ("\"Sorry, man.  No can do.\"")
+            }
+          </item>
+          <item key="hegemonkhan">
+            firsttime {
+              msg ("HK sees your offer and declines.  He returns to deep thinking.")
+            }
+            otherwise {
+              msg ("\"No thanks, Pix.\"")
+            }
+          </item>
+          <item key="Dark_Lizerd">
+            msg ("\"Meh.  Not interested.  I have better things to do.\"")
+          </item>
+          <item key="DarkLizerd">
+            msg ("\"Meh.  Not interested.  I have better things to do.\"")
+          </item>
+          <item key="Richard Headkid">
+            firsttime {
+              msg ("\"You'll need a flame, or something at least really hot to light that.  And, sorry, I don't have one.  KV doesn't let me play with fire anymore.\"")
+            }
+            otherwise {
+              msg ("\"That's still not lit, man,\" RH says.  \"Find a flame.   ...or something hot.\"")
+            }
+          </item>
+          <item key="XanMag">
+            firsttime {
+              msg ("\"Your first rodeo, Pixie?\"  Xan laughs.  \"This needs lit.  Here.  Gimme that.\"  He snatches the joint from you and reaches into his pocket.  \"Shit.  I must have lost my lighter.  Just find a flame or something hot enough and light that up.  Bring it back when you are done?\"")
+            }
+            otherwise {
+              msg ("\"Needs lit.  Something hot like a flame would do the trick.\"")
+            }
+          </item>
+        </giveto>
+      </object>
+    </object>
+    <command name="XM dance CMD">
+      <pattern>dance; dance to music; dance for xm; dance for xanmag; dance with xanmag</pattern>
+      <script>
+        msg ("XanMag sees your movement and matches it with much more precision and professionalism.")
+      </script>
+    </command>
+    <object name="whitepillXM">
+      <visible type="boolean">false</visible>
+      <look>You look closely at the pill.  It's light brown and has the letters AD etched in its surface.</look>
+      <alias>brown pill</alias>
+      <takemsg>{if BeginsWith(LCase(player.currentcommand), "take")):By take I assume you mean pick up?  }Okay.  Taken.</takemsg>
+      <alt type="stringlist">
+        <value>adderall</value>
+      </alt>
+      <eat>You, as far as I know, do not need adderall.  You are completely focused.  You hold on to it rather than tempt fate.</eat>
+      <feature_usegive />
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Drop</value>
+      </inventoryverbs>
+      <nocopy type="boolean">false</nocopy>
+      <take type="script">
+        if (StartsWith (LCase(player.currentcommand), "take")) {
+          msg ("By take I assume you mean pick up?  Okay.  Taken.")
+          MoveObject (whitepillXM, player)
+        }
+        else {
+          msg ("Okay.  Taken.")
+          MoveObject (whitepillXM, player)
+        }
+      </take>
+      <giveto type="scriptdictionary">
+        <item key="XanMag"><![CDATA[
+          msg ("You offer the pill to XanMag.<br/><br/>He takes it from you and without pausing long enough to wink, tosses it in his mouth and washes it down with a beer.<br/><br/>A few moments later Xan settles down and gets your attention.<br/><br/>\"Listen, you've been great all these years, Pix.  Go over to that hi-tech interface over there,\" he says, making direct and prolonged eye contact with you, \"and log in.  My password is 'frittata'.  Once you log-in, there will be a little something that pops-up that I need help with.  As always, thanks a ton!\"  <br/><br/>A couple minutes pass and XanMag becomes distracted again.")
+          MakeObjectVisible (hitechinterface)
+          firsttime {
+            IncreaseScore (2)
+            PrintCentered ("<b>[Your score has increased by 2!]</b>")
+            list add (game.scoreList, "Gave XM his pill: 2 points")
+          }
+          RemoveObject (whitepillXM)
+        ]]></item>
+        <item key="Richard Headkid"><![CDATA[
+          msg ("\"Don't need it!  I'm focused enough!\"<br/><br/>You highly doubt that, but whatever.")
+        ]]></item>
+        <item key="GalGadotXM">
+          msg ("\"I'm sure that is a perfectly safe little Adderall you have there, Pixie,\" says mumbles, \"But, I'm not the one that needs that.\"")
+        </item>
+        <item key="Dark_Lizerd">
+          msg ("\"No thanks.  I can stay focused, unlike some people,\" DL replies glancing over at XM and RH.")
+        </item>
+        <item key="DarkLizerd">
+          msg ("\"No thanks.  I can stay focused, unlike some people,\" DL replies glancing over at XM and RH.")
+        </item>
+        <item key="hegemonkhan">
+          msg ("HK definitely does not need this!")
+        </item>
+      </giveto>
+    </object>
+    <object name="hitechinterface">
+      <alias>hi-tech interface</alias>
+      <look>It's not really all that hi-tech really.  It's a small keyboard attached to a small monitor.  It seems ready for you to use.</look>
+      <visible type="boolean">false</visible>
+      <takemsg>It's securely fastened to the thingy.</takemsg>
+      <feature_usegive />
+      <nocopy type="string"></nocopy>
+      <use type="script"><![CDATA[
+        msg ("You start by pressing any key.<br/><br/>A single line pops-up:<br/>")
+        PrintCentered ("<b><u>PLEASE ENTER PASSWORD NOW:</u></b>")
+        get input {
+          switch (LCase(result)) {
+            case ("frittata") {
+              firsttime {
+                msg ("You type 'frittata' with the keyboard and the letters pop up on the small monitor.  You press enter and wait.")
+                IncreaseScore (4)
+                PrintCentered ("<b>[Your score has increased by 4!]</b>")
+                list add (game.scoreList, "Entered the correct password into XM's interface: 4 points")
+                wait {
+                  msg ("Nothing changes on the screen, but you hear a strange <b>zaawhaaaap</b>.  A sound you image would come from tossing a vulture into a giant bug zapper.<br/><br/>Hmmm...<br/><br/>Nothing else.")
+                  MakeObjectVisible (mindmelt portal)
+                  mindmelt portal.enter => {
+                    msg ("As you approach the black hole, you dumb feel the washness over you...  <br/><br/>The last thing you recall is a faint sucking sound...")
+                    wait {
+                      MoveObject (player, BeatLabXM)
+                    }
+                  }
+                  mindmelt portal.go => {
+                    msg ("As you approach the black hole, you the dumbness wash over you...  <br/><br/>The last thing you recall is a faint sucking sound...")
+                    wait {
+                      MoveObject (player, BeatLabXM)
+                    }
+                  }
+                }
+              }
+              otherwise {
+                msg ("If you haven't noticed, the 'mindmelt' door has already been opened.")
+              }
+            }
+            default {
+              msg ("The monitor flickers and goes blank.  Looks like you may need to use it again if you want another shot at this.")
+            }
+          }
+        }
+      ]]></use>
+    </object>
+    <object name="mindmelt portal">
+      <look>It's a strange black hole about the size of a manhole cover.  The dark circle is opened and wedged into a corner of the hub.  Just lookin' at it make you feel dumberer. You could probably 'enter portal' if you choose to.</look>
+      <scenery type="boolean">false</scenery>
+      <visible type="boolean">false</visible>
+      <alias>mind-melt portal</alias>
+      <alt type="stringlist">
+        <value>portal</value>
+        <value>mindmelt portal</value>
+        <value>mind portal</value>
+        <value>black hole</value>
+      </alt>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Enter</value>
+      </displayverbs>
+      <enterverb type="script"><![CDATA[
+        msg ("As you approach the black hole, you the dumbness wash over you...  <br/><br/>The last thing you recall is a faint sucking sound...")
+        wait {
+          MoveObject (player, BeatLabXM)
+        }
+      ]]></enterverb>
+    </object>
+    <object name="hegemonkhan">
+      <inherit name="namedmale" />
+      <alt type="stringlist">
+        <value>hk</value>
+      </alt>
+      <listalias>HK</listalias>
+      <attr name="feature_usegive" type="boolean">false</attr>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <alias>HK</alias>
+      <nocopy type="boolean">false</nocopy>
+      <attr name="feature_startscript" type="boolean">false</attr>
+      <hintlist type="stringlist">
+        <value>Hint 1:  "HK was too busy with school to collaborate on this one, but he does say, "THANKS, PIXIE!", and he approved his NPC's appearance here."</value>
+        <value>Hint 2:  You can ask HK about the forum.</value>
+        <value>Hint 3:  You can ask HK about his favorite story.</value>
+      </hintlist>
+      <speak>HK ignores you.{once:  Try asking him about the forum or his favorite story.}</speak>
+      <look type="script"><![CDATA[
+        msg ("HK/hegemonkhan/HegemonKhan is smiling and nodding at you, but most of his attention is on his work.<br/><br/>You decide he might not appreciate people bothering him while he's studying and avert your attention elsehere.<br/>")
+        DisplayHttpLink ("Visit hegemonkhan's profile page on textadventures.co.uk", "https://textadventures.co.uk/user/view/c09F2iijXkGqmDNIeJwKqA/hegemonkhan", false)
+      ]]></look>
+      <telltodefault type="script">
+        msg ("\"I can't " + text + " because I'm trying to study, Pix.,\" says HegemonKhan.")
+      </telltodefault>
+      <askdefault type="script">
+        msg ("\"I wish I could help, Pixie,\" says HK, \"but I really need to study.\"")
+      </askdefault>
+      <telldefault type="script">
+        msg ("HK nods but doesn't look up from his work.")
+      </telldefault>
+      <ask type="scriptdictionary">
+        <item key="forum site website"><![CDATA[
+          firsttime {
+            msg ("HK takes/inhales a big/deep breath and...<br/>")
+            JS.addText("<p>\"Pixie is the main forum poster (as well as developing quest and writing/creating guides/libraries for us, and whatever else he does as well with quest). Manowar is in charge of the quest servers. Not sure if this includes the quest site/forum, and/or if Pixie is the admins of the quest site/forum or if Manowar is, or both, meh. I hope Jay is still involved/helping/around with quest, but he's definately not been posting anymore, sighs. Jay and Pixie were the most knowledgeable and helpful posters here, but it's just been Pixie now (and KV too... a user who've learned a lot of coding and quest, quickly... sighs). From time to time, Pertex will post too, if there's an unanswered post, as he's also very knowledgeable and knows quest well, like Pixie and Jay. Most are probably busy with real life and/or managing/working on quest behind the scenes, from the public eye/forum-posting.<br/><br/>\"I try to help... too (somewhat code knowledgeable), and we got some other users too, who help, some who're very code knowledgeable and some less so.<br/><br/>\"I think XanMag is one of the quest game review moderators (as the site needed help with getting the games reviewed/organized), but I'm not sure how the site management structure is set up, how much mod power XanMag has, how many moderators/admins, and/or what/how-many type/roles of moderators there are. The site obviously isn't massive (it's not a social site with millions of users and lots of debates/arguments/trolls/flame/hostility wars to deal with), so there's probably not too much management structure.<br/><br/>\"I'm still perplexed at possibly how many accounts KV/Richard Headkid has on here... 'monster forum monster' and 'quest forum quest' users... feel like they're KV/Richard Headkid, too... I can't keep up with lots of his posts...\"  HK laughs and returns to his studies.</p>")
+          }
+          otherwise {
+            msg ("\"I wish I could expound, Pixie,\" says HK, \"but I really need to study.\"")
+          }
+        ]]></item>
+        <item key="story stories movie movies music tv television tv shows anime manga hentai"><![CDATA[
+          msg ("HK grins broadly and says, \"can't select one... but can list many favorites, lol<br/>")
+          JS.addText ("<p>\"(This will be really long... just doing this off the top of my head, which will be missing a lot of stuff... I'd have to put more work in for a more complete list...)</p><br/><hr><br/><p>\"(still under construction... I'll have to look up more movies/games/books/etc ... as I can't remember them off the top of my head...)</p><br/><p>\"(some of these aren't nessarily my favorites... lol. Most are, but some aren't, but including them anyways, for if anyone is interested in checking them out, and for just what I've seen, and also, some of these aren't really or are hardly as literature/stories too... meh)\"</p><br/>")
+          JS.addText ("<hr><br/><p>GAMING:</p><br/><p>NES:</p><br/><pre style=\"white-space: pre-wrap; word-break: keep-all;\"><code>01. Shadowgate<br/>02. Maniac Mansion<br/>03. Final Fantasy 1+2<br/>04. Little Nemo<br/>05. Mega Man (1 to ?)<br/>06. Crystalis, Willow<br/>07. Zelda (1+2)<br/>08. Super Mario Bros (1-3)<br/>09. Metroid (1)<br/>10. Teenage Mutant Ninja Turtles (1+2)<br/>11. Fester's Quest<br/></code></pre><br/><p>SNES:</p><br/><pre style=\"white-space: pre-wrap; word-break: keep-all;\"><code>01. Breath of Fire 1+2<br/>02. Lufia 1+2<br/>03. Final Fantasy 5+6<br/>04. OgreBattle: March of the Black Queen (?/?)<br/>")
+          JS.addText("05. Zelda: A Link to the Past (3 or 4)<br/>06. Super Mario World<br/>07. Super Metroid (3)<br/>08. Killer Insinct (1)<br/>09. Street Fighter 2<br/>10. Mortal Kombat (1-3, 3:Ultimate)<br/>11. Secret of Mana<br/>12. Chrono Trigger<br/>13. Mega Man X (1-3)<br/>14. 7th Saga<br/>15. Secret of Evermore<br/>16. the Gaia series (Soul Blazer:1/3, Illusion of Gaia:2/3, Terranigma:3/3)<br/>17. Jurassic Park<br/>18. EVO: Search for Eden<br/>19. Road Runner and Wile E. Coyote Death Valley Rally (game was unique/hard due to the road runner's speed and actual use of physics with its speed: inertia: doesn't stop right away: skids forward a bit, lol)<br/>20. Star Fox<br/></code></pre><br/><p>GB:</p><br/><pre style=\"white-space: pre-wrap; word-break: keep-all;\"><code>01. Zelda: Link's Awakening (3 or 4)<br/>02. Metroid Returns (2)<br/></code></pre><br/><p>N64:</p><br/><pre><code>01. Zelda: Ocarina of Time (5)<br/>02. Zelda: Minora's Mask (6)<br/></code></pre>")
+          JS.addText("<br/><p>PS1:</p><br/><pre><code>01. Breath of Fire 3+4<br/>02. Parasite Eve (1)<br/>03. Final Fantasy 7+8<br/>04. OgreBattle: Tactics Ogre (?/?)<br/>05. Metal Gear Solid<br/></code></pre><br/><p>Computer (Apple/PC):</p><br/><pre style=\"white-space: pre-wrap; word-break: keep-all;\"><code>01. Might and Magic (4+5)<br/>02. Wizards and Warriors (2000, heuristic park)<br/>03. Diablo 1+2<br/>04. Star Craft (1)<br/>05. Warcraft (1+2)<br/>06. Heroes of Might and Magic 3<br/>07. Pharaoh<br/>08. Civilization (1-4)<br/>09. Fall From Heaven 1 (mod for Civ4:BTS-xpac)<br/>10. Fall From Heaven 2 (mod for Civ4:BTS-xpac)<br/>11. Think Quick<br/>12. Oregon Train<br/>13. Amazon Trail<br/>14. Myst<br/>15. Riven<br/>16. TES: Morrowind<br/>17. Alpha Centauri<br/>18. Outpost<br/>19. Fallout (1+2)<br/>20. The Dig<br/>21. 7th Guest<br/>22. Colonization<br/>23. Sim City, Sim City 2000, Sim City 3000<br/>24. Sim Life<br/>25. Sim Ant<br/></code></pre><br/>")
+          JS.addText ("<p>Arcade:</p><br/><pre style=\"white-space: pre-wrap; word-break: keep-all;\"><code>01. Mortal Kombat (1-3, 3:Ultimate)<br/>02. Street Fighter: Third Strike<br/>03. Killer Instinct (1)<br/>04. The King of Dragons<br/>05. Slaughter House<br/>06. Tekken (1-3)<br/></code></pre><br/><hr><br/><p>Books:</p><br/><pre style=\"white-space: pre-wrap; word-break: keep-all;\"><code>01. Wheel of Time series (Robert Jordan)<br/>02. Hobbit and Lord of the Rings series (J.R.R. Tolkien)<br/>03. Wizard of Earthsea (Ursula K. Le Guin)<br/>04. Mary Shelley's Frankenstein (Mary Shelley)<br/>05. Crime and Punishment (Fyodor Dostoyevsky)<br/>06. the Adventure series (by Willard Price)<br/>07. The Great Brain (F. Scott Fitsgerald)<br/>08. Where the Red Fern Grows (Wilson Rawls)<br/>09. The Foundation series (Asimov)<br/>10. The Dune series (Frank Herbert)<br/>11. the Ender series (Orson Scott Card)<br/>12. Jurassic Park+World (Michael Crighton)<br/>13. Andromeda Strain (Michael Crighton)<br/>14. The Terminal Man (Michael Crighton)<br/>15. Sphere (michael crighton)<br/>16. The Bhagavad Gita (religion)<br/>17. Bible (religion)<br/>18. The Chronicles of Narnia (C.S. Lewis)<br/>19. Arthurian series (Mary Stewart)<br/>20. The 'I' Inside (Alan Dean Foster)<br/>21. Journey to the Center of the Earth (Jules Verne)<br/>22. Call of the Wild (Jack London)<br/>23. Down River (Will Hobbs)<br/>24. True Confessions of Charlotte Doyle (AVI)<br/>25. The Man Who Was Poe (AVI)<br/>26. Something Upstairs (AVI)<br/>27. Nothing But the Truth (AVI)<br/>28. Never Cry Wolf (Farley Mowat)<br/>29. In the Shadow of the Gargoyle (Neil Gaiman)<br/>30. The Art of War (Sun Tzu)<br/>31. Johnny Tremain (Esther Forbes, most historically accurate)<br/>32. The Black Pearl (Scott O'Dell)<br/>33. Lord of the Flies (William Golding)<br/>34. The Egypt Game (Zilpha Keatley Snyder)<br/>35. The Time Machine (H. G. Wells)<br/>36. the US Constitution (legal)<br/></code></pre><br/><hr><br/><p>comics:</p><br/>")
+          JS.addText("<pre style=\"white-space: pre-wrap; word-break: keep-all;\"><code>00. (none, I think)<br/></code></pre><br/><hr><br/><p>Movies/Tv-Films (american, asian/martial-arts but NOT anime, live-actor, animated):</p><br/><pre style=\"white-space: pre-wrap; word-break: keep-all;\"><code>001. Gladiator (Russel Crow)<br/>002. Underworld (1-5, only 1st was good though, Kate Beckinsale)<br/>003. Resident Evil (1-6, only 1+2 were good though, Mila Jovovich)<br/>004. Silent Hill (1+2, 1 was good but 2 not that good)<br/>005. Star Wars (1-6)<br/>006. Ultra Violet (Mila Jovovich)<br/>007. Equilibrium<br/>008. Braveheart (Mel Gibson)<br/>009. Last of Mohicans<br/>010. A.I. Artificial Intelligence (2001, a sci-fi pinocio story, done really really well)<br/>011. I, Frankenstein<br/>012. The Butterfly Effect<br/>013. The Goonies<br/>014. Flight of the Navigator<br/>015. Hulk (2003)<br/>016. Open Range (2003)<br/>017. Batteries Not Included (1, as 2 sucked)<br/>018. Kungfu Hustle<br/>019. Kiss of the Dragon (Jet Li)<br/>020. Brotherhood of the Wolf<br/>021. Terminator (1-3, Salvation)<br/>022. Red (1 only, as 2 sucked)<br/>023. Congo (Michael Crighton)<br/>024. Jurassic Park (1+2)<br/>025. Eaters of the Dead (michael crighton)<br/>026. I, Robot<br/>027. Aeon Flux (made by MTV surprisingly, but its a really good sci-fi movie)<br/>028. Mortal Kombat (1 only, as the others sucked)<br/>029. Street Fighter (1994 only, as the others sucked)<br/>030. Flight of Dragons<br/>031. The Pistol (about 'Pistol' Pete meravich, the white michael jordan who died young/short-nba-career from drugs, a story about this basketball player)<br/>032. Field of Dreams<br/>033. Lara Croft Tomb Raider (1, as 2 wasn't as good)<br/>034. Fracture<br/>035. Annie (original, 1982)<br/>036. The Sandlot (1, as 2 wasn't as good)<br/>037. Home Alone (1, as the rest weren't as good and just redundent/boring after 1 as well)<br/>038. The Secret of the Nimh (1, as 2 sucked)<br/>039. The Land Before Time (1, as the rest sucked)<br/>040. Stealth<br/>041. Honey I Shrunk the Kids<br/>042. Short Circuit (1+2)<br/>043. The Little Indian in the Cupboard<br/>044. Teenage Mutant Ninja Turtles (1 only: the original, as the rest sucked)<br/>045. The Rocketeer<br/>046. The Patriot (2000, most historically accurate)<br/>047. The Pirates of the Carribean (1, only 1st was good, the rest got too weird for me and weren't very good as well, and were also redudent/boring after seeing jack sparrow personality for first time in first movie)<br/>048. Undisputed (2-4, as 1st didn't have bokya, lol)<br/>049. The One (Jet Li)<br/>050. Ong Bak (1-3, Tony Jaa)<br/>051. The Protector (2005, Tony Jaa)<br/>052. The Legend of the Red Dragon (Jet Li)<br/>053. Iron Monkey (Jet Li)<br/>054. Frozen (disney animated/cartoon film)<br/>055. Tangled (disney animated/cartoon film)<br/>056. Aladdin (disney animated/cartoon film)<br/>057. Little Mermaid (disney animated/cartoon film)<br/>058. Lion King (disney animated/cartoon film)<br/>059. An American Tail (disney animated/cartoon film)<br/>060. Jumanji<br/>061. Willy Wonka and Chocolate Factory (original)<br/>062. October Sky<br/>063. The Ring (1 only, as 2 sucked)<br/>064. Dawn of the Dead<br/>065. Shawn of the Dead<br/>066. 28 Days/Weeks Later (1+2)<br/>067. The League of Extraordinary Gentleman<br/>068. Dragon Heart<br/>069. Pete's Dragon (original animated/cartoon film)<br/>070. The Sword in the Stone (disney animated/cartoon film)<br/>071. Robin Hood (disney animated/cartoon film)<br/>072. Bend It Like Beckem (girl soccer movie)<br/>073. Mr. Holland Opus (about deaf child of a musician)<br/>074. Search for Bobby Fisher (chess movie)<br/>075. The Count of Monte Christo<br/>076. Unfaithful<br/>077. Original Sin<br/>078. King Arthur (2004)<br/>079. Robin Hood: Prince of Thieves (1991)<br/>080. the rurouni kenshin series (live actors)<br/>081. Never Back Down (1 only, as rest sucked)<br/>082. Warrior (2011 -- the more I watch it, the better it gets each time, lol. It actually has a really deep story and etc stuff going on that I didn't realize/appreciate when I first saw it my first time. Tony is just badass in it, this is how real fights happen: the faster you win, the better you're as a fighter, lol. Fans/Spectators obviously don't like, but the best fights are the ones that are over the fastest... hehe. And Tony portrays this in it, hehe)<br/>083. Good Will Hunting (Robin Williams)<br/>084. Patch Adams (Robin Williams)<br/>085. The Fugitive<br/>086. Indiana Jones (only the original 3, as the new-remake: crystal skull whatever, sucked)<br/>087. The Phantom (1996 --- I think I'm like literally the only one who ever saw this and thus also knows of it, lol)<br/>088. Dark Kingdom / Ring of the Nibelungs (2004, kristanna loken, so fkn hot as Brunhilde, done so so so well!)<br/>089. The Grudge (1, as 2 sucked)<br/>090. Cinderella (2015, really good)<br/>091. Stardust (2007, really good)<br/>092. Divergent (1 only, as all the others sucked)<br/>093. Lady and the Tramp (disney)<br/>094. White Fang (only 1, as 2 sucked)<br/>095. Helen of Troy (4 part film/movie, Sienna Guillory as Helen, oo lala!)<br/>096. Oblivion (2013, tom cruise)<br/>097. The Mummy (1+2)<br/>098. The Scorpion King (The Mummy 3)<br/>099. Prince of Persia: The Sands of Time (2010)<br/>100. Chronicles of Riddick (2004)<br/>101. Bridge to Tarabithia<br/>102. Blade (1+2 only, as 3 sucked)<br/>103. Queen of the Damned (2002)<br/>104. Duck Tales: Treasure of the Lost Lamp (1990, really really good, disney)<br/>105. The Never Ending Story (1984)<br/>106. The Wizard (1989, boy who's a wiz at arcade games, runs away to compete in arcade championship)<br/>107. The 3 Musketeers (1993)<br/>108. The 3 Ninjas (1992)<br/>109. Ninja Assassin (2009)<br/>110. The Last Samurai (2003, tom cruise, really really good)<br/>111. The Warrior's Way (2010)<br/>112. Crouching Tiger Hidden Dragon (2000)<br/>113. Rambo (all, except the remake/new one)<br/>114. Die Hard: Live Free or Die Hard (2007)<br/>115. the Aliens series (1-4: Alien:1979, Aliens:1986, Alien 3: 1992, and Alien Resurrection:1997)<br/>116. The Mothman Prophesies<br/>117. Twelve Monkeys (1995, epic sci-fi time-travel movie, that seems to be lost/forgotten now, sighs)<br/>118. From Paris With Love (2010)<br/>119. James Bond: Casino Royale (2006, the rest of the bond films suck)<br/>120. the Matrix trilogy<br/>121. Colombiana (2011, same girl as in Guardians of the Galaxy, she's a really good and sexy actress: Zoe Saldana)<br/>122. the 'mexico' trilogy (El Mariachi:1992, Desperado:1995, Once Upon a Time in Mexico:2003)<br/>123. Machete (2010, and sequel: Machete Kills: 2013)<br/>124. The Mask of Zorro (1998: this was very good, but its sequel wasn't: The Legend of Zorro:2005)<br/>125. Star Trek (2009)<br/>126. Star Trek Into Darkness (2013)<br/>127. Wild Wild West (1999, I didn't find it actually that bad, though it certainly wasn't good, but it was decent, however I mainly like it just for the fanservice/hot-girls, lol)<br/>128. The 5th Element (not very good, but we're introduced to a young, beautiful, and nearly naked Mila Jovovich with pink hair, lol, whom will be our Resident Evil kickass Alice, hehe)<br/>129. Total Recall (2012, omg Kate Beckinsale is psycho-badess sexy in her role in this movie, most epic cat fight ever between her and jessica biel, as well as her vs the male protagonist too, whereas, in Underworld, she's the sexy cool-badass, lol)<br/>130. Miracle (2004, ice hockey movie, really good, true story/history)<br/>131. 300 (awesome, but its sequel sucked)<br/>132. the Batman trilogy (Batmen Begins, The Dark Knight, Batman Rises)<br/>133. Sin City (this was epic! but don't see it 4 times in the theatre in same day, lol, as even with its greatness, it gets boring on the 4th viewing of it, lol lol lol)<br/>134. Kick Ass (2010, as sequel sucked)<br/>135. Kill Bill (1+2)<br/>136. V for Vendetta (2005)<br/>137. Dare Devil (I didn't like it too much, but it's decent and the fight scenes/choreography is good too)<br/>138. The Watchmen (I didn't like it too much, but it's not bad, the fight scenes/choreography is good too)<br/>139. The Karate Kid (1-3, the original trilogy with Ralph machio and pat mugiagi, not the one with the girl karate kid and not the remake with will smith's boy and jacie chan)<br/>140. Serenity (2005, movie of the syfy's Firefly tv series, this movie is really good!)<br/>141. Evil Dead: Army of Darkness (the first two films were boring for me, but I love Army of Darkness)<br/>142. Firestarter (1, and sequel: Firestarter Rekindled)<br/>143. Elvira Mistress of the Dark (1988)<br/>144. Shawshank Redemption (1994)<br/>145. Cool Hand Luke (1967, Joy Harmon car wash, oo lala)<br/>146. Cirque du Freak: The Vampire's Assistant (2009, this is actually a pretty good vampire movie)<br/>147. Pride and Prejudice and Zombies (2016, I actually really like it and thought it was good)<br/>148. The Transporter (1+2 only, as 3 sucked)<br/>149. Dark Prince: The True Story of Dracula (2000, most historically accurate film)<br/>150. Drive (2011, epic!)<br/>151. Eragon (2006)<br/>152. How to Train your Dragon (1+2, disney)<br/>153. Conspiracy Theory (1997, mel gibson, epic/classic)<br/>154. 17 Again (2009)<br/>155. Catwoman (2004, halley barry)<br/>156. Unbreakable (2000)<br/>157. The Taking of Pelham 123 (2009)<br/>158. Sucker Punch (2011),<br/>159. Scott Pilgrim vs the World (2010)<br/>160. Back to the Future (1+2 only, as 3 sucked)<br/>161. Stay Alive (2006)<br/>162. Rocky (1-4, and epic rocky remake: rocky 6, but not creed and not rocky 5)<br/>163. Million Dollar Baby (2004, clint eastward, morgan freeman, girl boxing movie)<br/>164. Cinderella Man (2005, Russel Crow, boxing movie)<br/>165. The Fountain (2006, I liked it, but its not for most people)<br/>166. The Village (2004)<br/>167. Lady in the Water (2006)<br/>168. Signs (2002)<br/>169. Who Framed Roger Rabbit (1988)<br/>170. Cool World (1992)<br/>171. The Negotiator (1998)<br/>172. Coach Carter (2005)<br/>173. John Wick (2014, and sequel: 2017)<br/>174. John Carter (2012)<br/>175. Man of Steel (2013, I loved the warrior chick, \"a good death is its own reward\" and the evolution/trained/bred speech too, fkn sexy girl!, the super-human speed combat/fight choreography was awesome!)<br/>176. Man on Fire (2004, dakota fanning was epic, she made this movie)<br/>177. I Am Sam (2001, dakota fanning was epic, she made this movie)<br/>178. Crank (1+2: 2006, and sequel: 2009, though the sequel wasn't quite as good)<br/>179. The Punisher (2004, fkn epic, whereas the sequel was crap)<br/>180. Spawn (1997)<br/>181. The Avengers (2012)<br/>182. Captain America: The First Avenger (2011)<br/>183. Anaconda (1997, I actually really liked this one, and it had Ice Cube + Jennifer Lopez, hehe)<br/>184. Life (2017)<br/>185. Major Payne (1995)<br/>186. G.I. Jane (1997)<br/>187. Apollo 13 (1995)<br/>188. Dante's Peak (1997)<br/>189. Radio (2003)<br/>190. Snow White and the Huntsman (2012, this was good, but its sequel sucked)<br/>191. Willow (1988)<br/>192. Dredd (2012)<br/>193. Blood: The Last Vampire (2009, the movie sucked, but the fight choreography was awesome)<br/>194. Hitman (2007, but its sequel sucked)<br/>195. The Time Machine (2002, really good movie)<br/>196. Maleficent (2014, disney, live-actors)<br/>197. Hearts In Atlantis (2001)<br/>198. Down Periscope (1996)<br/>199. Beauty and the Beast (1991, disney, animated, not the new live-actor one)<br/>200. The Hunchback of Notre Dame (1996, disney, animated, Esmeralda is disney's sexiest and biggest-breasted girl, hehe, oo lala)<br/>201. The Nightmare Before Christmas (1993, but it's sequel Corpse Bride sucked)<br/>202. How the Grinch Stole Christmas (1966, disney, cartoon/animated film/movie)<br/>203. Beetlejuice (1988)<br/>204. Batman (1989)<br/>205. Mars Attacks (1996)<br/>206: Abraham Lincoln: Vampire Hunter (2012)<br/>207. Caroline (2009)<br/>208. Cutthroat Island (1995, really good female pirate movie)<br/>209. Hook (1991, but the sequel/s sucked)<br/>210. Peter Pan (1953, disney, animated, the original)<br/>211. Doomsday (2008)<br/>212. Water World (1995, I actually liked the movie)<br/>213. A League of their Own (1992, tom hanks, historical: women baseball during WW2)<br/>214. The Terminal (2004, tom hanks)<br/>215. Gods of Egypt (2016)<br/>216. Iron Will (1994, wolf/husky dog sled movie)<br/>217. The Phantom of the Opera (2004)<br/>218. A Sound of Thunder (2005, sci-fi/time-travel movie)<br/>219. Minority Report (2002, really good sci-fi movie)<br/>220. A Time To Kill (1996)<br/>221. A Knight's Tale (2001, heath ledger)<br/>222. Iron Man (2008, the first, as the rest sucked)<br/>223. Knight and Day (2010, tom cruise)<br/>224. Sinbad: Legend of the Seven Seas (2003, disney, animated/cartoon movie)<br/></code></pre><br/><hr><br/><p>Tv Shows/Series (cartoons-animated and live-actors, and also includes educational/science/etc shows too):</p>")
+          JS.addText("<br/><pre style=\"white-space: pre-wrap; word-break: keep-all;\"><code>01. He-Man<br/>02. GI-Joe<br/>03. Gargoyles (1+2)<br/>04. Pirates of Dark Water<br/>05. Teenage Mutant Ninja Turtles<br/>06. Transformers<br/>07. Captain Planet<br/>08. Power Rangers<br/>09. VR Troopers<br/>10. Doug<br/>11. Rugrats<br/>12. Hercules (Kevin Sorbo)<br/>13. Xena: Warrior Princess (Lucy Lawless)<br/>14. SeaQuest DSV<br/>15. Star Trek (Kirk)<br/>16. Star Trek: The Next Generation (Picard)<br/>17. Star Trek: Deep Space Nine (Cisco)<br/>18. Star Trek: Voyager (Janeway)<br/>19. Red Planet (disney cartoon, uber short/incomplete series, like a lot of american cartoons back then, sighs)<br/>20. Jayce and the Wheeled Warriors<br/>21. Secret World of Alex Mack (you got to watch this clip, a young teenage Jessica Alba!!!!!: ht.tps://www.youtube.com/watch?v=WREDQvgbLIo --- not that pretty/sexy back then, especially with that 80s/90s hair/clothes lol, but man did this ugly duckling turn into a smoking hot swan, lol. The main character isn't jessica alba - she only made a few appearances:minor character)<br/>22. Goof Troop<br/>23. Inspector Gadget<br/>24. Tail Spin<br/>25. Looney Tunes<br/>26. Double Dare (Nickoldeon)<br/>27. Are You Afraid of the Dark? (Nickolodeon)<br/>28. Hidden/Lost Temple (don't know exact name of it, Nickolodeon)<br/>29. American Gladiators<br/>30. Camp ??? (Nickolodeon, not sure on exact name of it either - too lazy to look it up, has 'Ug' camp leader in it)<br/>31. Wild and Crazy Kids (Nickolodeon)<br/>32. Van Hellsing (Syfy)<br/>33. Helix (Syfy)<br/>34. Defiance (Syfy)<br/>35. Dark Matter (Syfy)<br/>36. Killjoys (syfy)<br/>37. Young Riders<br/>38. Matlock<br/>39. Murder She Wrote<br/>40. MacGuyver<br/>41. Lost<br/>42. King Arthur and the Knights of Justice (a football team is teleported back in time, lol)<br/>43. Exo-Squad<br/>44. Chip-n-Dale Rescue Rangers<br/>45. Voltron<br/>46. Thunder Cats<br/>47. Ren and Stimpy<br/>48. The Simpsons<br/>49. Rin Tin Tin the Canine Cop<br/>50. Knight Rider<br/>51. Baywatch (only for pamela anderson, lol)<br/>52. Flipper<br/>53. Earth 2 (unfortunately, this never got many episodes/incomplete, sighs)<br/>54. The 12 Monkeys series (Syfy)<br/>55. Zorro<br/>56. The Magicians (Syfy, has a very good/interesting story/world, but it does have a lot of porno/adult/etc type of content in it, which takes a bit away from its interesting/good story/world, sighs)<br/>57. The Arrow (Oliver McQueen)<br/>58. The Addams Family<br/>59. The Munsters<br/>60. The Twilight Zone<br/>61. Golden Girls (these were some funny grannies, lol)<br/>62. Pawn Stars (History)<br/>63. Shipping Wars (FYI)<br/>64. Duck Dynasty<br/>65. Monsters Inside Me (Animal Planet)<br/>66. Myth Busters<br/>67. Fox News<br/>68. C-Span<br/>69. Top Shot (Military History)<br/>70. Big History<br/>71. Dual Survival (not that good anymore, as it was Cody that really made the show good, and runner up, Joe)<br/>72. The Legend of Mick Dodge<br/>73. Dude You're Screwed<br/>74. I shouldn't Be Alive<br/>75. Destroyed In Seconds<br/>76. Naked and Afraid (it's actually a good show, but lots of guys also like watching it for the naked female bottoms of the sexy ladies... not all are though... lol)<br/>77. Bar Rescue (Spike)<br/>78. Kitchen Nightmares (FYI)<br/>79. Face Off (Syfy)<br/>80. Uncut and Untamed (Animal Planet)<br/>81. Forged In Fire (History)<br/>82. The Shannara Chronicles<br/></code></pre><br/><hr><br/><p>Manga:</p><br/><pre style=\"white-space: pre-wrap; word-break: keep-all;\"><code>01. Claymore<br/></code></pre><br/><hr><br/><p>Anime (series and/or films):</p><br/>")
+          JS.addText("<pre style=\"white-space: pre-wrap; word-break: keep-all;\"><code>01. Dragon Ball (and DB Z, DB GT)<br/>02. Code Geass<br/>03. Full Metal Alchemist (and FMA: Brotherhood)<br/>04. Ghost in the Shell: Stand Alone Complex<br/>05. Claymore<br/>06. Shingeki no Kyojin (JP) / Attack on Titan (US)<br/>07. Blood+<br/>08. One Piece<br/>09. Naruto (and Naruto Shippuden)<br/>10. Bleach<br/>11. Trinity Blood<br/>12. Mobile Suit Gundam Wing<br/>13. Vanadies and Lord Marksman<br/>14. Rideback<br/>15. Spice and Wolf<br/>16. Wolf's Rain<br/>17. Ikkitousen (and DD, GG, XX)<br/>18. Tenjou Tenge<br/>19. Highschool of the Dead<br/>20. Fairy Tail<br/>21. Afro Samurai (1+2)<br/>22. Asobi Ni Iku Yo (JP) / Cat Planet Cuties (US)<br/>23. Black Lagoon<br/>24. Date A Live<br/>25. Death Note<br/>26. Chuu Bra<br/>27. B-Gata H-Kei<br/>28. Devil May Cry<br/>29. Eureka Seven<br/>30. Freezing<br/>31. Gai-Rei: Zero<br/>32. Gantz<br/>33. Girls Bravo<br/>34. Grenadier<br/>35. Gunslinger Girl<br/>36. Hajimeta No Gal<br/>37. Hellsing (and Ultimate)<br/>38. Highschool DxD (and Born and New)<br/>39. Hundred<br/>40. Jyu Oh Sei (JP) / Planet of the Beast King (US)<br/>41. Berserk (only seen the old/original, haven't watched the newly done one yet)<br/>42. Kobayashi-san Chi No Maid Dragon<br/>43. Kuragehime<br/>44. Kyoushoku Soukou Guyver (2005)<br/>45. Medaka Box (and Abnormal)<br/>46. Noien<br/>47. Oda Nobuna no Yabou<br/>48. My Little Sister Can't Be This Cute<br/>49. Phantom: Requiem for the Phantom<br/>50. Rosario to Vampire<br/>51. Rurouni Kenshin (both the long series and the 4-part origin ova films, but hadn't watched the Inferno ovas yet)<br/>52. S-CRY-ED<br/>53. Samurai Champloo<br/>54. Seiken No Blacksmith (JP) / The Sacred Blacksmith (US)<br/>55. Seirei no Moribito<br/>56. Kenichi<br/>57. Shinmai Maou no Testament<br/>58. Soul Eater<br/>59. Sword of the Stranger<br/>60. Tetsuwan Birdy Decode (JP) / Birdy the Mighty: Decode (US)<br/>61. The Big O<br/>62. Soul Taker<br/>63. Tokko<br/>64. Valkyrie Drive: Mermaid<br/>65. Witchblade<br/>66. Chobits<br/>67. Darker than Black<br/>68. Elfen Lied (make sure you spell 'LIED', as there's a hentai with nearly the same name: Elfen Laid - ya, whoopsy, so be careful!)<br/>69. Full Metal Panic<br/>70. Gankutsuou: The Count of Monte Cristo<br/>71. Grappler Baki<br/>72. MAR (marchen awakens romance)<br/>73. Mushishi<br/>74. Shikabane Hime<br/>75. Solty Rei<br/>76. Desert Punk<br/></code></pre><br/><hr><br/><p>Music/Songs/Bands:</p><br/><pre style=\"white-space: pre-wrap; word-break: keep-all;\"><code>01. Within Temptation<br/>02. Evervescence<br/>03. Epica<br/>04. Nightwish (back with Tarja only)<br/>05. Eminem<br/>06. Luca Turilli<br/>07. Kelly Clarkson<br/>08. Pink<br/>09. Claymore<br/></code></pre>")
+        ]]></item>
+      </ask>
+    </object>
+    <object name="DL_Keypad">
+      <visible type="boolean">false</visible>
+      <alias>keypad</alias>
+      <takemsg>You pull on the keypad, but it is securely attached to the wall... Besides, what use is the keypad all by it's self?</takemsg>
+      <hintlist type="stringlist">
+        <value>Hint 1:  Have you tried taking it?</value>
+        <value>Hint 2:  You can't take it.</value>
+        <value>Hint 3:  The keypad is a red herring.  DL thought it would be funny to annoy you by stopping you the first time you tried to enter his room, but the keypad actually has nothing at all to do with the strange door..</value>
+      </hintlist>
+      <look type="script"><![CDATA[
+        msg ("Just like a standard phone {object:DL_Keypad: keypad}, it has 10 numbers and the \"#\" and \"*\" keys.<br/>You notice a {object:DL_Card:card} hanging below the keypad.")
+        MakeObjectVisible (DL_Card)
+      ]]></look>
+    </object>
+    <object name="DL_Card">
+      <look>The card is blank on this side, but it looks like there is writting on the other side. You turn the card over and read... "Out of Order" on the card... Oh well...</look>
+      <visible type="boolean">false</visible>
+      <alias>card</alias>
+      <take type="script"><![CDATA[
+        msg ("You take the card and hang it around your neck and walk around for a moment. You notice everyone is watching you, and you start to feel just a bit more daft than you normally would, so you remove the sign from around your neck and hang it back on the keypad. (Maybe after a few drinks, you might try the sign again.)")
+        firsttime {
+          IncreaseScore (1)
+          list add (game.scoreList, "Took DL's card: 1 point")
+          msg ("<center><b>[  YOUR SCORE HAS JUST INCREASED BY 1  ]</b></center>")
+        }
+      ]]></take>
+    </object>
+    <object name="Dark_Lizerd">
+      <inherit name="namedmale" />
+      <visible type="boolean">false</visible>
+      <alt type="stringlist">
+        <value>DL</value>
+        <value>dark</value>
+        <value>lizard</value>
+        <value>lizerd</value>
+      </alt>
+      <listalias>Dark Lizerd</listalias>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <look><![CDATA[He looks just like the one in the other room... You suspect something strange is going on here because you still see him working at the desk. Staying at his side is another creature, much like the one from the other room, but with a dark tan fur.<br/>]]></look>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <inroomdescription><![CDATA[{object:Dark_Lizerd} is wandering around here looking like he is hiding from someone. Funny that you did not notice him before. 'He must be really good at hiding in plain sight!' you say to yourself.<br />]]></inroomdescription>
+      <alias>Dark Lizerd</alias>
+      <nocopy type="boolean">false</nocopy>
+      <maxScore type="int">7</maxScore>
+      <take type="script"><![CDATA[
+        msg ("You pick him up and hold him for a moment but feel silly, so you set him back down. \"Was it fun for you?\" he asks.")
+        firsttime {
+          IncreaseScore (1)
+          list add (game.scoreList, "Picked up the other DL: 1 point")
+          msg ("<center><b>[  YOUR SCORE HAS INCREASED BY ANOTHER POINT. ]</b></center>")
+        }
+      ]]></take>
+      <otherone type="script"><![CDATA[
+        msg ("You ask Dark Lizerd about the 'other' one on the other room. Oh, that... Well you see, I was having problems translating Basic into Quest so I created a clone of myself to do half of the work, but things didn't go as planned. The clone thought he was me and tried to lock me up when I tried to explain it to him. I managed to escape so now I'm hiding out, out here... By the way, is he making progress?")
+        if (not HasAttribute(Dark_Lizerd, "asked")) {
+          IncreaseScore (1)
+          list add (game.scoreList, "Asked DL about the 'other' DL: 1 point")
+          msg ("<center><b>[  YOUR SCORE HAS INCREASED BY 1  ]</b></center>")
+          Dark_Lizerd.asked = true
+        }
+      ]]></otherone>
+      <clones type="script"><![CDATA[
+        msg ("So, how many does he have working there now?")
+        if (not HasAttribute(Dark_Lizerd, "asked")) {
+          IncreaseScore (1)
+          list add (game.scoreList, "Asked DL about clones: 1 point")
+          msg ("<center><b>[  YOUR SCORE HAS INCREASED BY 1  ]</b></center>")
+          Dark_Lizerd.asked = true
+        }
+      ]]></clones>
+      <ask type="scriptdictionary">
+        <item key="other one">
+          HandleSingleCommand ("other one DL")
+        </item>
+        <item key="clone clones">
+          HandleSingleCommand ("clones DL")
+        </item>
+      </ask>
+    </object>
+    <object name="brochure">
+      <look><![CDATA[<div style="font-face:Georgia;padding:12px;border:1px solid black;"<center><h1>WELCOME TO YOUR 'THANK YOU' GAME!</h1>Hello, Pixie!<br/><br/>On behalf of everyone who has ever played or created a Quest game, THANK YOU!<br/><br/>As a little reward for all of your efforts, a few of us have gotten together and concocted what is now on your screen.<br/><br/>Each of us has hidden an object somewhere.<br/><br/>Can you find them all?<br/></center><br/></div><br/>]]></look>
+      <take />
+      <feature_usegive />
+      <hintlist type="stringlist">
+        <value>Hint 1:  You can take the brochure.</value>
+        <value>Hint 2:  You can examine it.</value>
+        <value>Hint 3:  You should USE it at least once.  (Hint, hint.)</value>
+      </hintlist>
+      <alias>brochure</alias>
+      <use type="script"><![CDATA[
+        msg ("You {random:fan yourself with the brochure.:consider making the brochure into a paper airplane, then think better of it.}")
+        firsttime {
+          IncreaseScore (1)
+          list add (game.scoreList, "Used the brochure: 1 point")
+          msg ("<center><b>[  YOUR SCORE HAS INCREASED BY 1  ]</b></center>")
+        }
+      ]]></use>
+    </object>
+    <object name="The Quest Forum">
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <alias>The Quest Forum</alias>
+      <nocopy type="boolean">false</nocopy>
+      <not_all />
+      <takemsg>You can't take it.  Try examining it.</takemsg>
+      <look type="script">
+        msg ("Click this link to view the Quest forum:")
+        DisplayHttpLink ("https://textadventures.co.uk/forum/quest", "https://textadventures.co.uk/forum/quest", false)
+      </look>
+      <fav type="script">
+        msg ("Opening page in browser...")
+        JS.goUrl ("https://textadventures.co.uk/forum/quest")
+      </fav>
+    </object>
+    <object name="group project">
+      <scenery type="boolean">false</scenery>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <hintlist type="stringlist">
+        <value>Hint 1:  You can try all day and all night long, but you'll NEVER get a peek at the project! (BWAHAHAHA!)</value>
+      </hintlist>
+      <alias>group project</alias>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <prefix>the</prefix>
+      <not_all />
+      <look type="script"><![CDATA[
+        roll = NewObjectList()
+        foreach (o, AllObjects()) {
+          if (GetString (o, "gender") = "he") {
+            if (o.parent = Quest Forum) {
+              list add (roll, o)
+            }
+          }
+        }
+        if (ListCount(roll) > 0) {
+          man = PickOneObject(roll)
+          theman = GetDisplayName(man)
+        }
+        msg (theman + " moves in front of the screen just before you can {random:get a peek.:get a good look.:sneek a peek.:see what these guys are really working on.}")
+      ]]></look>
+    </object>
+    <command name="travel_from_hub">
+      <pattern>xyzzy;travel;t</pattern>
+      <script>
+        ShowMenu ("Travel to where?", Quest Forum.destinations, true) {
+          msg ("You travel in some unspecified manner...")
+          game.pov.parent = GetObject(result)
+        }
+      </script>
+    </command>
+    <object name="GeneralDiscussionPostXM">
+      <visible type="boolean">false</visible>
+      <alias>general discussion post</alias>
+      <takemsg>You can't take it. Try examining it.</takemsg>
+      <read>Just examine it please.</read>
+      <look type="script"><![CDATA[
+        msg ("<img src='"+GetFileURL("generalpost.png") + "' width=\"100%\" height=\"344\" /><br/><a href=\"https://textadventures.co.uk/forum/general/topic/zi3qvd_s0kup9dabfes6rw/for-all-you-imbibers-out-there\">View this post in your browser.</a>")
+        firsttime {
+          GeneralDiscussionPostXM.viewedXM = true
+          IncreaseScore (5)
+          PrintCentered ("<b>[Your score has increased by 5!]</b>")
+          list add (game.scoreList, "Looked at XM's post: 5 points")
+        }
+      ]]></look>
+    </object>
+    <object name="RH desk">
+      <inherit name="surface" />
+      <inherit name="kvtype" />
+      <alias>Richard Headkid's desk</alias>
+      <visible />
+      <scenery type="boolean">false</scenery>
+      <feature_container />
+      <hidechildren />
+      <listchildren type="boolean">false</listchildren>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <not_all />
+      <nocopy type="boolean">false</nocopy>
+      <hintlist type="stringlist">
+        <value>Hint 1:  Have you tried moving it?</value>
+        <value>Hint 2:  You can't move it.</value>
+        <value>Hint 3:  Have you tried climbing onto it?</value>
+        <value>Hint 4:  You can't climb onto it.</value>
+        <value>Hint 5:  The desk is only there to put things on.</value>
+      </hintlist>
+      <pushable />
+      <push>You push it a little.  It barely moves.</push>
+      <takemsg>You'd rather not touch it.{once:  (It's the opposite of clean.)}</takemsg>
+      <look type="script">
+        if (Richard Headkid.parent = Quest Forum) {
+          msg ("\"Sorry, Pix,\" says RH before you can get a good look. \"That's top secret stuff, right there!\"")
+          RH desk.hidechildren = true
+        }
+        else {
+          RH desk.listchildren = true
+          msg ("")
+        }
+      </look>
+      <object name="rh_PC">
+        <inherit name="switchable" />
+        <inherit name="kvtype" />
+        <feature_container />
+        <feature_switchable />
+        <feature_usegive />
+        <switchonmsg><![CDATA[&nbsp;]]></switchonmsg>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Switch on</value>
+          <value>Switch off</value>
+        </displayverbs>
+        <alias>PC</alias>
+        <hintlist type="stringlist">
+          <value>Hint 1:  Have you turned it on?</value>
+        </hintlist>
+        <takemsg>That would be stealing.</takemsg>
+        <not_all />
+        <look type="script">
+          if (rh_PC.switchedon) {
+            HandleSingleCommand ("x monitor")
+          }
+          else {
+            msg ("The PC is off.")
+          }
+        </look>
+        <onswitchon type="script"><![CDATA[
+          if (not rh_screen.switchedon) {
+            rh_screen.switchedon = true
+            msg ("<br/>You switch on the monitor as well.<br/>")
+          }
+          if (not KVs room.visited) {
+            msg ("The PC whirrs to life...<br/>")
+            if (not HasAttribute(rh_PC, "switchedononce")) {
+              msg ("A new shade of black appears on the screen, then a message slowly appears...<br/><hr><br/><center style=\"background:black;border-radius:25px\"><br><br><img width=\"59%\" src=\"" + GetFileURL("gameon.png")  + "\"  id=\"titleimage\" onload=\"$(this).fadeIn(10000);\" style=\"display:none\" /><br/><br/><br></center><br/><br/><center><b>[  YOUR SCORE HAS INCREASED BY 1  ]</b></center>")
+              rh_PC.switchedononce = true
+              MakeObjectVisible (rh_screen)
+              rh_ANY key.scenery = false
+              IncreaseScore (1)
+              list add (game.scoreList, "Switched on the PC: 1 point")
+              JS.eval ("setTimeout(function(){scrollToEndBak();},100);")
+            }
+          }
+          else {
+            msg ("Nothing happens.")
+          }
+        ]]></onswitchon>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+          <value>Drop</value>
+          <value>Switch on</value>
+          <value>Switch off</value>
+        </inventoryverbs>
+      </object>
+      <object name="rh_ANY key">
+        <inherit name="kvtype" />
+        <usedefaultprefix type="boolean">false</usedefaultprefix>
+        <prefix>the</prefix>
+        <take type="boolean">false</take>
+        <scenery />
+        <takemsg>You're supposed to PRESS any key, not TAKE any key.</takemsg>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <alias>ANY key</alias>
+        <look>You see nothing special about the ANY key.</look>
+        <nocopy />
+        <hintlist type="stringlist">
+          <value>Hint 1:  Press it!</value>
+        </hintlist>
+        <hit>You try to hit it, but it dodges the blow.</hit>
+        <touch>You touch it, but you'll have to apply more pressure for anything to happen.  Perhaps you should try pressing it?</touch>
+        <kill>You have neither gun nor sword.</kill>
+        <pull>You try to pull it, but it simply doesn't wish to be pulled.</pull>
+        <move><![CDATA[You try to move the ANY key, but it is impervious to your efforts.<br/>]]></move>
+        <taste>It tastes just like chicken.</taste>
+        <smell>It smells like your upper lip.</smell>
+        <buy>It's not for sale.</buy>
+        <climb>{once:You climb to the very top of the ANY key.  "Top of the world, Ma!" you exclaim.  Then you climb back down.}{notfirst:Been there.  Done that.}</climb>
+        <lick><![CDATA[You ...um... <br><br>You know what?  No.  This is NOT that kind of game!]]></lick>
+        <listen><![CDATA[<sub><i>"press me"</i></sub>]]></listen>
+        <not_all />
+        <press type="script"><![CDATA[
+          msg ("You have initiated <code>blue_Telemat-booth.js</code>...<br/><br/>Reality flickers around you for a brief moment.<br/><br/>Once you regain your focus, you see a message on the screen.<br/><br/><div style=\"background:black;color:white;border-radius:25px\"><p style=\"padding:9px;font-family:Droid Sans Mono\"><br/>Hi there, Pixie!<br/><br/>You should use <code>cat filename.txt</code> or <code style=\"color:red\">print filename.txt</code> to view some files! (The newest one on the drive right now is README.txt.)<br/><br/>(You should probably peruse blue_Telemat-booth.txt as well...)<br/><br/>I hope you like the game so far!<br/><br/>Best of luck!<br/>Richard Headkid<br/><br/></p></div>")
+          MakeObjectVisible (px_blue_telemat_booth)
+          MakeObjectInvisible (rh_ANY key)
+          IncreaseScore (10)
+          list add (game.scoreList, "Pressed the ANY key: 10 points")
+          msg ("<br/><center><b>[ Your score has increased by 10 ]</b></center>")
+        ]]></press>
+      </object>
+      <object name="rh_screen">
+        <inherit name="switchable" />
+        <inherit name="kvtype" />
+        <alias>monitor</alias>
+        <alt type="stringlist">
+          <value>screen</value>
+        </alt>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <visible type="boolean">false</visible>
+        <gameon>Pix,
+
+How's the game?
+
+Are you into it?
+
+Have you tried using JavaScript in the game?
+
+JS.setCommands ("Look;Wait;Stand", "blue")
+
+The above should work... in fact, anything starting with JS. should work (thanks to you)!
+
+...but that's what this game is all about!
+
+Thanks, Pixie!
+
+PS
+
+Try entering: gamename Pixie Kicks Ass
+
+
+(Feel free to replace 'Pixie Kicks Ass' with the game name of your choice!)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </gameon>
+        <feature_switchable />
+        <hintlist type="stringlist">
+          <value>Hint 1:  You could look at it...</value>
+        </hintlist>
+        <takemsg>It's not worth the trouble.</takemsg>
+        <not_all />
+        <look type="script"><![CDATA[
+          if (rh_ANY key.visible) {
+            msg ("{either rh_screen.switchedon:{once:As soon as you look at it, the screen goes blank, but it sounds as if it's still powered on.}<br/><br/><hr><br/><center style=\"background:black;border-radius:25px\"><br><br><h1>DON'T PANIC!!!</h1><h3>PRESS THE ANY KEY TO CONTINUE</h3><br><br></center><br/><hr>|It's not switched on.}<br/>")
+          }
+          else {
+            msg ("<<div style=\"background:black;color:white;border-radius:25px\"><p style=\"padding:9px;font-family:Droid Sans Mono\"><br/>Hi there, Pixie!<br/><br/>If you look at my PC once in a while, you may find new file listings. (The newest one on the drive right now is README.txt.)<br/>(You should probably peruse blue_Telemat-booth.txt as well...)<br/><br/>I hope you like the game so far!<br/><br/>Best of luck!<br/>Richard Headkid<br/><br/></p></div>")
+          }
+        ]]></look>
+        <read type="script">
+          HandleSingleCommand ("x screen")
+        </read>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+          <value>Drop</value>
+          <value>Switch on</value>
+          <value>Switch off</value>
+        </inventoryverbs>
+      </object>
+    </object>
+    <object name="px_blue_telemat_booth">
+      <inherit name="kvtype" />
+      <attr name="feature_container" type="boolean">false</attr>
+      <alias>blue Telemat booth</alias>
+      <usedefaultprefix />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Enter</value>
+      </displayverbs>
+      <visible type="boolean">false</visible>
+      <not_all />
+      <linkcolour>MidnightBlue</linkcolour>
+      <hintlist type="stringlist">
+        <value>Hint 1:  Have you examined the booth?</value>
+        <value>Hint 2:  Did you notice the pop-up?  (It's two words.)</value>
+        <value>Hint 3:  Have you entered the booth?</value>
+        <value>Hint 4: Enter the booth.</value>
+      </hintlist>
+      <takemsg>It's too big and bulky.</takemsg>
+      <look type="script"><![CDATA[
+        msg ("It's just a perfectly normal <span style=\"color:blue !important\">{popup:TeleMat&nbsp;booth:TeleMat booths offer instant travel around the world; just step inside, dial the number of your destination, and you will be instantly teleported there.}.")
+      ]]></look>
+      <enterverb type="script"><![CDATA[
+        MoveObject (player, px_blue_telemat_booth)
+        kv_token of appreciation.use => {
+          params = NewDictionary()
+          dictionary add (params, "object1", kv_token of appreciation)
+          dictionary add (params, "object2", kv_slot)
+          do (put, "script", params)
+        }
+        kv_token of appreciation.generatedverbslist = NewStringList()
+        list add (kv_token of appreciation.generatedverbslist, "Use")
+      ]]></enterverb>
+      <onexit type="script"><![CDATA[
+        kv_token of appreciation.use => {
+          msg ("You can't do that.")
+        }
+        if (ListContains(kv_token of appreciation.generatedverbslist, "Use")) {
+          list remove (kv_token of appreciation.generatedverbslist, "Use")
+        }
+      ]]></onexit>
+      <beforeenter type="script">
+      </beforeenter>
+      <exit alias="out" to="Quest Forum">
+        <inherit name="outdirection" />
+      </exit>
+      <command name="kv_dialing">
+        <pattern>dial #text#;phone #text#;call #text#</pattern>
+        <script><![CDATA[
+          switch (text) {
+            case ("69105") {
+              MoveObject (player, px_blue_telemat_booth2)
+              firsttime {
+                MoveObject (kv_69105alert, kv_device)
+                IncreaseScore (5)
+                msg ("{b:YOU HAVE A NEW ALERT!}<br/><center><b>[  YOUR SCORE HAS INCREASED BY 5  ]</b></center>")
+                list add (game.scoreList, "Dialed 69105 to travel to KV's gateway: 5 points")
+              }
+            }
+            case ("911") {
+              msg ("The line is busy.<br/>")
+            }
+            case ("home") {
+              msg ("Oh, no... No E.T. jokes!<br/>")
+            }
+            default {
+              msg ("Something went wrong.")
+            }
+          }
+        ]]></script>
+      </command>
+      <object name="kv_phone">
+        <inherit name="kvtype" />
+        <alias>phone</alias>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <attr name="not_all" type="string"></attr>
+        <hintlist type="stringlist">
+          <value>Hint 1:  The phone is strictly cosmetic.  You can't do anything with it.</value>
+        </hintlist>
+        <takemsg>It's built into the booth.</takemsg>
+        <look type="script"><![CDATA[
+          msg ("It's a phone-like thingy. It has buttons.<br/><br/>(You're lucky, you know... If this were and INFOCOM game, you'd have to press each button, one by one, to dial a number...)<br/>")
+          if (not kv_buttons.visible) {
+            kv_buttons.visible = true
+          }
+        ]]></look>
+      </object>
+      <object name="kv_sticky note">
+        <inherit name="kvtype" />
+        <take type="boolean">false</take>
+        <alias>sticky note</alias>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+        </inventoryverbs>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <attr name="not_all" type="string"></attr>
+        <hintlist type="stringlist">
+          <value>Hint 1:  Have you tried turning it?</value>
+          <value>Hint 2: Turn the sticky note.</value>
+        </hintlist>
+        <takemsg>It's already in the best place it could be.</takemsg>
+        <look type="script"><![CDATA[
+          msg ("How many leaves were in the pile in Zork. <br>(DIAL THE ANSWER.)<br>")
+          kv_sticky note.turn = "You turn the sticky note over.<br>There's a number scribbled on the back:<h3>{command:dial 69105:69105}</h3>"
+          kv_sticky note.generatedverbslist = Split("Turn", ";")
+        ]]></look>
+      </object>
+      <object name="kv_slot">
+        <inherit name="container_open" />
+        <inherit name="kvtype" />
+        <feature_container />
+        <open type="boolean">false</open>
+        <close type="boolean">false</close>
+        <alias>slot</alias>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+        </inventoryverbs>
+        <attr name="not_all" type="string"></attr>
+        <look><![CDATA[It reads:<br/><br/>"INSERT TOKEN"]]></look>
+        <hintlist type="stringlist">
+          <value>Hint 1:  Examining the slot should give you the only clue you'll need.</value>
+          <value>Hint 2:  If you don't know what to do with this slot, you haven't done something yet.</value>
+        </hintlist>
+        <takemsg>{once:That's what she said!}{notfirst:Impossible.}</takemsg>
+        <addscript type="script"><![CDATA[
+          if (object = kv_token of appreciation) {
+            msg ("You put the token into the slot, but it pops right back out of the the machine. You grab it, then reality flickers<a href=\"#\" style=\"text-decoration:none\" title=\"FOOTNOTE: Reality didn't flicker because you grabbed the token. It flickered because you put the token into the slot!\">*</a>...")
+            MoveObject (player, kv_Crate Mart)
+          }
+          else {
+            msg ("You can't do that.")
+          }
+        ]]></addscript>
+      </object>
+      <object name="kv_buttons">
+        <inherit name="kvtype" />
+        <visible />
+        <usedefaultprefix type="boolean">false</usedefaultprefix>
+        <attr name="not_all" type="string"></attr>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+        </displayverbs>
+        <alias>buttons</alias>
+        <alt type="stringlist">
+          <value>button</value>
+        </alt>
+        <push>You push the buttons. Nothing happens. (Try dialing a number.)</push>
+        <press>You push the buttons. Nothing happens. (Try dialing a number.)</press>
+        <look><![CDATA[Perfectly normal. Useless here, but perfectly normal.<br/>]]></look>
+        <hintlist type="stringlist">
+          <value>Hint 1:  The buttons are useless.  They're only here so you won't say I was too lazy to include them!</value>
+        </hintlist>
+        <takemsg>They are part of the phone.</takemsg>
+      </object>
+      <command name="kv_dial69105">
+        <pattern>69105</pattern>
+        <script>
+          HandleSingleCommand ("dial 69105")
+        </script>
+      </command>
+    </object>
+    <object name="post 23346">
+      <alias>post 23346</alias>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <scenery type="boolean">false</scenery>
+      <alt type="stringlist">
+        <value>post #23346</value>
+      </alt>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <nocopy type="string"></nocopy>
+      <not_all />
+      <look type="script"><![CDATA[
+        if (player.loadedrh) {
+          if (kv_device.parent=player) {
+            firsttime {
+              msg ("Post automatically added to your bookmarks. (Enter {command:USE QUEST PX} to view your bookmarks.)")
+            }
+          }
+        }
+        msg ("<img src='" + GetFileURL("post23346.png") + "' width=\"100%\" height=\"344\" /><br/><a href=\"https://textadventures.co.uk/forum/quest/topic/3524/why-is-quest-unpopular#23240\">View this post in your browser.</a>")
+        if (player.loadedrh) {
+          if (not ListContains(kv_device.favorites, post 23346)) {
+            list add (kv_device.favorites, post 23346)
+          }
+        }
+        JS.scrollToEnd ()
+        MakeObjectInvisible (post 23346)
+      ]]></look>
+      <fav type="script"><![CDATA[
+        msg ("<img src='" + GetFileURL("post23346.png") + "' width=\"100%\" height=\"344\" /><br/><a href=\"https://textadventures.co.uk/forum/quest/topic/3524/why-is-quest-unpopular#23240\">View this post in your browser.</a>")
+      ]]></fav>
+    </object>
+    <turnscript name="rh_ingame">
+      <enabled type="boolean">false</enabled>
+      <script><![CDATA[
+        if (disk.parent = game.pov) {
+          if (not GetBoolean(disk, "has_been_taken_by_rh") and game.pov.parent = Quest Forum and Richard Headkid.parent = Quest Forum) {
+            msg ("<br/>\"Hey, Pixie!\" booms {object:Richard Headkid:Richard Headkid}. \"What'cha got there? <br/>\"Is that a {object:disk:planet disk}?!?!<br/>\"Can I see it? Please???\"<br/><br/>")
+            DisableTurnScript (rh_ingame)
+          }
+        }
+      ]]></script>
+    </turnscript>
+    <object name="water cooler">
+      <look><![CDATA[The water cooler is empty.  It has no nozzles or knobs.  It apparently only exists for people to gather around in an effort to waste valuable time.<br/>]]></look>
+      <scenery />
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <not_all />
+    </object>
+    <object name="curtain">
+      <scenery />
+      <look><![CDATA[{once:"Pay no attention to the curtain," says XM, nonchalantly.<br/>}{notfirst:"You can't see that," says XM.<br/>}]]></look>
+      <takemsg>That appears to belong to the man behind it.</takemsg>
+      <not_all />
+    </object>
+    <object name="strange doorway">
+      <scenery type="boolean">false</scenery>
+      <hintlist type="stringlist">
+        <value>Hint 1:  Have you tried going to it?</value>
+        <value>Hint 2:  You can't go to it the first time.</value>
+        <value>Hint 3:  The keypad is a red herring.  DL thought it would be funny to annoy you by stopping you the first time you tried to enter his room, but the keypad actually has nothing at all to do with the strange door.  Just try to go to the door twice.  The second attempt will be a success.</value>
+      </hintlist>
+      <look><![CDATA[You look through the strange doorway.<br/><br/> There is a green field of grass with a desk, in the shade of an umbrella, sitting so that it is framed by the doorway. Someone wearing a dark cloak, that covers most of his features, is frantically working at the desk, moving papers around, and sometimes loosing one to the ground below. Standing beside him is what looks like a short person covered in fur and wearing a leather skirt.<br/>]]></look>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+      </displayverbs>
+      <takemsg>It's fixed in place.</takemsg>
+      <not_all />
+      <enterverb type="script"><![CDATA[
+        // MakeObjectVisible (DL_Keypad)
+        // firsttime {
+          // msg ("As you get ready to go through the doorway, you notice a {object:DL_Keypad:keypad} on the wall. ")
+          // }
+        // otherwise {
+          // MoveObject (player, DL_Room)
+          // }
+        firsttime {
+          msg ("Before taking a step, you notice a {object:DL_Keypad:keypad} just next to the door and immediately dismiss it as a red herring...<br/>")
+          DL_Keypad.visible = true
+        }
+        MoveObject (player, DL_Room)
+      ]]></enterverb>
+    </object>
+  </object>
+  <command name="panes">
+    <pattern>panes</pattern>
+    <script>
+      firsttime {
+        game.showpanes = true
+      }
+      if (GetBoolean(game, "showpanes")) {
+        game.showpanes = false
+      }
+      else {
+        game.showpanes = true
+      }
+      game.suppressturnscripts = true
+      hidemsg = "Panes disabled."
+      showmsg = "Panes enabled."
+      JS.eval ("if (isElementVisible('#gamePanes')){ uiHide('#gamePanes'); addTextAndScroll('"+ hidemsg + "') }else{uiShow('#gamePanes'); addTextAndScroll('"+ showmsg + "');}")
+    </script>
+  </command>
+  <turnscript name="completelyThanked">
+    <enabled type="boolean">false</enabled>
+    <script><![CDATA[
+      if (XanMag.TaskCount = 0) {
+        if (kv_token of appreciation.parent = player) {
+          player.thanked = true
+          msg ("<br/><center><b>[ SYSTEM MESSAGE:  You now have access to Crate Mart! ]</b></center><br/>")
+          DisableTurnScript (completelyThanked)
+        }
+      }
+    ]]></script>
+  </turnscript>
+  <command name="px_update">
+    <pattern>load #text#</pattern>
+    <script>
+      LoadFile ("" + text + "")
+    </script>
+  </command>
+
+  <verb name="enter">
+    <pattern>enter #object#; go in #object#; go into #object#; get in #object#; get into #object#</pattern>
+    <property>enterverb</property>
+    <defaulttemplate>DefaultEnter</defaulttemplate>
+  </verb>
+
+  <turnscript name="update_contents_in_lists_turnscript">
+    <enabled />
+    <script>
+      UpdateContentsInLists
+    </script>
+  </turnscript>
+  <command name="pretty_inventory_cmd">
+    <pattern type="string">^i$|^inv$|^inventory$</pattern>
+    <script>
+      list = FormatObjectList(Template("CarryingListHeader"), game.pov, Template("And"), ".")
+      if (list = "") {
+        msg (Template("NotCarryingAnything"))
+      }
+      else {
+        PrettyInventory
+      }
+    </script>
+  </command>
+  <command name="save_mod">
+    <pattern>save</pattern>
+    <script>
+      if (not StartsWith(GetFileURL(""), "quest")) {
+        JS.saveGame ()
+      }
+      else {
+        request (RequestSave, "")
+      }
+      game.suppressturnscripts = true
+    </script>
+  </command>
+  
+  <template name="DefaultXyzzy">{random:Surprisingly, absolutely nothing happens.:Your surroundings begin to fold in on themselves, but they immediately go right back to normal.:Wrong game!}</template>
+
+  <type name="defaultgame">
+    <name>Pixie's Quest</name>
+    <enablehyperlinks />
+    <echocommand />
+    <echohyperlinks />
+    <showdescriptiononenter />
+    <autodescription />
+    <defaultfont>Georgia, serif</defaultfont>
+    <defaultfontsize type="int">12</defaultfontsize>
+    <defaultbackground>White</defaultbackground>
+    <defaultforeground>Black</defaultforeground>
+    <defaultlinkforeground>Blue</defaultlinkforeground>
+    <backgroundimage type="string"></backgroundimage>
+    <setbackgroundopacity type="boolean">false</setbackgroundopacity>
+    <backgroundopacity type="double">0.5</backgroundopacity>
+    <menufont>Arial</menufont>
+    <menufontsize type="int">9</menufontsize>
+    <menubackground>White</menubackground>
+    <menuforeground>Black</menuforeground>
+    <menuhoverbackground>LightGrey</menuhoverbackground>
+    <menuhoverforeground>Black</menuhoverforeground>
+    <underlinehyperlinks />
+    <compassdirections type="stringlist">
+      <value>northwest</value>
+      <value>north</value>
+      <value>northeast</value>
+      <value>west</value>
+      <value>east</value>
+      <value>southwest</value>
+      <value>south</value>
+      <value>southeast</value>
+      <value>up</value>
+      <value>down</value>
+      <value>in</value>
+      <value>out</value>
+    </compassdirections>
+    <clearframe />
+    <timeelapsed type="int">0</timeelapsed>
+    <appendobjectdescription type="boolean">false</appendobjectdescription>
+    <allobjects type="stringlist">
+      <value>all</value>
+      <value>everything</value>
+    </allobjects>
+    <parserignoreprefixes type="stringlist">
+      <value>the</value>
+      <value>a</value>
+      <value>an</value>
+    </parserignoreprefixes>
+    <displayroomdescriptiononstart />
+    <showpanes />
+    <showcommandbar />
+    <showlocation />
+    <statusandcompassattop type="boolean">false</statusandcompassattop>
+    <turnoffcompass type="boolean">false</turnoffcompass>
+    <turnoffinventory type="boolean">false</turnoffinventory>
+    <turnoffplacesandobjects type="boolean">false</turnoffplacesandobjects>
+    <borderlesscursor type="boolean">false</borderlesscursor>
+    <colourblend type="boolean">false</colourblend>
+    <commandpane type="boolean">false</commandpane>
+    <customstatuspane type="boolean">false</customstatuspane>
+    <panestheme>Classic</panestheme>
+    <shadowbox type="boolean">false</shadowbox>
+    <respondtogridclicks type="boolean">false</respondtogridclicks>
+    <commandcursor><![CDATA[>]]></commandcursor>
+    <moneyformat>$!</moneyformat>
+    <classiclocation />
+    <turnoffsavebutton type="boolean">false</turnoffsavebutton>
+    <mapexitwidth type="int">1</mapexitwidth>
+    <mapexitcolour>Black</mapexitcolour>
+    <setcustomwidth type="boolean">false</setcustomwidth>
+    <customwidth type="int">950</customwidth>
+    <setcustompadding type="boolean">false</setcustompadding>
+    <custompaddingtop type="int">30</custompaddingtop>
+    <custompaddingbottom type="int">0</custompaddingbottom>
+    <custompaddingleft type="int">20</custompaddingleft>
+    <custompaddingright type="int">20</custompaddingright>
+    <showborder />
+    <showscore type="boolean">false</showscore>
+    <showhealth type="boolean">false</showhealth>
+    <showmoney type="boolean">false</showmoney>
+    <showtitle />
+    <autodisplayverbs />
+    <clearscreenonroomenter type="boolean">false</clearscreenonroomenter>
+    <attr name="autodescription_youarein" type="int">1</attr>
+    <attr name="autodescription_youcansee" type="int">2</attr>
+    <attr name="autodescription_youcango" type="int">3</attr>
+    <attr name="autodescription_description" type="int">4</attr>
+    <autodescription_youarein_useprefix />
+    <attr name="autodescription_youarein_newline" type="boolean">false</attr>
+    <attr name="autodescription_youcansee_newline" type="boolean">false</attr>
+    <attr name="autodescription_youcango_newline" type="boolean">false</attr>
+    <attr name="autodescription_description_newline" type="boolean">false</attr>
+    <changeroom_newline />
+    <attr name="command_newline" type="boolean">false</attr>
+    <description type="string"></description>
+    <languageid>en</languageid>
+    <gridmap type="boolean">false</gridmap>
+    <mapscale type="int">30</mapscale>
+    <mapsize type="int">300</mapsize>
+    <attr name="feature_lightdark" type="boolean">false</attr>
+    <attr name="feature_pictureframe" type="boolean">false</attr>
+    <attr name="feature_limitinventory" type="boolean">false</attr>
+    <attr name="feature_asktell" type="boolean">false</attr>
+    <attr name="feature_annotations" type="boolean">false</attr>
+    <attr name="feature_advancedwearables" type="boolean">false</attr>
+    <attr name="feature_advancedscripts" type="boolean">false</attr>
+    <deactivatecommandlinks type="boolean">false</deactivatecommandlinks>
+    <multiplecommands type="boolean">false</multiplecommands>
+    <publishfileextensions>*.jpg;*.jpeg;*.png;*.gif;*.js;*.wav;*.mp3;*.htm;*.html;*.svg</publishfileextensions>
+    <changedpov type="script">
+      InitPOV (oldvalue, game.pov)
+    </changedpov>
+    <gameid>ba3a1705-de77-4b97-b22e-0800c1e2beb5</gameid>
+    <version>1.5.0.9.2</version>
+    <firstpublished>2017</firstpublished>
+    <author>Dark Lizerd, XanMag, and K.V.</author>
+    <aslversion>550</aslversion>
+    <description><![CDATA[You must acquire and use your super-programming powers to complete this Quester's Quest of all Quests.<br/><br/>This game is for The Pixie.<br/>
+    Thanks for everything you do!<br/>______________________________________________________<br/>Pixie's Quest<br/>by Dark Lizerd, XanMag, and K.V.<br/><br/>You must acquire and use your super-programming powers<br/>to complete this Quester's Quest of all Quests.<br/><br/>---------------<br/>For Quest 5.7.2]]></description>
+    <showscore />
+    <menufont>Source Sans Pro, Georgia, serif</menufont>
+    <showhealth />
+    <showmoney />
+    <feature_lightdark />
+    <feature_asktell />
+    <feature_limitinventory />
+    <feature_annotations />
+    <feature_advancedwearables />
+    <feature_advancedscripts />
+    <appendobjectdescription />
+    <allowlookdirections type="boolean">false</allowlookdirections>
+    <multiplecommands type="boolean">false</multiplecommands>
+    <defaultwebfont>Source Sans Pro</defaultwebfont>
+    <attr name="autodescription_youarein_useprefix" type="boolean">false</attr>
+    <attr name="autodescription_youcansee" type="int">3</attr>
+    <attr name="autodescription_youcango" type="int">4</attr>
+    <attr name="autodescription_description" type="int">2</attr>
+    <customlocationcolour>#296231</customlocationcolour>
+    <customlocationtextcolour>White</customlocationtextcolour>
+    <commandpane />
+    <cover>smallcover.png</cover>
+    <showtitle type="boolean">false</showtitle>
+    <defcmds>Look;Get all;UNDO;Wait;ClearScreen;Panes;Hints</defcmds>
+    <cmdprompts type="stringlist">
+      <value>Type here...</value>
+      <value>This game is parsed before a live studio audience.</value>
+      <value>Please enter a command...</value>
+      <value>Are you typing or clicking?</value>
+      <value>Enter LS or DIR at any time to view a list of accessible files...</value>
+      <value>Coming Soon: SHARDS OF ∞</value>
+      <value>Enter cat README.txt for a little help...</value>
+      <value>Have you examined XanMag today?</value>
+      <value>This space intentionally left blank.</value>
+      <value>Now what?</value>
+    </cmdprompts>
+    <publishfileextensions>*.jpg;*.jpeg;*.png;*.gif;*.js;*.wav;*.mp3;*.htm;*.html;*.svg;*.md;*.txt</publishfileextensions>
+    <showpanes />
+    <tower><![CDATA[<img  style="border:none;" src="{=GetFileURL("qdk-background.jpg")}" alt="QuestTower" width="32%" height="32%"/>]]></tower>
+    <underlinehyperlinks />
+    <locationmsg>" + CapFirst(GetDisplayName(game.pov.parent)) + "</locationmsg>
+    <subtitle>SHARDS OF ∞: PART NIL</subtitle>
+    <backgroundimage type="string"></backgroundimage>
+    <colourblend type="boolean">false</colourblend>
+    <colourblendtop>#296231</colourblendtop>
+    <colourblendbottom>#fac4ff</colourblendbottom>
+    <turnoffsavebutton />
+    <shadowbox type="boolean">false</shadowbox>
+    <menubackground>#296231</menubackground>
+    <menuforeground>#fac4ff</menuforeground>
+    <menuhoverbackground>#fac4ff</menuhoverbackground>
+    <menuhoverforeground>#296231</menuhoverforeground>
+    <defaultlinkforeground>Blue</defaultlinkforeground>
+    <customlocationbordercolour>#fac4ff</customlocationbordercolour>
+    <menufontsize type="int">11</menufontsize>
+    <suppressturnscripts type="boolean">false</suppressturnscripts>
+    <turns type="int">0</turns>
+    <category>Tribute</category>
+    <panestheme>Classic</panestheme>
+    <autodescription_youcansee_newline />
+    <hintOptNo type="int">0</hintOptNo>
+    <alphabet type="stringlist">
+      <value>A</value>
+      <value>B</value>
+      <value>C</value>
+      <value>D</value>
+      <value>E</value>
+      <value>F</value>
+      <value>G</value>
+      <value>H</value>
+      <value>I</value>
+      <value>J</value>
+      <value>K</value>
+      <value>L</value>
+      <value>M</value>
+      <value>N</value>
+      <value>O</value>
+      <value>P</value>
+      <value>Q</value>
+      <value>R</value>
+      <value>S</value>
+      <value>T</value>
+      <value>U</value>
+      <value>V</value>
+      <value>W</value>
+      <value>X</value>
+      <value>Y</value>
+      <value>Z</value>
+    </alphabet>
+    <scoreList type="stringlist" />
+    <devMode type="boolean">false</devMode>
+    <online type="boolean">false</online>
+    <lastoutputbeforesave type="int">0</lastoutputbeforesave>
+    <contactaddress>QuestQuesters@yahoo.com</contactaddress>
+    <pov type="object">player1</pov>
+    <onhealthzero type="script">
+      FinishGame ("You have died!")
+    </onhealthzero>
+    <inituserinterface type="script"><![CDATA[
+      JS.eval ("$('body').append('<style>@media only screen and (max-width: 956px) {#gamePanes, .game-stats {display: none !important;}}</style>');")
+
+      JS.eval ("$(\"#txtCommand\").css(\"font-size\", \"16px\")")
+      SetTimeout(2){
+        if (GetBoolean (game, "glitching")){
+          do (kv_glitch, "glitching")
+        }
+        if (GetBoolean (game, "took_glitch")){
+          request (Show, "Location")
+          statusmove
+        }
+      }
+      
+      if (game.pov.parent = kv_Darkness){
+        JS.uiShow ("#commandPane")
+        JS.setCommands ("Feel around")
+      }
+      else {
+        JS.uiHide ("#commandPane")
+      }
+      
+      if (GetBoolean (Quest Forum, "visited")){
+        InitPxUi_kv
+        if (not StartsWith (GetFileURL (""), "quest")){
+          SetTimeout(2){
+            InitPxUi_kv
+          }
+        }
+      }
+    ]]></inituserinterface>
+    <unresolvedcommandhandler type="script">
+      game.lasterror = command
+      game.suppressturnscripts = true
+      msg ("I didn't understand your command.")
+    </unresolvedcommandhandler>
+    <start type="script">
+      UpdateContentsInLists
+      FilterTakeDisplayVerbs
+    </start>
+  </game>
+
+
+
+</library>

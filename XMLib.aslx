@@ -1,0 +1,1399 @@
+<?xml version="1.0"?>
+
+<!--
+      XMLib
+      For the Quest Group Project
+      WORKING TITLE: Dimensions of ∞
+      Written for Quest 5.7.2
+      ASL Version 550
+      © 2017-2025 XanMag
+-->
+
+<library>
+
+    <object name="XanMag">
+      <inherit name="namedmale" />
+      <inherit name="container_limited" />
+      <alt type="stringlist">
+        <value>XM</value>
+      </alt>
+      <listalias>XM</listalias>
+      <feature_container />
+      <open type="boolean">false</open>
+      <close type="boolean">false</close>
+      <transparent />
+      <hidechildren />
+      <listchildren />
+      <maxobjects type="int">1</maxobjects>
+      <scenery type="boolean">false</scenery>
+      <TaskCount type="int">3</TaskCount>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Speak to</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Drop</value>
+      </inventoryverbs>
+      <nocopy type="boolean">false</nocopy>
+      <maxScore type="int">115</maxScore>
+      <look type="script">
+        firsttime {
+          msg ("XanMag is a pretty normal fellow upon inspection.  His shirt is old and adorned with two Bells - apparently a beer logo - and his jeans are old and snug around his frumpy waist.  He is bouncing between activities as you would expect an over-caffeinated teenager with A.D.D. would despite the fact that he is not over-caffeinated, not a teenager, and has never been diagnosed as having attention deficit disorder.  Currently he {random:is scouring through the forum posts.:is fiddling with his iPhone.:is taking a long 'sip' from his fancy beer.:is flipping between browser tabs.:is listening to music streaming out of his laptop.:appears to be daydreaming.}")
+        }
+        otherwise {
+          msg ("XanMag is easily distracted by all the stimuli around him.  Currently his focus is on {random:scouring through the forum posts.:fiddling with his iPhone.:\"sipping\" his fancy beer.:flipping between browser tabs.:listening to music streaming out of his laptop.:the enthralling daydream he is having.}")
+        }
+        DisplayHttpLink ("Visit XanMag's profile page.", "https://textadventures.co.uk/user/view/emxhs1hs8uaib5hfblmp4a/xanmag", false)
+      </look>
+      <speak type="script"><![CDATA[
+        if (GetBoolean(XanMag, "aware")) {
+          firsttime {
+            msg ("\"Whoa,\" Xan says, seeming startled again.  \"What's up, Pixie?  Got any questions for me?  I'd love to help.\"  You realize he isn't real good at helping but he certainly does try.")
+          }
+          otherwise {
+            msg ("You startle him with your comment, but he gathers himself and says, \"What's up?  Feel free to ask me about anything.  And I literally mean <i><b>ANYTHING</i></b>\"  You nod, but wonder how much help he could actually be to you.")
+          }
+        }
+        else {
+          msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you said.\"  With that, he returns to his tasks.")
+          SetObjectFlagOn (XanMag, "aware")
+        }
+      ]]></speak>
+      <changedTaskCount type="script"><![CDATA[
+        if (XanMag.TaskCount = 2) {
+          msg ("\"You really are something special, Pixie.  Your wonders know no bounds.  But,\" Xan shrugs and reddens a bit, \"I'm pretty inept as you damn well know.  If there is any chance at all, could you do a couple more things for me?\"  Xan returns to his distractions.<br/><br/>")
+        }
+        else if (XanMag.TaskCount = 1) {
+          msg ("<br/>\"Oh, and, if you don't mind,\" Xan adds, \"There is still one more thing I need help with.  \"Do you mind?\"")
+        }
+        else if (XanMag.TaskCount = 0) {
+          msg ("\"Hmm.\"  A tear wells up in Xan's eye.  \"I don't have the words for your kindness.\"  He thinks a while and disappears behind a curtain.  Odd, you didn't notice that curtain before...<br/><br/>When he returns, Xan hands you a piece of paper and extends you his hand.  You shake it, and with the utmost sincerity, Xan says, \"You, Pixie, are truly appreciated.\"")
+          AddToInventory (certificateofappreciationXM)
+          IncreaseScore (20)
+          PrintCentered ("<b>[Your score has increased by 20!]</b>")
+          list add (game.scoreList, "Completed all of XM's tasks: 20 points")
+          QuestComplete (XanMag, "helpXan")
+        }
+      ]]></changedTaskCount>
+      <ask type="scriptdictionary">
+        <item key="music soundcloud soundation sound bands artists songs"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            firsttime {
+              msg ("\"I love my music,\" XM responds.  \"I've been known to make my own actually.  I've been having some trouble finding that new sound, however.\"  <br/><br/>He looks at you with renewed wonder and continues, \"I'm not sure if you have any experience, but if you run across a cool beat, use this to record it and let me have a listen!\"  With that, he returns to other things.")
+              AddToInventory (flash drive)
+            }
+            otherwise {
+              msg ("\"You have any cool, new beats recorded on that flash drive?  If so, let me have a listen!\"")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="iPhone phone cellphone"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"I love my my phone,\" XM responds.  \"Probably spend too much time on it, but, sometimes...\"  The rest of that sentence trails off in a string of unintelligible mumbling and he returns his attention to his phone.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="posts forumposts"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"What a goddamn mess these are,\" he replies.  \"I'd respond to them, but most of these questions I can't answer.\"<br/><br/>He looks at you as if he once again just realies who you are.  \"Oh, thank god.  It's <b><i>YOU</b></i>!  You mind doing something about all this?\"  Xan motions to the posts,mumbles what sounds like a \"Thanks again, bud...\" and returns his attention elsewhere.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="beer drink drinks libation"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"You like this kind, Pix?\"  He holds up a freshly opened bottle and wiggles it at you.  You see the image of a fish and catch the word 'Hear...' on the label.  \"I love this beer here.  Good stuff.\"  Xan takes a long gulp and returns his attention elsewhere.  ")
+            firsttime {
+              bartender.askedbeerXM = true
+              IncreaseScore (2)
+              PrintCentered ("<b>[Your score has increased by 2!]</b>")
+              list add (game.scoreList, "Asked XM about beer: 2 points")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="laptop"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"Meh.  I use it for just about everything.  You can relate to that right, Pix?  Can't afford my own though so this one is on loan from my school.\"  Xan returns his attention again to his laptop.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="daydream dream"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("After the fourth call of his name, Xan snaps out of whatever trance he was in.  \"Oh, hey, Pix.  Didn't see you there.  Whatcha up to?  Hopefully you plan on hanging out a while.  I'm awfully busy and could use some help around here.\"  He motions to the posts lying around.<br/><br/>By 'help', you understand that he is almost entirely incapable of doing anything on his own with this.  You nod and grin trying to get the patronization out of your mannerisms.<br/><br/>He returns to whatever he was thinking about before you tried conversation.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="browser tabs browsertabs internet"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("He looks over at his laptop.  \"Oh.  You wouldn't be interested in those really.  Just personal browsing.\"  He quickly closes a few... ummm... suspicious looking tabs before you get too nosy.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="fantasy football fantasyfootball"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"I'm sure you have no interest in American Football, Pix, but if you must know...\" Xan rambles on for what feels like hours about his fantasy football team.  He really seems to enjoy verbally eviscerating and demasculating his fellow leaguemates.  It's quite a colorful monologue, but you have no real interest in it and, eventually, after a long while, you notice he has stopped talking and has returned his attention elsewhere.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="teaching teacher teach school students class classroom"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"Oh, hiya, Pix.  It's my job.  It's a love and hate type relationship, but mostly a love thing.  I enjoy teaching, but when it is not summertime, I have a harder time hanging out here in this 'time-sucker' of place.\"  <br/><br/>He returns to one of his many distractions.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="dance dancing"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"I love my music,\" Xan says.  <br/><br/>He flashes a few dance moves that are in perfect rhythm to song streaming from his laptop.  <br/><br/>\"Pretty sweet, huh, Pix?\"  You're not sure if <i>sweet</i> is what you would call that, but you nod your head affirmatively anyway.  Xan smiles and returns to his distractions.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="document worddocument writing author authoring story book"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("Xan looks at you with a skeptical eye.  \"Hm.  You've noticed that, huh?  Well, you are great and all, Pix, but that is kind of personal.  It's writing that I would prefer to keep secret.  <i>No one even knows the <b>name</b> of it yet</i>.\"  Xan looks genuinely concerned and a bit uneasy.  He returns to other things to end the awkwardness.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="anything nothing"><![CDATA[
+          firsttime {
+            player.said_anything = false
+            if (EndsWith(player.currentcommand, "anything")) {
+              player.said_anything = true
+            }
+            msg ("\"Well, that certainly is an interesting concept.  It's almost as interesting as {either player.said_anything:nothing|anything}.  Can you imagine nothing?  Nothing is the absence of anything.  Anything is everything including light and space.  You see, a long, long time ago... like 13.5 billion years ago, there was nothing.  Not even space.  Could you imagine?  Seems bizarre, right?  Well, get this,\" he continues, becoming more and more animated... \"Suddenly there was <i>some</i>thing,\" he gestures, hands flying wildly.  \"Something from... from what?!? What was that what, Pixie?\" He asks, flailing his arms around at... well, at whatever he is seeing in his mind's eye.  \"I'll tell you of the <i>what</i>,\" Xan continues, \"there are these things, called the Higgs-Boson.  I have one right here...\" Xan digs into his pocket and rummages around a bit.<br/><br/>\"Wait.  Look here!\" He pulls his hands violently from his pocket and presents a closed but open palm.  Your attention is drawn to a little brown tablet that inadvertently was ejected from Xan's pocket and has skittered across the floor.  Xan continues, \"You SEE it, Pix?  Do you?\"<br/><br/>You shake your head no.  \"Bingo!  Neither do I!  It has been avoiding me for years and years.  WE <i>know</i> it exists but we haven't been able to isolate it to study it.  Just imagine,\" he continues, still gesturing wildly. \"With this,\" as he references his empty palm, \"We might just be able to explain it ALL!!  There might just be an explanation to the beginning and the end.\"  <br/><br/>Xan trails off and looks around the room as if trying to spot an elusive shadow in a darkened room.  \"Beginning.  End.  What was I saying again?\"  Xan's attention has been redirected to other things. ")
+            IncreaseScore (4)
+            PrintCentered ("<b>[Your score has increased by 4!]</b>")
+            list add (game.scoreList, "Asked XM about {either player.said_anything:nothing|anything}: 4 points")
+            MakeObjectVisible (whitepillXM)
+            SetObjectFlagOn (XanMag, "aware")
+          }
+          otherwise {
+            msg ("Xan begins his lengthy diatribe on space and the Big Bang and the LHC and the evolution of the cosmos...<br/><br/>Hours later, you come to feeling exhausted.  Better get moving.")
+          }
+        ]]></item>
+        <item key="blunt weed marajuana dank drugs smoke smoking cannabis plant joint joints"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            if (GetBoolean(PlantXM, "weedviewedXM")) {
+              firsttime {
+                msg ("\"You ain't the Po are you?\"  Xan looks at you with a skeptical eye.   \"Nah, just kidding, Pixie.  Yeah, I like the occasional puff.  How about you?  Oh, you don't have any on you.  Hmm.  Me either.  I can roll a beauty if you can bring me some.\" Xan returns to pretending to be busy with a thousand things.")
+                SetObjectFlagOn (PlantXM, "weedableXM")
+              }
+              otherwise {
+                if (Got(bluntXM)) {
+                  msg ("\"Smoke 'em if you got 'em.\"  Odd.  He sounds like Rick Moranis in Spaceballs...")
+                }
+                else {
+                  msg ("\"Yep.  Me likey.  You likey?\"  Xan returns to his 'work'.")
+                }
+              }
+            }
+            else if (Got(budsXM)) {
+              msg ("\"Hey, Pix!  Is that what I think it is, or are you carrying a skunk in your pocket?  Let me see that!\"")
+            }
+            else {
+              msg ("\"Yeah.  What about it?\"  Xan goes back to bouncing around like a long-tailed cat on a porch full of rockers.")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="hk hegemon khan hegemonkhan hege heg"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            firsttime {
+              msg ("\"HK does a lot here, Pix.  You know that.  He has certainly been helpful, like you, to the Quest Forums all these years.\"  At this point, Xan lowers his voice a bit.  \"Although...HK is a mystery/enigma/riddle wrapped up in a conundrum/puzzle/perplexity.  If you know what I mean.\"  <br/><br/>Xan winks at you and looks up quickly in the direction he last saw HK.  \"Who knows though.  He might be up to something.\"")
+            }
+            otherwise {
+              msg ("\"Good dude that HK.  Just keep your eyes up.\"  Xan looks around the room at where he last saw HK before returning to accomplishing so little.")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="quest textadventures text adventures forum"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            firsttime {
+              msg ("Xan chuckles.  \"Why are you asking me?  You are the expert.\"  Xan returns to his work, but quickly turns back around again.  \"Oh.  You're serious.\"  Xan smiles.  \"You just must want to humor me, huh?  I love it here.  Good people.  Good friends.  Excellent helpers.  I can't complain.  Those spammers can be quite annoying though.\"<br/><br/>You bore quickly and Xan continues to babble.  Eventually you've noticed he has returned to his 'work'.")
+            }
+            otherwise {
+              msg ("\"I like it here.  It's challenging and enjoyable.  Thank you for all of your help.\"")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="group project groupproject secret secretproject"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            firsttime {
+              msg ("\"Ummm....\" Xan looks around nervously, holding special attention at where he last spotted KV.  \"We aren't really supposed to talk about that here.  At least... not now.\"  Xan returns to his work.")
+            }
+            otherwise {
+              msg ("\"Sorry, Pix.  I've told you once.  We aren't really allowed to talk about it here.  The 'boss',\" XM says while air-quoting the word 'boss', \"says so.\"")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="kavin richard headkid richardheadkid rh"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            firsttime {
+              msg ("\"That bloody twit?\" XM says in his best, yet still terrible, English accent gesturing to where he last saw RH.  \"He's some sort of savant I think.  Quite brilliant but a little...\" XM pauses to think.  \"A little off maybe? Better keep an eye on that one, Pix.\"  With a hardy slap on the shoulder, XM spins and returns to next-to-nothing.")
+            }
+            otherwise {
+              msg ("\"Quite gifted that one.\"  He waves over at RH.  \"<i>This</i> was his idea in the first place and I think it has turned out just right!\"")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="dark lizerd darklizerd darklizard lizard dl"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            firsttime {
+              msg ("\"Odd bird.  Just look at him.\"  He glances over his shoulder to make sure there are no eavesdroppers.  \"He always looks like he is up to something, if you know what I mean.  Or, maybe, he's just thinking up his next great idea.  Either way.  You might want to be wary of that one.\"  Xan returns to his chores.")
+            }
+            otherwise {
+              msg ("\"Good guy, DL.  Right Pix?  Ask him for ideas.  He'll churn up something. Just keep your eyes on him.\"")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="prima primafacie facie"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            if (Contains (pedestalXM,IdeaInAnEnvelopeXM)) {
+              firsttime {
+                msg ("Xan looks at you and freezes.  His eyes widen.  \"Wait!\"<br/><br/>\"Eureka!\"  He shouts.  \"I've done it.  Wait.  No.  <i>You've</i> done it!  No, wait.  I've got it.  You... Me.   I've... Either way, whatever!\"  Xan exclaims excitedly.  \"I need to get to writing!\"")
+                XanMag.TaskCount = XanMag.TaskCount - 1
+                IncreaseScore (20)
+                PrintCentered ("<b>[Your score has increased by 20!]</b>")
+                list add (game.scoreList, "Asked XM about the idea: 20 points")
+              }
+              otherwise {
+                msg ("\"It's coming along nicely thanks to us!\"  Xan gives you a high five and returns quickly to his computer.")
+              }
+            }
+            else {
+              msg ("Xan looks at you with a skeptical eye.  \"Hm.  Yeah.  I'm writing a book.  I'm a little obfuscated... opaqued...\"  He pauses and looks confused.  \"I've got writer's block okay?  Sorry.\"  Xan's face lengthens in sadness.  He returns to work.")
+            }
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="xm xan mag xanmag himself he"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"Well,\" Xan looks around sheepishly.  \"I yam what I yam,\" he says in a terrible Popeye-like accent.  \"Look at me all you want.  You'll learn everything you need to know.\"")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="posts post forumpost forum"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"There are posts all over this stinking place.  Most are useful but, \"Some are just outright dumb.\"  He laughs and says, \"You know what I mean?\"  Xan returns to doing nothing and somehow makes that look challenging.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+        <item key="computer pc comp"><![CDATA[
+          if (GetBoolean(XanMag, "aware")) {
+            msg ("\"My computer is not too much to brag about.\"  He flicks it with a backhand before returning to his stuff.")
+          }
+          else {
+            msg ("XanMag seems startled by your voice and looks at you in surprise.<br/><br/>\"You... you're... you're actually a real person?\"  Xan cocks his head and looks at you a little closer.  \"Pix?  Is that you?  It has to be you.  You look like a Pixie.\"  You nod affirmatively and wonder if that was meant to be an insult.  <br/><br/>\"Never expected to actually talk to you face to face.  You are exactly as I imagined you being.\"  Again... you are unsure if that's a compliment, indifference, or an insult.  The smile on XanMag's face though tells you that he meant no harm by his foot-in-mouth approach to conversation.<br/><br/>\"Oh,\" Xan pauses, \"Totally forgot what you asked me.\"  With that, he returns to his tasks.")
+            SetObjectFlagOn (XanMag, "aware")
+          }
+        ]]></item>
+      </ask>
+      <object name="laptopXM">
+        <inherit name="container_limited" />
+        <scenery />
+        <takemsg>This laptop belongs to XanMag.  He is currently at a "six".  You do not want to see him take it to a "ten".</takemsg>
+        <feature_container />
+        <open type="boolean">false</open>
+        <close type="boolean">false</close>
+        <hidechildren />
+        <listchildren />
+        <maxobjects type="int">1</maxobjects>
+        <openmsg>It's already open and the screen can be viewed.</openmsg>
+        <closemsg>No point in closing XM's laptop.</closemsg>
+        <transparent />
+        <nocopy type="boolean">false</nocopy>
+        <alias>laptop</alias>
+        <alt type="stringlist">
+          <value>computer</value>
+          <value>pc</value>
+          <value>labtop</value>
+        </alt>
+        <look type="script">
+          msg ("You take a quick peak at the laptop while XanMag is distracted.  It's sleek and modern and you wonder how XanMag could afford it on his measly teacher's salary.  Many tabs are open across the top of Chrome, but the screen is currently displaying {random:a fantasy football draft page.:some website called TheChive.:the Soundation home page.:the Soundcloud homepage.:a Yahoo! email page.:a website called Beer Advocate.} You also notice that there is a word document open in the background.")
+        </look>
+        <displayverbs type="stringlist">
+          <value>Look at</value>
+          <value>Take</value>
+          <value>Open</value>
+          <value>Close</value>
+        </displayverbs>
+        <inventoryverbs type="stringlist">
+          <value>Look at</value>
+          <value>Use</value>
+          <value>Drop</value>
+          <value>Open</value>
+          <value>Close</value>
+        </inventoryverbs>
+        <object name="browser tabsXM">
+          <scenery />
+          <look>Just a bunch of seemingly unrelated tabs across the top of XM's laptop.</look>
+          <alias>browser tabs</alias>
+          <alt type="stringlist">
+            <value>tabs</value>
+            <value>browser</value>
+            <value>internet</value>
+          </alt>
+        </object>
+        <object name="word document">
+          <look>It's in the background so you can't see it, but it is definitely there.  You wonder what information it contains...</look>
+          <scenery />
+          <feature_usegive />
+          <nocopy type="boolean">false</nocopy>
+          <read type="script">
+            firsttime {
+              msg ("You move the pointer over the word document icon and just before you are able to click it, Xan shoos you briskly away.  \"Sorry, Pix,\" I'd like to show you what I've been writing, but... but... \"It's kind of personal.\"  Xan's face flushes and he returns to other things.")
+            }
+            otherwise {
+              msg ("Evidently, Xan doesn't want you snooping around his personal documents so you leave it be.")
+            }
+          </read>
+          <use type="script">
+            msg ("This is not your laptop to use.  Sorry.")
+          </use>
+          <exit alias="northeast" to="WorldofBeerXM">
+            <inherit name="northeastdirection" />
+          </exit>
+        </object>
+      </object>
+      <object name="iPhoneXM">
+        <scenery />
+        <takemsg>No way.  XanMag is very protective of his stuff.</takemsg>
+        <alias>iPhone</alias>
+        <nocopy type="boolean">false</nocopy>
+        <look type="script">
+          msg ("It is your standard run-of-the-mill iPhone.")
+        </look>
+      </object>
+      <object name="beerXM">
+        <scenery />
+        <takemsg>That will never happen.  You want to see XanMag go total apeshit?</takemsg>
+        <alias>beer</alias>
+        <drink>You try to snatch a quick libation off of Xan's beer, but he deflects your lips with a sharp backhand.  Looks like you'll be getting none of that.</drink>
+        <nocopy type="string"></nocopy>
+        <look type="script">
+          msg ("It looks like XanMag is currently clutching a {random:Boddington's.:Old Speckled Hen.:Breckenridge Vanilla Porter.:Bell's Two Hearted.:Elysian Space Dust IPA.:Guiness.:Murphy's Irish Stout.}")
+        </look>
+      </object>
+      <object name="musicXM">
+        <scenery />
+        <look>You can't really look at the music XanMag is listening to, can you?</look>
+        <takemsg>The music is on the laptop and the laptop is untakeable.  Therefore, you cannot take the music.</takemsg>
+        <listen>The music is very quiet but it sounds like you can make out the rhythm's of a {random:Tech N9ne:Hopsin:Dirty Heads:XanMag:Dispatch:State Radio:Atmosphere:Mac Lethal:Mayday:Krizz Kaliko:Sublime:Ces Cru} song.</listen>
+        <alias>music</alias>
+        <nocopy type="boolean">false</nocopy>
+      </object>
+      <object name="bluntXM">
+        <alias>blunt</alias>
+        <visible type="boolean">false</visible>
+        <feature_usegive />
+        <smell>It smells like you'll be writing a new text adventure after you smoke it!  (All the words will just FALL INTO PLACE!)</smell>
+        <alt type="stringlist">
+          <value>cigarette</value>
+          <value>joint</value>
+          <value>fatty</value>
+        </alt>
+        <look type="script">
+          if (GetBoolean(bluntXM, "litXM")) {
+            msg ("There are dark embers surrounding a faint orange glow at one end of the blunt.  It appears ready to be smoked.")
+          }
+          else {
+            msg ("It's a big, fat, unlit blunt.  Smells a bit skunky.")
+          }
+        </look>
+        <smoke type="script">
+          msg ("You try and take a hit from a cool and unlit cigarette.  It just doesn't seem to work...")
+        </smoke>
+        <giveto type="scriptdictionary">
+          <item key="GalGadotXM"><![CDATA[
+            firsttime {
+              msg ("\"Thanks, Pix!\"  Gal gives you a light kiss on the cheek.  \"It's a little stressed living in here.  If you know what I mean.\"  She takes the joint from you and it immediately starts to burn.  DAMN.  She <i>IS</i> hot!<br/><br/>She takes a long draw from the cigarette and hands it back to you.  <br/><br/>\"Thanks, dear.\"")
+              firsttime {
+                IncreaseScore (6)
+                PrintCentered ("<b>[Your score has increased by 6!]</b>")
+                list add (game.scoreList, "Passed the doobie to the left-hand side: 6 points")
+              }
+              RemoveObject (bluntXM)
+              MoveObject (litbluntXM, player)
+            }
+            otherwise {
+              msg ("\"Are you trying to take advantage of me, you little devil.\"  She wiggles her finger at you and smiles.  \"Sorry, sexy, I just can't risk another draw on that.\"")
+            }
+          ]]></item>
+          <item key="KV">
+            firsttime {
+              msg ("\"Nah, I don't want RH to show back up.\"  KV shrugs.")
+            }
+            otherwise {
+              msg ("\"Sorry, man.  No can do.\"")
+            }
+          </item>
+          <item key="hegemonkhan">
+            firsttime {
+              msg ("HK sees your offer and declines.  He returns to deep thinking.")
+            }
+            otherwise {
+              msg ("\"No thanks, Pix.\"")
+            }
+          </item>
+          <item key="Dark_Lizerd">
+            msg ("\"Meh.  Not interested.  I have better things to do.\"")
+          </item>
+          <item key="DarkLizerd">
+            msg ("\"Meh.  Not interested.  I have better things to do.\"")
+          </item>
+          <item key="Richard Headkid">
+            firsttime {
+              msg ("\"You'll need a flame, or something at least really hot to light that.  And, sorry, I don't have one.  KV doesn't let me play with fire anymore.\"")
+            }
+            otherwise {
+              msg ("\"That's still not lit, man,\" RH says.  \"Find a flame.   ...or something hot.\"")
+            }
+          </item>
+          <item key="XanMag">
+            firsttime {
+              msg ("\"Your first rodeo, Pixie?\"  Xan laughs.  \"This needs lit.  Here.  Gimme that.\"  He snatches the joint from you and reaches into his pocket.  \"Shit.  I must have lost my lighter.  Just find a flame or something hot enough and light that up.  Bring it back when you are done?\"")
+            }
+            otherwise {
+              msg ("\"Needs lit.  Something hot like a flame would do the trick.\"")
+            }
+          </item>
+        </giveto>
+      </object>
+    </object>
+    <command name="XM dance CMD">
+      <pattern>dance; dance to music; dance for xm; dance for xanmag; dance with xanmag</pattern>
+      <script>
+        msg ("XanMag sees your movement and matches it with much more precision and professionalism.")
+      </script>
+    </command>
+    <object name="whitepillXM">
+      <visible type="boolean">false</visible>
+      <look>You look closely at the pill.  It's light brown and has the letters AD etched in its surface.</look>
+      <alias>brown pill</alias>
+      <takemsg>{if BeginsWith(LCase(player.currentcommand), "take")):By take I assume you mean pick up?  }Okay.  Taken.</takemsg>
+      <alt type="stringlist">
+        <value>adderall</value>
+      </alt>
+      <eat>You, as far as I know, do not need adderall.  You are completely focused.  You hold on to it rather than tempt fate.</eat>
+      <feature_usegive />
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Drop</value>
+      </inventoryverbs>
+      <nocopy type="boolean">false</nocopy>
+      <take type="script">
+        if (StartsWith (LCase(player.currentcommand), "take")) {
+          msg ("By take I assume you mean pick up?  Okay.  Taken.")
+          MoveObject (whitepillXM, player)
+        }
+        else {
+          msg ("Okay.  Taken.")
+          MoveObject (whitepillXM, player)
+        }
+      </take>
+      <giveto type="scriptdictionary">
+        <item key="XanMag"><![CDATA[
+          msg ("You offer the pill to XanMag.<br/><br/>He takes it from you and without pausing long enough to wink, tosses it in his mouth and washes it down with a beer.<br/><br/>A few moments later Xan settles down and gets your attention.<br/><br/>\"Listen, you've been great all these years, Pix.  Go over to that hi-tech interface over there,\" he says, making direct and prolonged eye contact with you, \"and log in.  My password is 'frittata'.  Once you log-in, there will be a little something that pops-up that I need help with.  As always, thanks a ton!\"  <br/><br/>A couple minutes pass and XanMag becomes distracted again.")
+          MakeObjectVisible (hitechinterface)
+          firsttime {
+            IncreaseScore (2)
+            PrintCentered ("<b>[Your score has increased by 2!]</b>")
+            list add (game.scoreList, "Gave XM his pill: 2 points")
+          }
+          RemoveObject (whitepillXM)
+        ]]></item>
+        <item key="Richard Headkid"><![CDATA[
+          msg ("\"Don't need it!  I'm focused enough!\"<br/><br/>You highly doubt that, but whatever.")
+        ]]></item>
+        <item key="GalGadotXM">
+          msg ("\"I'm sure that is a perfectly safe little Adderall you have there, Pixie,\" says mumbles, \"But, I'm not the one that needs that.\"")
+        </item>
+        <item key="Dark_Lizerd">
+          msg ("\"No thanks.  I can stay focused, unlike some people,\" DL replies glancing over at XM and RH.")
+        </item>
+        <item key="DarkLizerd">
+          msg ("\"No thanks.  I can stay focused, unlike some people,\" DL replies glancing over at XM and RH.")
+        </item>
+        <item key="hegemonkhan">
+          msg ("HK definitely does not need this!")
+        </item>
+      </giveto>
+    </object>
+
+    <object name="GeneralDiscussionPostXM">
+      <visible type="boolean">false</visible>
+      <alias>general discussion post</alias>
+      <takemsg>You can't take it. Try examining it.</takemsg>
+      <read>Just examine it please.</read>
+      <look type="script"><![CDATA[
+        msg ("<img src='"+GetFileURL("generalpost.png") + "' width=\"100%\" height=\"344\" /><br/><a href=\"https://textadventures.co.uk/forum/general/topic/zi3qvd_s0kup9dabfes6rw/for-all-you-imbibers-out-there\">View this post in your browser.</a>")
+        firsttime {
+          GeneralDiscussionPostXM.viewedXM = true
+          IncreaseScore (5)
+          PrintCentered ("<b>[Your score has increased by 5!]</b>")
+          list add (game.scoreList, "Looked at XM's post: 5 points")
+        }
+      ]]></look>
+    </object>
+
+  <object name="BeatLabXM">
+    <alias>Beat Laboratory</alias>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <description type="script"><![CDATA[
+      if (GetBoolean(flash drive, "given")) {
+        msg ("The sound in here is deafening.  The ceiling is one giant speaker and is vibrating everything in the room.  It is definitely hard to hear in here.  So loud, in fact, that you can't even hear yourself think.  Everything in the room has disappeared, however.  The only thing left behind is the music and the giant number on the floor.<br/>")
+      }
+      else {
+        msg ("The sound in here is deafening.  The ceiling is one giant speaker and is vibrating everything in the room.  It is definitely hard to hear in here.  So loud, in fact, that you can't even hear yourself think.  There is one particularly interesting bank of doo-hickeys here, in front of which is a beat up chair.<br/>")
+      }
+    ]]></description>
+    <enter type="script">
+      if (GetBoolean(flash drive, "given")) {
+        play sound ("Drums237-drums only.mp3", false, true)
+      }
+      else {
+        play sound ("Fired Up.mp3", false, true)
+      }
+    </enter>
+    <onexit type="script">
+      stop sound
+      MoveObject (headphoneXM, BeatLabXM)
+      if (headphoneXM.worn) {
+        RemoveGarment (headphoneXM)
+      }
+    </onexit>
+    <beforeenter type="script">
+    </beforeenter>
+    <object name="bankofdoohickeys">
+      <alias>bank of doo-hickeys</alias>
+      <alt type="stringlist">
+        <value>computer</value>
+      </alt>
+      <look>It is a massive wall of levers and switches and buttons and cords and doo-hickeys that you have no name for.  There is, however, a big large button that catches your eye and next to it a small rectangular slot.  </look>
+    </object>
+    <object name="instrumentsXM">
+      <look>A lot of these things you can name but none of which you can really play.  The only instrument that looks worth you time is the digital drum set setting in the corner of the room.</look>
+      <scenery type="boolean">false</scenery>
+      <alias>instruments</alias>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <play type="script">
+        HandleSingleCommand ("play drums")
+      </play>
+    </object>
+    <object name="chairXM">
+      <alias>chair</alias>
+      <look>It's just a beat up, old chair that seems overused.</look>
+      <sit>It smells of XanMag and that immediately turns you off of sitting in it.</sit>
+      <takemsg>You cannot take the chair as it is XM's, not yours.</takemsg>
+    </object>
+    <object name="headphoneXM">
+      <inherit name="wearable" />
+      <alias>headphones</alias>
+      <feature_wearable />
+      <attr name="wear_layer" type="int">2</attr>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+      <look type="script">
+        if (headphoneXM.worn) {
+          msg ("They are kind of hard to see since they are covering your ears.  They are securely plugged in to some port on the doohickey via a really long cord.")
+        }
+        else {
+          msg ("The headphones are securely plugged into the doohickey bank via a really long cord.  These look like really nice headphones - the noise cancelling type.")
+        }
+      </look>
+      <onafterwear type="script">
+        msg ("You put the headphones on and all the noise in the room is canceled out!  Cool!")
+        stop sound
+      </onafterwear>
+      <onafterremove type="script">
+        msg ("You remove the headphones and the blaring music returns!")
+        play sound ("Fired Up.mp3", false, false)
+      </onafterremove>
+      <take type="script">
+        msg ("You snatch up the headphones.")
+        AddToInventory (headphoneXM)
+      </take>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Use</value>
+        <value>Drop</value>
+        <value>Wear</value>
+        <value>Remove</value>
+      </inventoryverbs>
+    </object>
+    <object name="drumsXM">
+      <look>It's a set of digital drums ready to be played.</look>
+      <alias>drums</alias>
+      <visible />
+      <scenery />
+      <play type="script">
+        if (GetBoolean (drumsXM,"recordable") and headphoneXM.worn) {
+          msg ("You pick up the drumsticks and snap them on the digital drums to test it out.  You can clearly hear your beat through the headphones.  You proceed to hammer out and record one dope-ass beat!")
+          SetObjectFlagOn (flash drive, "writtentoXM")
+        }
+        else if (GetBoolean (drumsXM,"recordable")) {
+          msg ("You bang on the drums a bit but because of this loud music, you can't hear anything you are playing!  ")
+        }
+        else if (headphoneXM.worn) {
+          msg ("You pick up the drumsticks and snap them on the digital drums to test it out.  You can clearly hear your beat through the headphones.  You proceed to hammer out one dope-ass beat!")
+        }
+        else {
+          msg ("You bang on the drums for a bit of fun, but you can neither replay what you've played nor can you hear it!!")
+        }
+      </play>
+    </object>
+    <object name="rectangularslotXM">
+      <inherit name="container_open" />
+      <alias>rectangular slot</alias>
+      <scenery />
+      <alt type="stringlist">
+        <value>rectangle</value>
+      </alt>
+      <feature_container />
+      <open type="boolean">false</open>
+      <close type="boolean">false</close>
+      <hidechildren />
+      <listchildren />
+      <look type="script">
+        if (GetBoolean(rectangularslotXM, "drivenXM")) {
+          msg ("The rectangular slot is filled with a small flash drive.")
+        }
+        else {
+          msg ("It's a small (and empty) rectangular slot that looks familiar, especially to someone as tech-saavy as you.")
+        }
+      </look>
+      <addscript type="script">
+        if (not object = flash drive) {
+          msg ("You can't do that.")
+        }
+        else {
+          if (GetBoolean(rectangularslotXM, "drivenXM")) {
+            msg ("You've already put the flash drive in the USB port, you dolt.  And I thought you knew what you were doing??!")
+          }
+          else if (GetBoolean(flash drive, "writtentoXM")) {
+            msg ("There is no need to re-record a beat.  You've already got one on here!")
+          }
+          else {
+            msg ("You plug the flash drive into the rectangular slot.  It fits nicely.")
+            SetObjectFlagOn (rectangularslotXM, "drivenXM")
+            MoveObjectHere (flash drive)
+          }
+        }
+      </addscript>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Take</value>
+        <value>Open</value>
+        <value>Close</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Use</value>
+        <value>Drop</value>
+        <value>Open</value>
+        <value>Close</value>
+      </inventoryverbs>
+    </object>
+    <object name="buttonXM">
+      <inherit name="switchable" />
+      <alias>button</alias>
+      <scenery />
+      <feature_switchable />
+      <switchonmsg>You push the button and a light just above it begins to blink.</switchonmsg>
+      <switchoffmsg>You press the button and the light goes out.</switchoffmsg>
+      <look type="script">
+        if (IsSwitchedOn(buttonXM)) {
+          msg ("Above the button there is a flashing red light and the word 'Record'.")
+        }
+        else {
+          msg ("It's just a button with a small, unlit screen above it.")
+        }
+      </look>
+      <onswitchon type="script">
+        SetObjectFlagOn (drumsXM, "recordable")
+      </onswitchon>
+      <onswitchoff type="script">
+        SetObjectFlagOff (drumsXM, "recordable")
+      </onswitchoff>
+      <push type="script">
+        if (GetBoolean(drumsXM, "recordable")) {
+          msg ("You push the button and the light fades off.")
+          SwitchOff (buttonXM)
+          SetObjectFlagOff (drumsXM, "recordable")
+        }
+        else {
+          msg ("You push the button and the light begins to blink.")
+          SwitchOn (buttonXM)
+          SetObjectFlagOn (drumsXM, "recordable")
+        }
+      </push>
+      <press type="script">
+        do (buttonXM, "push")
+      </press>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Take</value>
+        <value>Switch on</value>
+        <value>Switch off</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Use</value>
+        <value>Drop</value>
+        <value>Switch on</value>
+        <value>Switch off</value>
+      </inventoryverbs>
+    </object>
+    <object name="mindmelt portal1">
+      <look>It's a strange black hole about the size of a manhole cover.  Just looking at it gives you hope for brighter days. You could probably enter it if you choose.</look>
+      <scenery type="boolean">false</scenery>
+      <visible />
+      <alias>mind-melt portal</alias>
+      <alt type="stringlist">
+        <value>portal</value>
+        <value>mindmelt portal</value>
+        <value>mind portal</value>
+        <value>black hole</value>
+      </alt>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Enter</value>
+      </displayverbs>
+      <enterverb type="script"><![CDATA[
+        msg ("As you approach the black hole, you feel smarter and smarter...  <br/><br/>The last thing you recall is a faint sucking sound...")
+        // MoveObjectHere (headphoneXM)
+        wait {
+          MoveObject (player, Quest Forum)
+        }
+      ]]></enterverb>
+      <exit alias="out" to="Quest Forum">
+        <inherit name="outdirection" />
+      </exit>
+    </object>
+    <exit alias="northwest" to="WorldofBeerXM">
+      <inherit name="northwestdirection" />
+      <scenery type="boolean">false</scenery>
+    </exit>
+    <object name="floorXM">
+      <look>It's an etching in the floor.  A number.  "5"</look>
+      <alt type="stringlist">
+        <value>number</value>
+        <value>writing</value>
+      </alt>
+      <alias>floor</alias>
+      <scenery />
+      <read>"5"</read>
+    </object>
+  </object>
+  <object name="WordDocumentXM">
+    <alias>Word Document</alias>
+    <usedefaultprefix />
+    <description type="script">
+      if (GetBoolean(bluntXM, "smokedXM")) {
+        msg ("The room you're in is quite 'trippy'.  It reminds you of the old disco days with the flashing strobelight.  You are in a room, yes, but it is unlike any you have seen before.  The walls, floor and ceiling are a forest green tinted with intersecting gold lines.  The lines occasionally pulse as if filled with energy.  Whirling around the perimeter of the room is a cyclonic column of spinning, blue-white light.")
+      }
+      else {
+        msg ("You are in a room, yes, but it is unlike any you have seen before.  The walls, floor and ceiling are a forest green tinted with a intersecting gold lines.  The lines occasionally pulse as if filled with energy.  Whirling around the perimeter of the room is a cyclonic column of spinning, blue-white light.  Being here is disorienting and it is making you nauseous.")
+      }
+    </description>
+    <object name="swirlingcolumnXM">
+      <alias>swirling column of light</alias>
+      <look type="script">
+        if (GetBoolean(bluntXM, "smokedXM")) {
+          msg ("You look at the swirling wall of energy and can definitely make out some... unrandom text swirling in its seas.  In your current state, I bet you could actually read it if you wanted.")
+        }
+        else {
+          msg ("You stand in a room, inside a swirling column of dizzying blue-white lights.  Trying to focus on the blur gives you a headache and makes your stomach lurch.  Before focusing on the floor once again, you can make out what appears to be some lettering flying and dancing within the maelstrom of energy.")
+        }
+      </look>
+      <read type="script"><![CDATA[
+        if (GetBoolean(bluntXM, "smokedXM")) {
+          if (Got(notepad pencil)) {
+            firsttime {
+              msg ("You squint and focus on the swirling letters and begin to scribble down all you see in the notebook.  After what feels like hours of extreme concentration, you feel your transcription is complete.")
+              SetObjectFlagOn (notepad pencil, "scribedXM")
+              msg ("<br/></b>Your high seems to have faded.</b>")
+            }
+            otherwise {
+              msg ("You've already copied everything down.  It's probably still in your notebook.  Try to read your notebook maybe?")
+            }
+          }
+          else {
+            msg ("You study the wall of text for a moment and concentrate.  There is definitely some order here and you try and commit it to memory, but it is simply too much for you to remember off the top of your head.")
+          }
+        }
+        else {
+          msg ("You squint and focus on the swirling letters:<br/><br/>REV...<br/>unccl....<br/><br/>You cannot proceed any farther.  You promptly vomit all over the floor.<br/><br/><center>[  YOUR HEALTH HAS DECREASED BY 10!  ]</center>")
+          DecreaseHealth (10)
+        }
+      ]]></read>
+    </object>
+    <exit alias="northeast" to="WorldofBeerXM">
+      <inherit name="northeastdirection" />
+    </exit>
+    <exit alias="southeast" to="daydreamroomXM">
+      <inherit name="southeastdirection" />
+    </exit>
+    <object name="floorXM2">
+      <look>It's an etching in the floor.  A number.  "5"</look>
+      <alt type="stringlist">
+        <value>number</value>
+        <value>writing</value>
+      </alt>
+      <alias>floor</alias>
+      <scenery />
+      <read>"5"</read>
+    </object>
+  </object>
+  <object name="WorldofBeerXM">
+    <alias>World of Beer</alias>
+    <usedefaultprefix type="boolean">false</usedefaultprefix>
+    <object name="barXM">
+      <look>The bar disappears into the distance.  Weird.  It seems infinitely long.  One bartender stands behind it, working diligently.</look>
+      <alias>bar</alias>
+    </object>
+    <object name="bartender">
+      <inherit name="namedfemale" />
+      <alt type="stringlist">
+        <value>gal</value>
+        <value>galgadot</value>
+        <value>gadot</value>
+        <value>girl</value>
+        <value>woman</value>
+      </alt>
+      <look type="script"><![CDATA[
+        firsttime {
+          msg ("You glance at the bartender and exclaim, \"DAAAAMN.\"  She looks up at you, winks and smiles, and returns to her bartending duties.  Wait... What?!  That's Gal Gadot.  <i>What is she doing here?</i> you wonder, but you remember that you are inside the mind of XanMag so really anything is possible.<br/><br/>She seems to be working way too hard considering that she is the only one, other than you, in this bar.")
+        }
+        otherwise {
+          msg ("Gal glances up at you and winks.  She returns to her bartending duties with diligence.  ")
+        }
+      ]]></look>
+      <speak type="script">
+        msg (" The beautiful bartender is interrupted by your voice and she looks up.  {random: \"Well, hot damn, sexy.\":\"Looking good, Pix.\":\"Oh, looky, looky.\":\"Look at this stud.\":\"My, my, my.  If I weren't just a figment.\":  She mumbles something along the lines of 'What I wouldn't give to get me a piece of...' the rest is mumbled inaudibly.:She stares you up and down and licks her lips.}  The incredibly sexy bartender soaks in your contenance with lustful eyes before returning back to work.")
+      </speak>
+      <ask type="scriptdictionary">
+        <item key="bar">
+          msg ("Gal takes a brief break from her hard work and says, \"This is wear he wants me, I guess so I'm glad to be here.\"  Gal returns to working hard behind the bar.")
+        </item>
+        <item key="music">
+          msg ("\"Yes, that is one of the topics I'm fluent in.  The Great and Wonderful XanMag has made that so.\"  Gal winks and returns to bartending.")
+        </item>
+        <item key="sports golf basketball baseball soccer sport games darts coaching teaching coach teach">
+          msg ("Gal doesn't seem to be too impressed talking to you about this but she smiles politely and says, \"Yes, that activity is something I'm willing to talk to Xan about.\"  The beautiful Gal Gadot returns to work.")
+        </item>
+        <item key="beer"><![CDATA[
+          firsttime {
+            msg ("\"Well,\" Gal says, \"Xan has a limitless supply of beer here.  If you can tell me his favorite beer, I'll let you leave with it.  If you cannot tell me, I have to assume that...\" Gal pauses and tucks a loose piece of hair behind her ear.  \"I have to assume you have hacked into his thoughts and I will remove you from here at once.\"<br/><br/>She smiles and winks at you.  \"Whenever you are ready just 'order a beer' and we can proceed.\"  Gal returns to working the bar.")
+            SetObjectFlagOn (bartender, "askedbeerXM")
+          }
+          otherwise {
+            msg ("Gal pauses from her work and looks up at you, \"Whenever you are ready, just 'order a beer' and we can proceed.\"  <br/><br/>She stares at you and cracks her knuckles as if to give you a warning.  Gal smiles and returns to her bartending duties.")
+          }
+        ]]></item>
+        <item key="xanmag xan xm">
+          msg ("\"He's got his head up my ass all the time,\" she sighs.")
+        </item>
+      </ask>
+      <tell type="scriptdictionary">
+        <item key="life mylife me pix pixie andy thepixie thepix"><![CDATA[
+          firsttime {
+            msg ("Well, well, well,\" Gal says with a sheepish smile.  \"Now doesn't <i>THAT</i> sound much more fascinating than...\" <br/><br/>Gal pauses and winks before continuing, \"Please don't mention that to XanMag.  I actually quite like being a figment of his imagination, but he's... he's...\" It seems Gal is having quite the trouble finding the words.<br/><br/>\"He's just so, Xan.  You know what I mean, Pix?\"  <br/><br/>With a wink and a smile, Gal returns to her work behind the bar.")
+          }
+          otherwise {
+            msg ("\"You are very interesting, Pix.\"  She blows you a kiss and continues working.")
+          }
+        ]]></item>
+      </tell>
+    </object>
+    <object name="taps">
+      <look>Holy shit.  The taps are infinite and stretch farther than your eye can see.  There are literally millions of beers to choose from here and each tap is numbered.  If you want a drink, perhaps you should try talking with the bartender.</look>
+      <usedefaultprefix type="boolean">false</usedefaultprefix>
+    </object>
+    <command name="sex gadot xm CMD">
+      <pattern type="string"><![CDATA[^(fuck|sex|bang|do|penetrate|hump|kiss|hug|flirt with) (?<object1>.*)$]]></pattern>
+      <script><![CDATA[
+        if (object1 = bartender) {
+          firsttime {
+            msg ("You make your move on Gal Gadot and before you can say \"uh...uhhhh.... oh, oh, oh, ooohhhh... aaahhhhhhh\" she politely stops you and says, \"This,\" gesturing to her body, \"only belongs to XanMag.\"  She returns to working behind the bar.  Damn that XM.  I guess you too have <i>your own</i> fantasies, yes?")
+          }
+          otherwise {
+            msg ("You've tried that and XanMag's Gal Gadot has put the kibosh on that.  Damn him.")
+          }
+        }
+        else {
+          error ("This is not that kind of game!")
+        }
+      ]]></script>
+    </command>
+    <command name="order a beer XM CMD">
+      <pattern>order a beer; order beer; order a drink; order drink; place order; put in an order</pattern>
+      <script><![CDATA[
+        if (GetBoolean(bartender, "askedbeerXM")) {
+          firsttime {
+            msg ("\"Well,\" she says with a smile, \"Here you go.  It's the only one I have.\"  She reaches into her back pocket and places a post on the bar.  Just as you reach out to take it, a stiff breeze picks it from the bar and whisks it out of the World of Beer.<br/><br/>In the distance you hear a faint sucking sound.<br/><br/>\"Oops.\"")
+            MakeObjectVisible (GeneralDiscussionPostXM)
+          }
+          otherwise {
+            if (HasAttribute(GeneralDiscussionPostXM, "viewedXM")) {
+              msg ("\"Oh, good!  I'm glad you have found that post.  You can keep it.  Xan has ALL these numbered taps memorized.\"  Gal rolls her eyes and smiles.<br/><br/>She gestures into infinity at the innumerable taps.  \"I can only give you one of these beers to remove from here.  Any more than that and Xan might lose more than the memory of his favorite beer.  We can't have that, can we?\"  Gal laughes lightly.<br/><br/><b>\"So, what is the <u>numbered</u> beer he prefers?\"</b>")
+              get input {
+                switch (LCase(result)) {
+                  case ("11","eleven","bells two hearted","two hearted","2 hearted","2 heart","bells two","hearted","11.") {
+                    msg ("\"Well,\" Gal says, unable to hide her surprise, \"That <i>is</i> his favorite beer.\"  She crackles, flashes, and disappears.<br/><br/>Moments later she materializes into existence once more holding a frothy pint of Bell's Two Hearted Ale.<br/><br/>\"Here you go, Pix.\"  She slides the pint down the bar in your direction.  \"For you, no charge.\"  She blows you a kiss just before she disappears once again.")
+                    IncreaseScore (7)
+                    PrintCentered ("<b>[Your score has increased by 7!]</b>")
+                    list add (game.scoreList, "Ordered the correct beer: 7 points")
+                    MakeObjectVisible (PintOfBeerXM)
+                    MakeObjectInvisible (bartender)
+                  }
+                  default {
+                    msg ("She looks you over with a sad smile on her face.<br/><br/>\"I'm afraid that's not his favorite, Pix.\"  She shakes her head.  \"I can't risk having you run around here taking information willy-nilly.  It's in short supply as it is.\"  Gal hold her hands out and a dark stream of shadow leaps from her finger tips and strikes you square in the chest.  Despite it being quite the turn on, it does hurt a bit...")
+                    wait {
+                      MoveObject (player, Quest Forum)
+                      DecreaseHealth (20)
+                    }
+                  }
+                }
+              }
+            }
+            else {
+              firsttime {
+                msg ("Gal looks at you suspiciously.  \"I get the feeling you haven't found that post I accidentally misplaced.\"  She pulls her lips back in a show of embarrassment.  Once you've taken a look at it, I can take your order.  Sorry,\" she says, \"put I don't have the time to read to you the nearly infinite selection of taps.\"  She smiles and returns to work.")
+              }
+              otherwise {
+                msg ("\"Sorry, but you'll need to select from that list presented in the post... that I lost.  Let me know when you've found it.\"")
+              }
+            }
+          }
+        }
+        else {
+          msg ("Gal looks at you sympathetically.  \"Why don't we talk about it first, dear?\"  She smiles and returns to her work behind the bar.")
+        }
+      ]]></script>
+    </command>
+    <object name="PintOfBeerXM">
+      <alias>pint of beer</alias>
+      <look>It's a pint of XanMag's favorite beer - Bell's Two Hearted Ale.</look>
+      <visible type="boolean">false</visible>
+      <take />
+      <feature_usegive />
+      <drink type="script"><![CDATA[
+        firsttime {
+          msg ("This beer does look and smell wonderful, but it is not for you, Pix.  I mean, even though I know you deserve it... <br/><br/>Ah, what the hell, it's just a game, right?  Bottoms up!<br/><br/>You lift the glass and drink the beer.  It is absolutely magnificent!  A beer well-deserved, Pixie.<br/><br/>Whoa... what the...?  The glass has magically refilled.  Sweet! This must be the programmer's way of virtually \"buying\" you a beer without actually buying you a beer.  In fact, the programmer feels bad he can't <i>actually</i> buy you a beer in real life.  In it's place, however, is this game.  Hmmm... Looks like you got screwed.")
+        }
+        otherwise {
+          msg ("Good thing this is entirely virtual.  You slam back another beer and another 16 ounces of golden nectar magically take its place.")
+        }
+      ]]></drink>
+      <ontake type="script">
+        beerXM.visible = false
+      </ontake>
+      <giveto type="scriptdictionary">
+        <item key="XanMag"><![CDATA[
+          msg ("As soon as you pull the beer from your inventory, a spot of drool immediately beads at the corner of XanMag's mouth.  He eyes you for a bit before saying, \"For me?\"<br/><br/>You nod affirmatively and he takes the beer and settles in for a relaxing drink.  A few minutes pass and the beer is all but gone and he looks up from his beer-coma realizing you are still loitering in his personal space.<br/><br/>\"Oh, hey, Pix.\"  Xan holds the empty glass above his head.  \"Cheers!  Thanks so much!\"  <br/><br/>Xan places the empty glass away and returns to his multi-tasking.")
+          IncreaseScore (10)
+          XanMag.TaskCount = XanMag.TaskCount - 1
+          PrintCentered ("<b>[Your score has increased by 10!]</b>")
+          list add (game.scoreList, "Gave XM the beer: 10 points")
+          RemoveObject (PintOfBeerXM)
+          beerXM.visible = true
+        ]]></item>
+        <item key="Richard Headkid"><![CDATA[
+          firsttime {
+            msg ("\"Lovely.  Don't mind if I do.\"  Before you can blink, RH has snatched the pint from you and guzzled the beer.  He hands you back an empty glass.  <br/><br/>RH belches the words, \tThank you.\"<br/><br/>Just as you are about to protest Richard's rudeness, you glance down and notice that the pint has magically refilled!")
+          }
+          otherwise {
+            msg ("\"Thanks!\" Richard pounds another beer, and just like the last time, the pint magically refills.")
+          }
+        ]]></item>
+        <item key="hegemonkhan">
+          firsttime {
+            msg ("\"I will have a sip.\"  HK sips the beer and contorts his face a bit.  \"Not my... cup of tea, Pix, but thanks nonetheless.  The beer refills to exactly one pint.")
+          }
+          otherwise {
+            msg ("\"Tried that.  Not my first choice,\"  HK says.")
+          }
+        </item>
+        <item key="DarkLizerd">
+          firsttime {
+            msg ("\"Nah.  Colludes my thoughts.  Thanks though.\"")
+          }
+          otherwise {
+            msg ("\"Nah.  Colludes my thoughts.  Thanks though.\"")
+          }
+        </item>
+        <item key="Dark_Lizerd">
+          firsttime {
+            msg ("\"Nah.  Colludes my thoughts.  Thanks though.\"")
+          }
+          otherwise {
+            msg ("\"Nah.  Colludes my thoughts.  Thanks though.\"")
+          }
+        </item>
+        <item key="GalGadotXM"><![CDATA[
+          firsttime {
+            msg ("\"Yum.  Don't mind if I do!\"  Gal picks up the beer and crushes the pint before you can blink.  \"Thanks, sweet stuff.\"  <br/><br/>Now <i>there</i> is a guy's Gal.  She kisses your cheek ever so slightly and returns to Xan's bidding.  The pint glass has magically refilled.")
+          }
+          otherwise {
+            msg ("\"Now, Pixie,\" Gal says coyly, \"you wouldn't be trying to take advantage of me would you?  I've had my fill.  Thanks though.\"  She winks and returns to what she was doing before you tried to take advantage off her.")
+          }
+        ]]></item>
+      </giveto>
+    </object>
+    <exit alias="southeast" to="BeatLabXM">
+      <inherit name="southeastdirection" />
+    </exit>
+    <exit alias="southwest" to="WordDocumentXM">
+      <inherit name="southwestdirection" />
+      <visible />
+    </exit>
+    <object name="floorXM1">
+      <look>It's an etching in the floor.  A number.  "5"</look>
+      <alt type="stringlist">
+        <value>number</value>
+        <value>writing</value>
+      </alt>
+      <alias>floor</alias>
+      <scenery />
+      <read>"5"</read>
+    </object>
+  </object>
+  <verb name="xm_play">
+    <property>play</property>
+    <pattern>play</pattern>
+    <defaultexpression>"You can't play " + object.article + "."</defaultexpression>
+  </verb>
+  <object name="storageroomXM">
+    <object name="flash drive">
+      <look>It's a small rectangular flash drive about the size of your pinky.  XM gave this to you.</look>
+      <feature_usegive />
+      <nocopy />
+      <usedefaultprefix />
+      <take type="script">
+        if (GetBoolean(rectangularslotXM, "drivenXM")) {
+          msg ("You remove the flash drive from the slot.")
+          SetObjectFlagOff (rectangularslotXM, "drivenXM")
+          AddToInventory (flash drive)
+        }
+        else {
+          msg ("Taken.")
+          AddToInventory (flash drive)
+        }
+      </take>
+      <use type="script">
+        msg ("You use the little flash drive like a bad boy and then... oh wait.  Yeah.  You can't use this by itself.")
+      </use>
+      <givesingle type="script">
+      </givesingle>
+      <selfuseon type="scriptdictionary">
+        <item key="rectangularslotXM">
+          if (GetBoolean(rectangularslotXM, "drivenXM")) {
+            msg ("You've already put the flash drive in the USB port, you dolt.  And I thought you knew what you were doing??!")
+          }
+          else if (GetBoolean(flash drive, "writtentoXM")) {
+            msg ("There is no need to re-record a beat.  You've already got one on here!")
+          }
+          else {
+            msg ("You plug the flash drive into the rectangular slot.  It fits nicely.")
+            SetObjectFlagOn (rectangularslotXM, "drivenXM")
+            MoveObjectHere (flash drive)
+          }
+        </item>
+      </selfuseon>
+      <giveto type="scriptdictionary">
+        <item key="XanMag"><![CDATA[
+          if (GetBoolean(flash drive, "writtentoXM")) {
+            msg ("You manage to get Xan's attention and he takes the flash drive from you.  <br/><br/>\"Hm... Let's see what you've come up with, shall we?\"  He plugs the flash drive in the USB port and clicks around a bit on the laptop.  Your music starts playing and Xan gives it a listen.  <br/><br/>\"You know what, Pix?\"  He gives you a concerned look.<br/>")
+            play sound ("Drums237-drums only.mp3", false, false)
+            wait {
+              msg ("<br/>\"This beat is... DOPE!!  As always, thanks again!\"<br/>")
+              XanMag.TaskCount = XanMag.TaskCount - 1
+              IncreaseScore (10)
+              PrintCentered ("<b>[Your score has increased by 10!]</b>")
+              list add (game.scoreList, "Hooked XM up with a dope beat: 10 points")
+              SetObjectFlagOn (flash drive, "given")
+              RemoveObject (bankofdoohickeys)
+              RemoveObject (instrumentsXM)
+              RemoveObject (chairXM)
+              RemoveObject (headphoneXM)
+              RemoveObject (flash drive)
+              RemoveObject (drumsXM)
+              RemoveObject (rectangularslotXM)
+              RemoveObject (buttonXM)
+            }
+          }
+          else {
+            msg ("You manage to get Xan's attention and he takes the flash drive from you.  <br/><br/>\"Hm... Let's see what you've come up with, shall we?\"  He plugs the flash drive in the USB port and clicks around a bit on the laptop.  \"Hey, Pix!  It doesn't appear there is anything on here.\"<br/><br/>He hands you the flash drive.<br/><br/>\"Get me some beats, man.  Thanks!\"")
+          }
+        ]]></item>
+        <item key="hegemonkhan">
+          msg ("HK looks at it.  \"What is this?   I don't need that.  Try someone else.\"  HK returns to his work.")
+        </item>
+        <item key="Richard Headkid"><![CDATA[
+          msg ("\"Mmm... No thanks, Pix.  I've already got so many external storage devices, I don't even know which one is storing what!\"<br/><br/>The Dickhead Kid returns to fiddling around with this and that, never settling on one task for more than a few seconds.<br/><br/><i>Harrumph</i> you think.  <i>He could have at least checked it out...</i>")
+        ]]></item>
+        <item key="Dark_Lizerd"><![CDATA[
+          msg ("\"No thanks.  I don't have much need for that.\"<br/><br/>DL returns with laser-like focus on the task at hand.")
+        ]]></item>
+        <item key="DarkLizerd"><![CDATA[
+          msg ("\"No thanks.  I don't have much need for that.\"<br/><br/>DL returns with laser-like focus on the task at hand.")
+        ]]></item>
+        <item key="GalGadotXM">
+          msg ("\"I'm sure that whatever is on there is awesome, but I don't need that.  Thanks for thinking of me though.\"")
+        </item>
+        <item key="bartender"><![CDATA[
+          msg ("\"I'm sure that whatever is on there is awesome, but I don't need that.  Thanks for thinking of me though.\"  Gal returns to her work behind the bar.  <br/><br/>God... she is HOT.")
+        ]]></item>
+      </giveto>
+    </object>
+    <object name="certificateofappreciationXM">
+      <inherit name="surface" />
+      <take />
+      <takemsg>Taken.</takemsg>
+      <drop type="boolean">false</drop>
+      <dropmsg>No way, Pix!  That would hurt Xan's feelings too much!</dropmsg>
+      <alias>Certificate of Appreciation</alias>
+      <nocopy />
+      <feature_container />
+      <look type="script">
+        if (GetBoolean(certificateofappreciationXM, "shardremovedXM")) {
+          msg ("This is a slightly mangled and torn and partially bejeweled certificate of appreciation presented to you by XanMag.  You could still read it if you wanted.")
+        }
+        else {
+          msg ("This is a bejeweled certificate of appreciation presented to you by XanMag.  There is a large pink crystal shard affixed to its surface.  At least he tried...  You could read it if you wanted.")
+        }
+      </look>
+      <read type="script">
+        if (GetBoolean(certificateofappreciationXM, "shardremovedXM")) {
+          picture ("Pixie COA without shard.jpg")
+        }
+        else {
+          picture ("Pixie COA with shard.jpg")
+        }
+      </read>
+      <object name="pinkcrystalXM">
+        <look>It's a large,  pink crystal that XanMag has affixed to a certificate.  Take it if you wish.</look>
+        <alias>pink crystal</alias>
+        <scenery type="boolean">false</scenery>
+        <drop type="boolean">false</drop>
+        <take type="script"><![CDATA[
+          msg ("You twists and pull on the crystal and it separates from the paper with a big <i><b>riiiip</b></i>!!!<br/><br/>Upon closer inspection, you recognize this as something more than just a lousy bejewelment.  This is a shard of infinity!!")
+          SetObjectFlagOn (certificateofappreciationXM, "shardremovedXM")
+          RemoveObject (pinkcrystalXM)
+          AddToInventory (pinkshardofinfinityXM)
+        ]]></take>
+      </object>
+    </object>
+    <object name="litbluntXM">
+      <look>It's a lit blunt with darkened embers around a soft glow at one end.</look>
+      <smell>It smells like you'll be writing a new text adventure after you smoke it!  (All the words will just FALL INTO PLACE!)</smell>
+      <alias>lit blunt</alias>
+      <feature_usegive />
+      <alt type="stringlist">
+        <value>joint</value>
+        <value>cigarette</value>
+        <value>fatty</value>
+      </alt>
+      <smoke type="script"><![CDATA[
+        msg ("You take a really long draw from the blunt, hold your breath, inhale again, and let out a fanciful stream of smoke in inexplicably complicated shapes.  <br/><br/>Whatever you focus your attention on now seems to slow and clarify.")
+        if (game.pov.parent = Quest Forum) {
+          msg ("\"Whoa, Pix,\" Xan says.  You glance over at Xan through pinched eyelids.  \"That's damned impressive.\"  He gives you a thumbs up and returns to work.")
+        }
+        RemoveObject (litbluntXM)
+        SetObjectFlagOn (bluntXM, "smokedXM")
+      ]]></smoke>
+      <giveto type="scriptdictionary">
+        <item key="GalGadotXM">
+          msg ("\"No thanks, hot stuff,\" Gal says in a slow drawl.  Apparently, she is still I bit high from her last toke.")
+        </item>
+        <item key="hegemonkhan">
+          msg ("\"I like the smell, but I don't partake,\" Hk says as he politely declines.")
+        </item>
+        <item key="RH">
+          msg ("RH's eyes widen, then he seems to sink a little.  \"KV won't let me.\"")
+        </item>
+        <item key="bartender">
+          msg ("She eyes it with a glimmer of hunger in her eyes, but says, \"Working here!  Maybe later, Pix.\"")
+        </item>
+        <item key="Richard Headkid">
+          msg ("RH's eyes widen, then he seems to sink a little.  \"KV won't let me.\"")
+        </item>
+        <item key="Dark_Lizerd">
+          msg ("\"Ah... The seed of imagination is planted.\"  He takes a tiny puff and hands it back.")
+        </item>
+        <item key="DarkLizerd">
+          msg ("\"Ah... The seed of imagination is planted.\"  He takes a tiny puff and hands it back.")
+        </item>
+        <item key="posterXM"><![CDATA[
+          firsttime {
+            msg ("You hold the blunt out toward the poster.  Ralph blinks and jumps from the poster.  He snatches the blunt, takes the biggest hit you've ever seen, and disappears into the poster.  Moments later he pops back into view and freezes once again in place.<br/><br/>Whoa.<br/><br/>Does he have <b>more</b> feathers stuck to his beak?")
+          }
+          otherwise {
+            msg ("Already done that.  Ralph has been appeased in more ways than one.")
+          }
+        ]]></item>
+      </giveto>
+    </object>
+    <object name="IdeaInAnEnvelopeXM">
+      <inherit name="openable" />
+      <alias>idea in an envelope</alias>
+      <look>It's an envelope that contains a written edit of XanMag's work-in-progress novel.</look>
+      <feature_container />
+      <open />
+      <close />
+      <read>You've already expressed your opinions in this letter.  There is no need to rehash them.</read>
+      <feature_usegive />
+      <scenery />
+      <take type="script">
+        if (Contains (pedestalXM,IdeaInAnEnvelopeXM)) {
+          msg ("There is no need to take the idea in the envelope off of the pedestal.  It is where it belongs.  Now what?")
+        }
+        else {
+          msg ("You pick up the envelope stuffed with your idea about Xan's writing.")
+          AddToInventory (IdeaInAnEnvelopeXM)
+        }
+      </take>
+      <openscript type="script">
+        msg ("You have already written and sealed your brilliant ideas within the envelope.  No reason to open it.")
+      </openscript>
+      <closescript type="script">
+        msg ("It's already closed, dipshit.")
+      </closescript>
+      <giveto type="scriptdictionary">
+        <item key="XanMag"><![CDATA[
+          msg ("You hand the envelope over to XanMag.  He looks at it and peeks inside.<br/><br/>\"I do NOT need help with this, Pixie.  I need to come up with these ideas on my OWN or my efforts will all be for naught.\"<br/><br/>He shoves the envelope back in your hand.  Evidently this is not something that he does not want 'help' with.")
+        ]]></item>
+        <item key="hegemonkhan">
+          msg ("HK looks at the envelope and says, \"That is not for me, Pixie.\"")
+        </item>
+        <item key="RH">
+          msg ("\"Um... I don't need that, Pix.  Try Xan?\"")
+        </item>
+        <item key="Dark_Lizerd">
+          msg ("DL looks at you with a perplexed look on his face but he grabs the envelope and gives it a quick read.  \"Interesting,\" he responds, \"and some pretty good advice, but this isn't mine.  I think this should go to Xan.\"  He hands the envelope back to you.")
+        </item>
+        <item key="DarkLizerd">
+          msg ("DL looks at you with a perplexed look on his face but he grabs the envelope and gives it a quick read.  \"Interesting,\" he responds, \"and some pretty good advice, but this isn't mine.  I think this should go to Xan.\"  He hands the envelope back to you.")
+        </item>
+        <item key="GalGadotXM">
+          msg ("\"I definitely do not need that, Pixie. My envelope is already full if you know what I mean.\"  Gal laughs at her own joke.  \"You should probably give that to Xan.")
+        </item>
+        <item key="bartender">
+          msg ("Gal appears too busy to take the envelope from you.  Perhaps she doesn't need it?")
+        </item>
+        <item key="KV"><![CDATA[
+          msg ("\"Yeah, I don't really need that, Pix,\" says KV, not taking it.  \"Try Xan.\"<br/>")
+        ]]></item>
+      </giveto>
+      <displayverbs type="stringlist">
+        <value>Look at</value>
+        <value>Take</value>
+        <value>Open</value>
+        <value>Close</value>
+      </displayverbs>
+      <inventoryverbs type="stringlist">
+        <value>Look at</value>
+        <value>Use</value>
+        <value>Drop</value>
+        <value>Open</value>
+        <value>Close</value>
+      </inventoryverbs>
+    </object>
+    <object name="pinkshardofinfinityXM">
+      <alias>pink shard of infinity</alias>
+      <take />
+      <takemsg>You are already carrying it!</takemsg>
+      <drop type="boolean">false</drop>
+      <dropmsg>Better not.  This seems pretty valuable.</dropmsg>
+      <look type="script">
+        firsttime {
+          msg ("It's quite the bejewelment.  It has been removed from that cheesy Certificate of Appreciation XanMag gave you.  That paper is bascially worthless but this shard emits an aura of mysterious and great power.  At least that is the impression you get when holding it in your inventory.")
+        }
+        otherwise {
+          msg ("Pink shard of infinity... emits a feeling of great power.")
+        }
+      </look>
+    </object>
+  </object>
+
+  <verb name="xm_light">
+    <property>light</property>
+    <pattern>light;ignite</pattern>
+    <defaultexpression>"You can't light;ignite " + object.article + "."</defaultexpression>
+  </verb>
+  <verb name="xm_smoke">
+    <property>smoke</property>
+    <pattern>smoke;chief;toke;toke up</pattern>
+    <defaultexpression>"You can't smoke;chief;toke;toke up " + object.article + "."</defaultexpression>
+  </verb>
+
+
+
+
+</library>
